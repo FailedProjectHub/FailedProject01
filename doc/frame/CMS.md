@@ -28,36 +28,12 @@ CMS由两个部分组成：用户系统，文件系统
 =====================================
 2.用户系统:
 
-	super admin:
-		站长，可以任免副站长，含有所有权限
-	admin:
-   		副站长，除了不能任免副站长一万，有站长其他所有的权限
-   	user:
-   		普通用户，在/home下有自己的独立的文件夹
-   	group:
-    	用户组，在/group下有该组独立的文件
-    group super host:
-    	用户组主，由super admin和admin任免，越过该组对应的ACL权限系统(下面介绍)
-	group host:
-		用户组副主，由group super host任免，除此之外有group super host的所有权限
+	参照linux
 		    	
 ======================================
 另外之一:
 
-	文件和文件夹的acl
-	read属性，文件(文件夹)对于哪些用户(用户组)可见。特别地，对文件来说,如果该文件对A用户(用户组)可见,则A用户(用户组)可以在[网盘层面]上面播放(下载)这个视频
-	read_by_user(最多可以指定20个,包括自己)
-	read_by_group(最多可以指定20个)
-	
-	remove属性，哪些用户(用户组)可以删除这个文件(文件夹)
-	removed_by_user(最多可以指定5个,包括自己,最少一个)
-	removed_by_group(最多可以指定3个)
-	
-	create属性，哪些用户(用户组)可以在这个文件夹下添加文件
-	created_by_user(最多可以指定5个，包括自己，最少一个)
-	created_by_group(最多可以指定3个)
-	
-	特别地, super admin和admin和该组的group host在此规则之外，拥有查看删除创建所有文件的权限。
+	ACL
 	
 ========================================
 另外之二:
@@ -118,4 +94,7 @@ CMS由两个部分组成：用户系统，文件系统
 	urls.py正则表达式匹配{{hostname}}/cms/<path>/<operation>
 	根据操作名调用cms.plugin内的process函数
 	规定对于操作的接口
-	def process(session, *argv)
+	def process(session, args, user)
+	session如名
+	args命令参数，举例: mkdir -p /home/voidrank 命令，会调用../plugins/mkdir.py,传入参数为["-p","/home/voidrank"]
+	user是当前用户的信息

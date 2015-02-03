@@ -1,14 +1,15 @@
 from optparse import OptionParser
 import os
+from django.contrib.auth.models import User
 from cms.models import Folder, File
 from .base import baseplugin
-from .exceptions import MissArguments, WrongArgument
+from .exceptions import UserNotFound, MissArguments
 
 
-class chmod(baseplugin):
+class chown(baseplugin):
 
     def __init__(self):
-        super(chmod, self).__init__()
+        super(chown, self).__init__()
         parser = OptionParser()
         self.parser = parser
 
@@ -17,31 +18,28 @@ class chmod(baseplugin):
         if len(args) < 2:
             raise MissArguments()
         try:
-            mod = int(args[0], 8)
-            args.pop(0)
+            user = User.objects.get(username=args[0])
         except Exception:
-            raise WrongArgument(0)
-        if (0o0 <= mod <= 0o777) is False:
-            raise WrongArgument(0)
+            raise UserNotFound(args[0])
+        args.pop(0)
         not_success = []
         for i in args:
             path = os.path.join(session['path'], i)
             if path.endswith("/"):
                 path = path[0:-1]
             try:
-                folder = Folder.objects.get(path=path+'/')
+                folder = Folder.objects.get(path=path+"/")
             except Exception:
                 try:
                     file = File.objects.get(path=path)
                 except Exception:
-                    not_success.append(path)
+                    not_success.append(i)
                 else:
-                    file.mod = mod
+                    file.user = user
                     file.save()
             else:
-                folder.mod = mod
+                folder.user = user
                 folder.save()
-
         if len(not_success) > 0:
             not_success.insert(0, "File not found:")
             return [not_success]
@@ -49,5 +47,5 @@ class chmod(baseplugin):
             return None
 
 
-process_object = chmod()
+process_object = chown()
 process = process_object.process

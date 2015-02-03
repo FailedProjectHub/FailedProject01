@@ -4,7 +4,9 @@ __all__ = [
     'ls',
     'mkdir',
     'getfacl',
-    'chmod'
+    'chmod',
+    'chown',
+    'chgrp'
 ]
 
 from . import *

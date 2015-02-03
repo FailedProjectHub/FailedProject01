@@ -39,3 +39,11 @@ class WrongArgument(Exception):
     def __str__(self):
         return "WrongArgument at %d" % (self.index,)
 
+
+class UserNotFound(Exception):
+
+    def __init__(self, username):
+        self.username = username
+
+    def __str__(self):
+        return 'User with name "%s" not found' % (self.username,)

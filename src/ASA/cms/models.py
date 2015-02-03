@@ -5,13 +5,13 @@ from django.db import models
 class BaseFile(models.Model):
     id = models.AutoField(primary_key=True)
     mod = models.IntegerField()
-    user = models.ManyToManyField(
+    user = models.ForeignKey(
         'auth.User',
         related_name="%(class)s",
         blank=True,
         null=True,
         db_index=True)
-    group = models.ManyToManyField(
+    group = models.ForeignKey(
         'auth.Group',
         related_name="%(class)s",
         blank=True,
