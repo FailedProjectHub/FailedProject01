@@ -1,10 +1,13 @@
 from django.db import models
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericForeignKey
 # from django.core.exceptions import ValidationError
 
 
-class BaseFile(models.Model):
+class File(models.Model):
     id = models.AutoField(primary_key=True)
     mod = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
     user = models.ForeignKey(
         'auth.User',
         related_name="%(class)s",
@@ -24,19 +27,25 @@ class BaseFile(models.Model):
         null=True,
         db_index=True)
     path = models.CharField(max_length=128, unique=True)
+    attrib_type = models.ForeignKey(ContentType)
+    attrib_id = models.PositiveIntegerField()
+    attrib_object = GenericForeignKey('attrib_type', 'attrib_id')
+
+
+class BaseFile(models.Model):
+    id = models.AutoField(primary_key=True)
 
     class Meta:
         abstract = True
 
 
 class Folder(BaseFile):
-    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.path)
 
 
-class File(BaseFile):
+class VideoFile(BaseFile):
     size = models.BigIntegerField()
     filehash = models.CharField(max_length=64, unique=True)
     filename = models.CharField(max_length=1024)

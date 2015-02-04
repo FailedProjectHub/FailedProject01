@@ -98,3 +98,8 @@ CMS由两个部分组成：用户系统，文件系统
 	session如名
 	args命令参数，举例: mkdir -p /home/voidrank 命令，会调用../plugins/mkdir.py,传入参数为["-p","/home/voidrank"]
 	user是当前用户的信息
+	
+======================================
+另外之五:
+
+	文件模型。所有的文件都有一个basefile。所有的basefile都会被反向连接一个OneToOneField,
