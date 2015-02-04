@@ -11,14 +11,40 @@
 			<div>
 				{$user$}@{$host$}:{$pwd$}$ {$com.inp$}
 			</div>
-			<div>
-				{$com.oup$}
+			<ng-include src="/templates/{$com_type.html$}"></ng-include>
+			<!-- 
+			<div ng-switch="type">
+				<div ng-switch-when="cd">
+					<div ng-switch="com.oup.msg">
+						<div ng-switch-when="OK"></div>
+						<div ng-switch-default>
+							{$com.oup.msg$} does not exists!
+						</div>
+					</div>
+				</div>
+				<div ng-switch-when="mkdir">
+				</div>
+				<div ng-switch-when="rm">
+				</div>
+				<div ng-switch-when="ls">
+					<div ng-switch="com.oup.status">
+						<div ng-switch-when="error">
+							{$com.oup.msg$}
+						</div>
+						<div ng-switch-when="OK">
+							<div ng-repeat="line in com.oup.msg" ng-init="outerIndex = $index">
+								<span ng-repeat="word in line" ng-init="innnerIndex = $index">{$com.oup.msg[outerIndex][innerIndex]$} </span>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
+			-->
 		</div>
 		<div>{$user$}@{$host$}:{$pwd$}$ {$inp$}</div>
 	</div>
 	<div id="InputWrap">
-		<input type="text" ng-model="inp" />
+		<input type="text" ng-model="inp" ng-keypress="detectEnter($event)" />
 		<button ng-click="submit()">submit</button>
 	</div>
 	<script src="/static/js/web_terminal.js"></script>
