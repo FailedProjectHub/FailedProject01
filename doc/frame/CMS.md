@@ -28,12 +28,12 @@ CMS由两个部分组成：用户系统，文件系统
 =====================================
 2.用户系统:
 
-	参照linux
+	参照linux(with)
 		    	
 ======================================
 另外之一:
 
-	ACL
+	实现部分POSIX的权限接口(例如chmod). 而对于ls, cd, mkdir暂不实现POSIX接口.
 	
 ========================================
 另外之二:
@@ -94,12 +94,12 @@ CMS由两个部分组成：用户系统，文件系统
 	urls.py正则表达式匹配{{hostname}}/cms/<path>/<operation>
 	根据操作名调用cms.plugin内的process函数
 	规定对于操作的接口
-	def process(session, args, user)
-	session如名
+	def process(environ, args)
+	environ是一个字典对象, 现在已经规定的key-value为: "path":str, "username":str, "user":user(django自带的auth中的user对象)
 	args命令参数，举例: mkdir -p /home/voidrank 命令，会调用../plugins/mkdir.py,传入参数为["-p","/home/voidrank"]
 	user是当前用户的信息
 	
 ======================================
 另外之五:
 
-	文件模型。所有的文件都有一个basefile。所有的basefile都会被反向连接一个OneToOneField,
+	文件模型。所有的文件都有一个basefile。所有的basefile都会被反向连接一个OneToOneField, 被称之为属性（应要求每个File只有一种属性）
