@@ -1,45 +1,18 @@
 <html ng_app>
 <head>
 	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<link rel="stylesheet" type="text/css" href="css\style.css" >
+	<link rel="stylesheet" type="text/css" href="/static/css/style.css" >
 	<script src="/static/js/angular.min.js"></script>
+	<script src="/static/js/angular-mocks.js"></script>
 </head>
 <body ng-app="web_terminal" ng-controller="f">
 <div id="wrap">
-	<div id="screen">
+	<div id="OutputWrap">
 		<div ng-repeat="com in coms">
 			<div>
 				{$user$}@{$host$}:{$pwd$}$ {$com.inp$}
 			</div>
-			<ng-include src="/templates/{$com_type.html$}"></ng-include>
-			<!-- 
-			<div ng-switch="type">
-				<div ng-switch-when="cd">
-					<div ng-switch="com.oup.msg">
-						<div ng-switch-when="OK"></div>
-						<div ng-switch-default>
-							{$com.oup.msg$} does not exists!
-						</div>
-					</div>
-				</div>
-				<div ng-switch-when="mkdir">
-				</div>
-				<div ng-switch-when="rm">
-				</div>
-				<div ng-switch-when="ls">
-					<div ng-switch="com.oup.status">
-						<div ng-switch-when="error">
-							{$com.oup.msg$}
-						</div>
-						<div ng-switch-when="OK">
-							<div ng-repeat="line in com.oup.msg" ng-init="outerIndex = $index">
-								<span ng-repeat="word in line" ng-init="innnerIndex = $index">{$com.oup.msg[outerIndex][innerIndex]$} </span>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-			-->
+			<ng-include src="'com_'+com.com_type+'.html'"></ng-include>
 		</div>
 		<div>{$user$}@{$host$}:{$pwd$}$ {$inp$}</div>
 	</div>

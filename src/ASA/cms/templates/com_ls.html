@@ -1,10 +1,13 @@
-<div ng-switch="com.oup.status">
+<div ng-switch="com.oup.status" ng-controller="ls">
 	<div ng-switch-when="error">
 		{$com.oup.msg$}
 	</div>
 	<div ng-switch-when="OK">
-		<div ng-repeat="line in com.oup.msg" ng-init="outerIndex = $index">
-			<span ng-repeat="word in line" ng-init="innnerIndex = $index">{$com.oup.msg[outerIndex][innerIndex]$} </span>
-		</div>
+		<div>{$com.oup.head[0]$} {$com.oup.head[1]$}</div>
+		<table>
+			<tr ng-repeat="line in com.oup.msg track by $index" ng-init="outerIndex = $index">
+				<td ng-repeat="word in line track by $index" ng-init="innerIndex = $index">{$com.oup.msg[outerIndex][innerIndex]$} </td>
+			</tr>
+		</table>
 	</div>
 </div>
