@@ -14,7 +14,7 @@ ICommand-line-API
 返回值json: 
 	
 	错误{"status": "error", "msg": "{{reason}}"}
-	正常返回{"status": "OK", "msg": "{{msg}}"}	
+	正常返回{"status": "OK", "msg": {{msg}}}	
 	msg的格式
 		[[第一行的信息], [第二行的信息], ...]
 	例如:
