@@ -17,7 +17,7 @@
 		<div>{$user$}@{$host$}:{$pwd$}$ {$inp$}</div>
 	</div>
 	<div id="InputWrap">
-		<input type="text" ng-model="inp" ng-keypress="detectEnter($event)" />
+		<input type="text" ng-model="inp" ng-keypress="detectEnter($event)" autofocus="autofocus" />
 		<button ng-click="submit()">submit</button>
 	</div>
 	<script src="/static/js/web_terminal.js"></script>
