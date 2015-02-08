@@ -1,12 +1,10 @@
 __all__ = [
     'cd',
-    'rm',
     'ls',
     'mkdir',
-    'getfacl',
+    'rm',
     'chmod',
-    'chown',
-    'chgrp'
+    'chown'
 ]
 
 from . import *

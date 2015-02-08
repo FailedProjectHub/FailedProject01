@@ -95,7 +95,7 @@ CMS由两个部分组成：用户系统，文件系统
 	根据操作名调用cms.plugin内的process函数
 	规定对于操作的接口
 	def process(environ, args)
-	environ是一个字典对象, 现在已经规定的key-value为: "path":list, "username":str, "user":user(django自带的auth中的user对象)
+	environ是一个字典对象, 现在已经规定的key-value为: "path":str, "username":str, "user":user(django自带的auth中的user对象)
 	args命令参数，举例: mkdir -p /home/voidrank 命令，会调用../plugins/mkdir.py,传入参数为["-p","/home/voidrank"]
 	user是当前用户的信息
 	

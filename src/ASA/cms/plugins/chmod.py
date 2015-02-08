@@ -1,7 +1,7 @@
 from optparse import OptionParser
+from cms.models import File
 import os
-from cms.models import Folder, File
-from .base import baseplugin
+from .base import baseplugin, path_str_to_list
 from .exceptions import MissArguments, WrongArgument
 
 
@@ -12,39 +12,35 @@ class chmod(baseplugin):
         parser = OptionParser()
         self.parser = parser
 
-    def process(self, session, args):
+    def process(self, environ, args):
         options, args = self.parser.parse_args(args)
         if len(args) < 2:
             raise MissArguments()
         try:
             mod = int(args[0], 8)
-            args.pop(0)
         except Exception:
             raise WrongArgument(0)
+        args.pop(0)
         if (0o0 <= mod <= 0o777) is False:
             raise WrongArgument(0)
         not_success = []
         for i in args:
-            path = os.path.join(session['path'], i)
-            if path.endswith("/"):
-                path = path[0:-1]
+            path = os.path.join(environ['path'], i)
+            list_path = path_str_to_list(path)
             try:
-                folder = Folder.objects.get(path=path+'/')
+                file = File.objects.get(path=list_path)
             except Exception:
-                try:
-                    file = File.objects.get(path=path)
-                except Exception:
-                    not_success.append(path)
-                else:
+                not_success.append(['No such file:', path])
+            else:
+                if environ['user'].is_superuser \
+                        or file.user.username == environ['username']:
                     file.mod = mod
                     file.save()
-            else:
-                folder.mod = mod
-                folder.save()
+                else:
+                    not_success.append(["Permission denied:", path])
 
         if len(not_success) > 0:
-            not_success.insert(0, "File not found:")
-            return [not_success]
+            return not_success
         else:
             return None
 
