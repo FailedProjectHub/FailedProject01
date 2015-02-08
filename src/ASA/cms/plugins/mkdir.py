@@ -1,8 +1,38 @@
 from cms.models import *
-from .base import baseplugin
-from .exceptions import MissArguments, FileExists
+from .base import *
+from .exceptions import *
 from optparse import OptionParser
-from copy import deepcopy
+from django.db import IntegrityError
+import os
+
+
+def set_up_a_folder(environ, filename):
+    path_list = path_str_to_list(os.path.join(environ['path'], filename))
+    if access(environ, path_list[:-1], AUTH_FOR_WRITE) is False:
+        raise PermissionDenied(path_list_to_str(path_list))
+    # TODO:umask
+    parent_folder = File.objects.get(path=path_list[:-1])
+    if hasattr(parent_folder, 'folderattrib') is False:
+        raise DirectoryNotFound(path_list_to_str(path_list[:-1]))
+    try:
+        file = File.objects.create(
+            user=environ['user'],
+            mod=parent_folder.mod,
+            parent_folder=parent_folder,
+            path=path_list
+        )
+    except IntegrityError:
+        raise FileExists(path_list_to_str(path_list))
+    FolderAttrib.objects.create(base_file=file)
+
+
+def recursive(environ, filename):
+    path_list = path_str_to_list(os.path.join(environ['path'], filename))
+    try:
+        File.objects.get(path=path_list[:-1])
+    except File.DoesNotExist:
+        recursive(environ, filename[:filename.rfind('/')])
+    set_up_a_folder(environ, filename)
 
 
 class mkdir(baseplugin):
@@ -13,48 +43,23 @@ class mkdir(baseplugin):
         parser.add_option("-p", action="store_true", default=False, dest="p")
         self.parser = parser
 
-    def set_up_a_folder(self, folder, filename):
-        subfolder = deepcopy(folder)
-        subfolder.id = None
-        subfolder.parent_folder = folder
-        subfolder.path += filename + "/"
-        subfolder.save()
-
-    def process(self, session, args):
+    def process(self, environ, args):
         options, args = self.parser.parse_args(args)
-        if len(args) == 0:
-            raise MissArguments()
-        path_str = session['path']
-        path_list = args[0].split("/")
-        if args[0].startswith("/"):
-            path_str = "/"
-            path_list.pop(0)
-        if args[0].endswith("/"):
-            path_list.pop()
-        for i in path_list[:-1]:
-            next_path_str = path_str + i + '/'
+        not_success = []
+        for i in args:
             try:
-                Folder.objects.get(path=next_path_str)
-            except Exception as e:
                 if options.p is True:
-                    folder = Folder.objects.get(path=path_str)
-                    self.set_up_a_folder(folder, i)
+                    recursive(environ, i)
                 else:
-                    raise e
-            path_str = next_path_str
-        # "/"
-        if len(path_list) == 0:
-            raise FileExists("/")
+                    set_up_a_folder(environ, i)
+            except Exception as e:
+                raise e
+                not_success.append([str(e)])
+        if len(not_success) > 0:
+            return not_success
         else:
-            next_path_str = path_str + path_list[-1] + '/'
-            try:
-                Folder.objects.get(path=next_path_str)
-            except:
-                folder = Folder.objects.get(path=path_str)
-                self.set_up_a_folder(folder, path_list[-1])
-            else:
-                raise FileExists(args[0])
-        session['path'] = path_str
+            return None
+
 
 process_object = mkdir()
 process = process_object.process

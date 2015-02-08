@@ -1,9 +1,9 @@
 from optparse import OptionParser
 import os
 from django.contrib.auth.models import User
-from cms.models import Folder, File
-from .base import baseplugin
-from .exceptions import UserNotFound, MissArguments
+from cms.models import File
+from .base import *
+from .exceptions import *
 
 
 class chown(baseplugin):
@@ -13,7 +13,7 @@ class chown(baseplugin):
         parser = OptionParser()
         self.parser = parser
 
-    def process(self, session, args):
+    def process(self, environ, args):
         options, args = self.parser.parse_args(args)
         if len(args) < 2:
             raise MissArguments()
@@ -24,25 +24,21 @@ class chown(baseplugin):
         args.pop(0)
         not_success = []
         for i in args:
-            path = os.path.join(session['path'], i)
-            if path.endswith("/"):
-                path = path[0:-1]
+            path = os.path.join(environ['path'], i)
+            path_list = path_str_to_list(path)
             try:
-                folder = Folder.objects.get(path=path+"/")
+                file = File.objects.get(path=path_list)
             except Exception:
-                try:
-                    file = File.objects.get(path=path)
-                except Exception:
-                    not_success.append(i)
-                else:
+                not_success.append(['FileNotFound', path])
+            else:
+                if environ['user'].is_superuser or \
+                        file.user.username == environ['username']:
                     file.user = user
                     file.save()
-            else:
-                folder.user = user
-                folder.save()
+                else:
+                    not_success.append(['Permission denied:', path])
         if len(not_success) > 0:
-            not_success.insert(0, "File not found:")
-            return [not_success]
+            return not_success
         else:
             return None
 
