@@ -61,3 +61,4 @@ src/ASA/video_cms/chunks
 src/ASA/video_cms/files
 src/ASA/db.sqlite3
 *.ropeproject
+*migrations
