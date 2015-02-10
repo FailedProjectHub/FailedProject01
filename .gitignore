@@ -1,4 +1,4 @@
-# Byte-compiled / optimized / DLL files
+led / optimized / DLL files
 __pycache__/
 *.py[cod]
 
@@ -60,3 +60,6 @@ src/Upload/test_file
 src/ASA/video_cms/chunks
 src/ASA/video_cms/files
 src/ASA/db.sqlite3
+*.ropeproject
+*migrations
+
