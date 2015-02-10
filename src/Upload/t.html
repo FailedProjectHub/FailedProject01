@@ -1,0 +1,95 @@
+<!doctype html>  
+<html>
+  <head>  
+  <meta charset="utf-8">  
+  <title></title>  
+  <script src="sha256.js"></script>
+  <script>
+	var config = {
+    "chunksize":    65536,
+    "url"     :     "http://localhost:8000/",
+    "filename":"ttttt",
+	};
+
+  function  handleFiles(files)  
+  {  
+    if(files.length)  
+    {  
+	
+       var file = files[0];  
+       var token;
+		function upload_single_chunk(seq,callback) {
+			var offset=config.chunksize*seq;
+			var chunksize=offset+config.chunksize<file.size?config.chunksize:file.size-offset;
+			var reader = new FileReader(); 
+			reader.onload=function() {
+				var hash=sha256_digest(this.result);
+				  var xmlHttp=new XMLHttpRequest();
+				  xmlHttp.open("PUT", config.url+"upload/chunk/"+token+"/?hash="+hash+"&seq="+seq, false);
+				  xmlHttp.send(this.result);
+				callback();
+			};
+			reader.readAsBinaryString(file.slice(offset, offset+chunksize));
+		}
+	var seqnow=0;
+	var seqs=parseInt((file.size-1)/config.chunksize)+1;
+	function upload_next() {
+		if (seqnow>=seqs) {
+			//finish
+			  var xmlHttp=new XMLHttpRequest();
+			  xmlHttp.open("GET", config.url+"upload/store/"+token, false);
+			  xmlHttp.send(null);
+				document.getElementById("filecontent").innerHTML += xmlHttp.responseText;
+			return;
+		}
+		seqnow++;
+		upload_single_chunk(seqnow-1,upload_next);
+	}
+	  function finish_checksum(sum) {
+		  var xmlHttp=new XMLHttpRequest();
+		  xmlHttp.open("POST", config.url+"upload/init/", false);
+		  xmlHttp.send("size="+file.size+"&hash="+sum+"&filename="+config.filename+"&chunksize="+config.chunksize);
+		  document.getElementById("filecontent").innerHTML +=xmlHttp.responseText;
+		  
+		  var res=eval('('+xmlHttp.responseText+')');
+		  token=res.token;
+	  }
+	  
+	  
+       var reader = new FileReader(); 
+       document.getElementById("filecontent").innerHTML = ""+file.size+"<br/>"; 
+       var chunksize = config["chunksize"];
+       var pos=0;
+       sha256_init();
+	   var sha256_nextchunk = function() {   
+		   reader.onload=function() {
+			   if (pos>file.size) pos=file.size;
+				document.getElementById("bar").style.width=pos/file.size*100+"%";
+				if (pos>=file.size) {
+				   sha256_final();
+				   var res=sha256_encode_hex();
+				   document.getElementById("filecontent").innerHTML += res+"<br>";
+				   finish_checksum(res);
+				   return;	
+			   }					
+			   sha256_update(this.result, pos+chunksize<file.size?chunksize:file.size-pos);
+			   pos+=chunksize;
+			   sha256_nextchunk();
+			};
+		   reader.readAsBinaryString(file.slice(pos, pos+chunksize<file.size?pos+chunksize:file.size));
+		};
+		sha256_nextchunk();
+    }  
+  }  
+  
+  </script>  
+    
+  </head>  
+  <body>  
+  
+  <input type="file" id="file" onchange="handleFiles(this.files)"/>  
+  <div style="width:500px;height:20px;"><div id="bar" style="height:100%;width:0%;background-color:#02F;"></div></div>
+  <div id="filecontent"></div>  
+  <div id="sha"></div>
+  </body>  
+</html>  
