@@ -20,26 +20,27 @@
        var token;
 		function upload_single_chunk(seq,callback) {
 			var offset=config.chunksize*seq;
-			var chunksize=offset+config.chunksize<file.size?config.chunksize:file.size-offset;
+			var chunksize=offset+config.chunksize*2<file.size?config.chunksize:file.size-offset;
 			var reader = new FileReader(); 
 			reader.onload=function() {
 				var hash=sha256_digest(this.result);
 				  var xmlHttp=new XMLHttpRequest();
 				  xmlHttp.open("PUT", config.url+"upload/chunk/"+token+"/?hash="+hash+"&seq="+seq, false);
 				  xmlHttp.send(this.result);
+				document.getElementById("filecontent").innerHTML += xmlHttp.responseText+"<br>";
 				callback();
 			};
 			reader.readAsBinaryString(file.slice(offset, offset+chunksize));
 		}
 	var seqnow=0;
-	var seqs=parseInt((file.size-1)/config.chunksize)+1;
+	var seqs=parseInt((file.size-1)/config.chunksize);
 	function upload_next() {
 		if (seqnow>=seqs) {
 			//finish
 			  var xmlHttp=new XMLHttpRequest();
 			  xmlHttp.open("GET", config.url+"upload/store/"+token, false);
 			  xmlHttp.send(null);
-				document.getElementById("filecontent").innerHTML += xmlHttp.responseText;
+				document.getElementById("filecontent").innerHTML += xmlHttp.responseText+"<br>";
 			return;
 		}
 		seqnow++;
@@ -48,11 +49,16 @@
 	  function finish_checksum(sum) {
 		  var xmlHttp=new XMLHttpRequest();
 		  xmlHttp.open("POST", config.url+"upload/init/", false);
-		  xmlHttp.send("size="+file.size+"&hash="+sum+"&filename="+config.filename+"&chunksize="+config.chunksize);
-		  document.getElementById("filecontent").innerHTML +=xmlHttp.responseText;
+		  var qstr='{"size":'+file.size+',"hash":"'+sum+'","filename":"'+config.filename+'","chunksize":'+config.chunksize+'}';
+		  console.log(qstr);
+		  xmlHttp.send(qstr);
+		  document.getElementById("filecontent").innerHTML +=xmlHttp.responseText+"<br>";
 		  
 		  var res=eval('('+xmlHttp.responseText+')');
 		  token=res.token;
+		  
+		  seqnow=0;
+		  upload_next();
 	  }
 	  
 	  
@@ -72,11 +78,11 @@
 				   finish_checksum(res);
 				   return;	
 			   }					
-			   sha256_update(this.result, pos+chunksize<file.size?chunksize:file.size-pos);
+			   sha256_update(this.result, pos+chunksize*2<file.size?chunksize:file.size-pos);
 			   pos+=chunksize;
 			   sha256_nextchunk();
 			};
-		   reader.readAsBinaryString(file.slice(pos, pos+chunksize<file.size?pos+chunksize:file.size));
+		   reader.readAsBinaryString(file.slice(pos, pos+chunksize*2<file.size?pos+chunksize:file.size));
 		};
 		sha256_nextchunk();
     }  
