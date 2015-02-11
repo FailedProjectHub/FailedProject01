@@ -7,30 +7,37 @@
   <script>
 	var config = {
     "chunksize":    65536,
-    "url"     :     "http://localhost:8000/",
+    "url"     :     "{{hostname}}",
     "filename":"ttttt",
 	};
-
   function  handleFiles(files)  
   {  
     if(files.length)  
     {  
-	
+	function getFileName(path){
+	var pos1 = path.lastIndexOf('/');
+	var pos2 = path.lastIndexOf('\\');
+	var pos = Math.max(pos1, pos2);
+	if (pos==0&&path[0]!='/'&&path[0]!='\\') return path;else return path.substring(pos+1);}
+		config.filename=getFileName(document.getElementById("file").value);
+		console.log("filename: "+config.filename);
        var file = files[0];  
        var token;
 		function upload_single_chunk(seq,callback) {
 			var offset=config.chunksize*seq;
 			var chunksize=offset+config.chunksize*2<file.size?config.chunksize:file.size-offset;
 			var reader = new FileReader(); 
-			reader.onload=function() {
-				var hash=sha256_digest(this.result);
+			reader.onload=function(e) {
+				var data = String.fromCharCode.apply(null, new Uint8Array(this.result));
+				var hash=sha256_digest(data);
 				  var xmlHttp=new XMLHttpRequest();
 				  xmlHttp.open("PUT", config.url+"upload/chunk/"+token+"/?hash="+hash+"&seq="+seq, false);
+				  xmlHttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
 				  xmlHttp.send(this.result);
 				document.getElementById("filecontent").innerHTML += xmlHttp.responseText+"<br>";
-				callback();
+				if (xmlHttp.status<400) callback();
 			};
-			reader.readAsBinaryString(file.slice(offset, offset+chunksize));
+			reader.readAsArrayBuffer(file.slice(offset, offset+chunksize));
 		}
 	var seqnow=0;
 	var seqs=parseInt((file.size-1)/config.chunksize);
@@ -50,7 +57,6 @@
 		  var xmlHttp=new XMLHttpRequest();
 		  xmlHttp.open("POST", config.url+"upload/init/", false);
 		  var qstr='{"size":'+file.size+',"hash":"'+sum+'","filename":"'+config.filename+'","chunksize":'+config.chunksize+'}';
-		  console.log(qstr);
 		  xmlHttp.send(qstr);
 		  document.getElementById("filecontent").innerHTML +=xmlHttp.responseText+"<br>";
 		  
@@ -69,7 +75,6 @@
        sha256_init();
 	   var sha256_nextchunk = function() {   
 		   reader.onload=function() {
-			   if (pos>file.size) pos=file.size;
 				document.getElementById("bar").style.width=pos/file.size*100+"%";
 				if (pos>=file.size) {
 				   sha256_final();
@@ -77,9 +82,9 @@
 				   document.getElementById("filecontent").innerHTML += res+"<br>";
 				   finish_checksum(res);
 				   return;	
-			   }					
+			   }
 			   sha256_update(this.result, pos+chunksize*2<file.size?chunksize:file.size-pos);
-			   pos+=chunksize;
+			   pos+=pos+chunksize*2<file.size?chunksize:file.size-pos;
 			   sha256_nextchunk();
 			};
 		   reader.readAsBinaryString(file.slice(pos, pos+chunksize*2<file.size?pos+chunksize:file.size));
@@ -92,8 +97,7 @@
     
   </head>  
   <body>  
-  
-  <input type="file" id="file" onchange="handleFiles(this.files)"/>  
+  <input type="file" id="file" onchange="handleFiles(this.files)">  
   <div style="width:500px;height:20px;"><div id="bar" style="height:100%;width:0%;background-color:#02F;"></div></div>
   <div id="filecontent"></div>  
   <div id="sha"></div>
