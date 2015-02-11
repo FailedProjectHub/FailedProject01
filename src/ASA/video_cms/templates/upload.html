@@ -23,6 +23,9 @@
 		console.log("filename: "+config.filename);
        var file = files[0];  
        var token;
+       
+	var seqnow=0;
+	var seqs=parseInt((file.size-1)/config.chunksize);
 		function upload_single_chunk(seq,callback) {
 			var offset=config.chunksize*seq;
 			var chunksize=offset+config.chunksize*2<file.size?config.chunksize:file.size-offset;
@@ -35,12 +38,11 @@
 				  xmlHttp.setRequestHeader("Content-Type","application/x-www-form-urlencoded");
 				  xmlHttp.send(this.result);
 				document.getElementById("filecontent").innerHTML += xmlHttp.responseText+"<br>";
+				document.getElementById("bar").style.width=seq/seqs*100+"%";
 				if (xmlHttp.status<400) callback();
 			};
 			reader.readAsArrayBuffer(file.slice(offset, offset+chunksize));
 		}
-	var seqnow=0;
-	var seqs=parseInt((file.size-1)/config.chunksize);
 	function upload_next() {
 		if (seqnow>=seqs) {
 			//finish
