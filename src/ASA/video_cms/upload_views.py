@@ -29,8 +29,8 @@ class InitView(View):
             assert 'chunksize' in data
         except AssertionError:
             return HttpResponseBadRequest(json.dumps({ 'errstr' : 'required field missing' }), content_type='application/json')
-        
-        
+
+
         try:
             assert isinstance(data['size'], int)
             assert isinstance(data['chunksize'], int)
@@ -39,15 +39,15 @@ class InitView(View):
             session = Session.new(data['size'], data['hash'], data['filename'], data['chunksize'])
         except AssertionError:
             return HttpResponseForbidden(json.dumps({ 'errstr' : 'invalid value type' }), content_type='application/json')
-        
+
         response = HttpResponse(status=201, reason='Initialized', content_type='application/json')
         response.write(json.dumps({
             'token' : session.token
         }))
         return response
-    
+
 class ChunkView(View):
-    
+
     @staticmethod
     def get(request, owner, *args, **kwargs):
         owner = owner.lower()
@@ -63,7 +63,7 @@ class ChunkView(View):
                 'seq': chunk.chunk_seq,
             }, owner.chunk_set.order_by('chunk_seq')))
         ))
-    
+
     @staticmethod
     def put(request, owner, *args, **kwargs):
         owner = owner.lower()
@@ -72,7 +72,7 @@ class ChunkView(View):
             assert 'seq' in request.GET
         except AssertionError:
             return HttpResponseBadRequest(json.dumps({ 'errstr' : 'required GET field missing' }), content_type='application/json')
-        
+
         try:
             seq = int(request.GET['seq'])
             assert seq >= 0
@@ -85,13 +85,13 @@ class ChunkView(View):
             return HttpResponse(json.dumps({
                 'errstr' : str(e)
             }), status=e.status_code)
-        
+
         response = HttpResponse(status=201, reason='Stored', content_type='application/json')
         response.write(json.dumps({
             'chunk_token' : chunk.token,
         }))
         return response
-    
+
     @staticmethod
     def patch(request, owner, *args, **kwargs):
         owner = owner.lower()
@@ -100,7 +100,7 @@ class ChunkView(View):
             assert 'seq' in request.GET
         except AssertionError:
             return HttpResponseBadRequest(json.dumps({ 'errstr' : 'required field missing' }), content_type='application/json')
-        
+
         try:
             seq = int(request.GET['seq'])
             assert seq >= 0
@@ -113,13 +113,14 @@ class ChunkView(View):
             return HttpResponse(json.dumps({
                 'errstr' : str(e)
             }), status=e.status_code)
-        
+
         response = HttpResponse(status=201, reason='Stored', content_type='application/json')
         response.write(json.dumps({
             'chunk_token' : chunk.token,
         }))
         return response
-    
+
+
 class FinalizeView(View):
     @staticmethod
     def get(request, owner, *args, **kwargs):
@@ -141,7 +142,8 @@ class FinalizeView(View):
             'rec'       : int(new_file.rec),
         }))
         return response
-    
+
+
 class DestroyView(View):
     @staticmethod
     def get(request, owner, *args, **kwargs):
@@ -155,4 +157,7 @@ class DestroyView(View):
         return HttpResponse(status=201, reason='Deleted', content_type='application/json')
 
 
-
+class PageView(View):
+    @staticmethod
+    def get(request):
+        return render(request, 'upload.html', {})
