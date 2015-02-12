@@ -4,7 +4,10 @@ __all__ = [
     'mkdir',
     'rm',
     'chmod',
-    'chown'
+    'chown',
+    'touch',
+    'lna'
 ]
 
 from . import *
+Register = base.basepluginMetaclass.Register

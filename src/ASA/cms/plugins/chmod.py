@@ -7,13 +7,12 @@ from .exceptions import MissArguments, WrongArgument
 
 class chmod(baseplugin):
 
-    def __init__(self):
-        super(chmod, self).__init__()
-        parser = OptionParser()
-        self.parser = parser
+    parser = OptionParser()
+    parser = parser
 
-    def process(self, environ, args):
-        options, args = self.parser.parse_args(args)
+    @staticmethod
+    def process(environ, args):
+        options, args = chmod.parser.parse_args(args)
         if len(args) < 2:
             raise MissArguments()
         try:
@@ -43,7 +42,3 @@ class chmod(baseplugin):
             return not_success
         else:
             return None
-
-
-process_object = chmod()
-process = process_object.process

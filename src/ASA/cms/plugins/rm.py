@@ -37,13 +37,11 @@ class rm(baseplugin):
                 raise IsADirectory(path_list_to_str(path_list))
         file_.delete()
 
-    def process(self, environ, args):
+    @staticmethod
+    def process(environ, args):
         options, args = self.parser.parse_args(args)
         self.options = options
         if len(args) == 0:
             raise MissArguments()
         for i in args:
             self.delete_a_file(environ, i)
-
-process_object = rm()
-process = process_object.process

@@ -8,13 +8,12 @@ from .exceptions import *
 
 class chown(baseplugin):
 
-    def __init__(self):
-        super(chown, self).__init__()
-        parser = OptionParser()
-        self.parser = parser
+    parser = OptionParser()
 
-    def process(self, environ, args):
-        options, args = self.parser.parse_args(args)
+    @staticmethod
+    def process(environ, args, options=None):
+        if options is None:
+            options, args = chown.parser.parse_args(args)
         if len(args) < 2:
             raise MissArguments()
         try:
@@ -41,7 +40,3 @@ class chown(baseplugin):
             return not_success
         else:
             return None
-
-
-process_object = chown()
-process = process_object.process

@@ -8,7 +8,16 @@ AUTH_FOR_WRITE = 2
 AUTH_FOR_EXECUTE = 1
 
 
-class baseplugin(object):
+class basepluginMetaclass(type):
+
+    Register = {}
+
+    def __init__(cls, name, bases, nmspc):
+        super(basepluginMetaclass, cls).__init__(name, bases, nmspc)
+        basepluginMetaclass.Register[name] = cls
+
+
+class baseplugin(object, metaclass=basepluginMetaclass):
 
     def __init__(self):
         super(baseplugin, self).__init__()

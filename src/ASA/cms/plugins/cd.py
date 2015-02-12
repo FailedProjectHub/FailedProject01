@@ -4,11 +4,9 @@ from .exceptions import *
 import os
 
 
-class cd(baseplugin):
+class cd(baseplugin, metaclass=basepluginMetaclass):
 
-    def __init__(self):
-        super(cd, self).__init__()
-
+    @staticmethod
     def process(self, environ, args):
         if len(args) == 0:
             raise Missarguments()
@@ -28,6 +26,3 @@ class cd(baseplugin):
                 return None
             else:
                 raise PermissionDenied(file.path)
-
-process_object = cd()
-process = process_object.process

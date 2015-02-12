@@ -1,26 +1,19 @@
-from django.http import HttpResponseBadRequest, HttpResponseForbidden, HttpResponse, HttpResponseNotFound
-from django.shortcuts import render, render_to_response
+from django.http import HttpResponseBadRequest, \
+    HttpResponseForbidden, HttpResponse, HttpResponseNotFound
+from django.shortcuts import render
 from django.views.generic import View
-
-from .models import Session, Chunk, File
-from .exceptions import UploadException, DownloadException
-
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
+from .models import Session, Chunk
+from .exceptions import UploadException
+from django.views.decorators.csrf import csrf_exempt
 import simplejson as json
-import copy
-import base64
 
 # Create your views here.
 
-class InitView(View):
-    @staticmethod
-    def post(request, *args, **kwargs):
 
-        # check request.body type (json accepted)
-        try:
-            data = json.loads(request.body)
-            assert isinstance(data, dict)
-        except (ValueError, AssertionError):
-            return HttpResponseBadRequest(json.dumps({ 'errstr' : 'invalid json format' }), content_type='application/json')
+class InitView(View):
+    def post(self, request, data, *args, **kwargs):
 
         try:
             assert 'size' in data
@@ -28,28 +21,59 @@ class InitView(View):
             assert 'filename' in data
             assert 'chunksize' in data
         except AssertionError:
-            return HttpResponseBadRequest(json.dumps({ 'errstr' : 'required field missing' }), content_type='application/json')
-
+            return HttpResponseBadRequest(
+                json.dumps(
+                    {'errstr': 'required field missing'}
+                ),
+                content_type='application/json'
+            )
 
         try:
             assert isinstance(data['size'], int)
             assert isinstance(data['chunksize'], int)
             assert isinstance(data['hash'], str)
             assert isinstance(data['filename'], str)
-            session = Session.new(data['size'], data['hash'], data['filename'], data['chunksize'])
+            session = Session.new(
+                data['size'],
+                data['hash'],
+                data['filename'],
+                data['chunksize']
+            )
         except AssertionError:
-            return HttpResponseForbidden(json.dumps({ 'errstr' : 'invalid value type' }), content_type='application/json')
+            return HttpResponseForbidden(
+                json.dumps(
+                    {'errstr': 'invalid value type'}
+                ),
+                content_type='application/json'
+            )
 
-        response = HttpResponse(status=201, reason='Initialized', content_type='application/json')
+        response = HttpResponse(
+            status=201,
+            reason='Initialized',
+            content_type='application/json'
+        )
         response.write(json.dumps({
-            'token' : session.token
+            'token': session.token
         }))
         return response
 
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            data = json.loads(request.body)
+            assert isinstance(data, dict)
+        except (ValueError, AssertionError):
+            return HttpResponseBadRequest(json.dumps({
+                'errstr': 'invalid json format'
+                }),
+                content_type='application/json'
+            )
+        return super(InitView, self).dispatch(data, *args, **kwargs)
+
+
 class ChunkView(View):
 
-    @staticmethod
-    def get(request, owner, *args, **kwargs):
+    def get(self, request, owner, *args, **kwargs):
         owner = owner.lower()
         try:
             owner = Session.objects.get(token=owner)
@@ -64,8 +88,7 @@ class ChunkView(View):
             }, owner.chunk_set.order_by('chunk_seq')))
         ))
 
-    @staticmethod
-    def put(request, owner, *args, **kwargs):
+    def put(self, request, owner, *args, **kwargs):
         owner = owner.lower()
         try:
             assert 'hash' in request.GET
@@ -92,8 +115,7 @@ class ChunkView(View):
         }))
         return response
 
-    @staticmethod
-    def patch(request, owner, *args, **kwargs):
+    def patch(self, request, owner, *args, **kwargs):
         owner = owner.lower()
         try:
             assert 'hash' in request.GET
@@ -120,10 +142,13 @@ class ChunkView(View):
         }))
         return response
 
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super(ChunkView, self).dispatch(*args, **kwargs)
+
 
 class FinalizeView(View):
-    @staticmethod
-    def get(request, owner, *args, **kwargs):
+    def get(self, request, owner, *args, **kwargs):
         owner = owner.lower()
         try:
             new_file = Session.objects.get(token=owner).try_finish()
@@ -143,10 +168,13 @@ class FinalizeView(View):
         }))
         return response
 
+    @method_decorator(csrf_exempt)
+    def dispatch(self, *args, **kwargs):
+        return super(FinalizeView, self).dispatch(*args, **kwargs)
+
 
 class DestroyView(View):
-    @staticmethod
-    def get(request, owner, *args, **kwargs):
+    def get(self, request, owner, *args, **kwargs):
         owner = owner.lower()
         try:
             owner = Session.objects.get(token=owner)
@@ -158,6 +186,9 @@ class DestroyView(View):
 
 
 class PageView(View):
-    @staticmethod
-    def get(request):
+    def get(self, request):
         return render(request, 'upload.html', {})
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(InitView, self).dispatch(*args, **kwargs)

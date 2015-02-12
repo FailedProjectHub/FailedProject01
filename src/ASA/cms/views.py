@@ -7,7 +7,7 @@ import importlib
 from .plugins.exceptions import *
 from .plugins.base import *
 import re
-plugins = importlib.import_module(__package__+'.plugins')
+plugins = importlib.import_module(__package__+'.plugins').Register
 # import copy
 try:
     import simplejson as json
@@ -43,7 +43,7 @@ def command_line_tool_ajax(request, path, command):
         environ['path'] = path
         args = re.split(r' +', command.strip())
         try:
-            plugin = plugins.__dict__[args[0]]
+            plugin = plugins[args[0]]
         except Exception as e:
             raise NoSuchCommand()
         args.pop(0)
@@ -52,7 +52,8 @@ def command_line_tool_ajax(request, path, command):
         raise e
         return HttpResponse(json.dumps({
             'status': 'error',
-            'msg': str(e)}))
+            'msg': str(e)}
+        ))
     return HttpResponse(json.dumps({'status': 'OK', "msg": msg}))
 
 

@@ -11,19 +11,19 @@ urlpatterns_upload = patterns(
 
     url(
         r'^upload/init/?',
-        csrf_exempt(InitView.as_view()),
+        InitView.as_view(),
         name='init'
     ),
 
     url(
         r'^upload/chunk/(?P<owner>[a-fA-F0-9]{64})/?',
-        csrf_exempt(ChunkView.as_view()),
+        ChunkView.as_view(),
         name='chunk'
     ),
 
     url(
         r'^upload/store/(?P<owner>[a-fA-F0-9]{64})/?',
-        csrf_exempt(FinalizeView.as_view()),
+        FinalizeView.as_view(),
         name='store'
     ),
 

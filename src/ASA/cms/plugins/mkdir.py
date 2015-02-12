@@ -37,14 +37,13 @@ def recursive(environ, filename):
 
 class mkdir(baseplugin):
 
-    def __init__(self):
-        super(mkdir, self).__init__()
-        parser = OptionParser()
-        parser.add_option("-p", action="store_true", default=False, dest="p")
-        self.parser = parser
+    parser = OptionParser()
+    parser.add_option("-p", action="store_true", default=False, dest="p")
+    parser = parser
 
-    def process(self, environ, args):
-        options, args = self.parser.parse_args(args)
+    @staticmethod
+    def process(environ, args):
+        options, args = mkdir.parser.parse_args(args)
         not_success = []
         for i in args:
             try:
@@ -59,7 +58,3 @@ class mkdir(baseplugin):
             return not_success
         else:
             return None
-
-
-process_object = mkdir()
-process = process_object.process

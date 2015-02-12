@@ -6,10 +6,8 @@ import os
 
 class ls(baseplugin):
 
-    def __init__(self):
-        super(ls, self).__init__()
-
-    def process(self, environ, args):
+    @staticmethod
+    def process(environ, args):
         if len(args) == 0:
             args.append('')
         if isinstance(args[0], str) is False:
@@ -23,6 +21,3 @@ class ls(baseplugin):
                 File.objects.filter(parent_folder__path=path_list)
             )
         )]
-
-process_object = ls()
-process = process_object.process
