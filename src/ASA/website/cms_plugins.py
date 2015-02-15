@@ -1,21 +1,32 @@
 from cms.plugins.base import baseplugin
-from optparse import OptionParser
+from cms.plugins import touch, lna
 from .exceptions import *
+from .models import *
+from video_cms.models import *
+from cms.plugins.exceptions import *
 
 
 class av(baseplugin):
 
-    parser = OptionParser()
+    '''
+        av path video_file_id
+    '''
 
     @staticmethod
     def process(environ, args):
-        args, options = parser.parse_args(args)
-        if args[0] == 'init':
-            av.init(environ, args, options)
-
-    @staticmethod
-    def init(environ, args, options):
-        path_list = path_str_to_list(args[0])
-        folder_path_list = path_list[:-1]
-        if access(environ, folder_path_list, 0o2) is False:
-            return Unauthorized("Permission Denied: %s" % (args[0],))
+        options, args = av.parser.parse_args(args)
+        try:
+            path = args[0]
+            video_file = args[1]
+        except Exception:
+            raise MissArguments()
+        video_file = File.objects.get(rec=video_file)
+        attrib = VideoFileAttrib.objects.create(
+            uploader=environ['user'],
+            video_file=video_file
+        )
+        touch.touch.process(environ, [path])
+        lna.lna.process(
+            environ,
+            ['website.videofileattrib', str(attrib.id), path]
+        )

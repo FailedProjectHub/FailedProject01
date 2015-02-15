@@ -1,8 +1,6 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 
-import video_cms
-
 urlpatterns = patterns(
     '',
     # Examples:
@@ -12,5 +10,6 @@ urlpatterns = patterns(
     url(r'', include('cms.urls', namespace='cms')),
     url(r'^accounts/login/$', 'django.contrib.auth.views.login',
         {'template_name': 'admin/login.html'}),
-    url(r'', include(video_cms)),
+    url(r'', include('website.urls')),
+    url(r'', include('video_cms'))
 )

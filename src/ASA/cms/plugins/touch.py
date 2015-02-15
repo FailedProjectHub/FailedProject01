@@ -6,6 +6,10 @@ from optparse import OptionParser
 
 class touch(baseplugin):
 
+    '''
+        touch pathname
+    '''
+
     @staticmethod
     def process(environ, args):
         if len(args) == 0:

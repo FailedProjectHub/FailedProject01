@@ -4,7 +4,7 @@ from .upload_views import InitView, ChunkView, FinalizeView, \
 from .player_views import MediaView, DownloadView, DanmakuView
 from django.views.decorators.csrf import csrf_exempt
 
-__all__ = ['exceptions', 'models', 'views']
+__all__ = ['exceptions', 'models', 'upload_views', 'player_views']
 
 urlpatterns_upload = patterns(
     r'',
@@ -57,7 +57,7 @@ urlpatterns_danmaku = patterns(
 
 urlpatterns = patterns(
     '',
-    url('', include(urlpatterns_upload)),
+    # url('', include(urlpatterns_upload)),
     url('', include(urlpatterns_download)),
     url('', include(urlpatterns_danmaku)),
 )

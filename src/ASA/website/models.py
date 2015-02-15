@@ -5,6 +5,19 @@ from cms.models import BaseFileAttrib
 
 
 class VideoFileAttrib(BaseFileAttrib):
-    uploader = models.OneToOneField('auth.User', db_index=True)
-    video_file = models.OneToOneField('video_cms.File', db_index=True)
+    uploader = models.ForeignKey('auth.User', db_index=True)
+    video_file = models.OneToOneField(
+        'video_cms.File',
+        related_name="authattrib",
+        db_index=True
+    )
 
+
+class SessionUploaderRecord(models.Model):
+    session = models.OneToOneField(
+        'video_cms.Session',
+        related_name='session_uploader_record'
+    )
+    uploader = models.ForeignKey(
+        'auth.User'
+    )

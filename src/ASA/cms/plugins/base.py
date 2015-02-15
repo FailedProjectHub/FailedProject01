@@ -1,6 +1,7 @@
 from .exceptions import FileNotFound
 from ..models import File
 import os
+from optparse import OptionParser
 
 
 AUTH_FOR_READ = 4
@@ -18,6 +19,8 @@ class basepluginMetaclass(type):
 
 
 class baseplugin(object, metaclass=basepluginMetaclass):
+
+    parser = OptionParser()
 
     def __init__(self):
         super(baseplugin, self).__init__()
@@ -46,13 +49,20 @@ def access(environ, file_, mod):
         except Exception:
             raise FileNotFound(path_list_to_str(file_))
     if isinstance(file_, File):
-        if environ['user'].is_superuser is True:
-            return True
-        elif file_.user.username == environ['username']:
-            return (((file_.mod >> 6) & mod) == mod)
-        elif file_.group in file_.groups.all():
-            return (((file_.mod >> 3) & mod) == mod)
-        else:
-            return ((file_.mod & mod) == mod)
+        if isinstance(mod, int):
+            if environ['user'].is_superuser is True:
+                return True
+            elif file_.user.username == environ['username']:
+                return (((file_.mod >> 6) & mod) == mod)
+            elif file_.group in file_.groups.all():
+                return (((file_.mod >> 3) & mod) == mod)
+            else:
+                return ((file_.mod & mod) == mod)
+        elif isinstance(mod, str):
+            if mod == 'host':
+                if file_.user.username == environ['username']:
+                    return True
+                else:
+                    return False
     else:
         raise TypeError("Given argument does not relate to any file type")

@@ -59,10 +59,18 @@ class File(models.Model):
 
 class BaseFileAttrib(models.Model):
     id = models.AutoField(primary_key=True)
-    base_file = models.OneToOneField(File, related_name="%(class)s")
+    base_file = models.OneToOneField(
+        File,
+        related_name="%(class)s",
+        null=True,
+        blank=True
+    )
 
     def __str__(self):
-        return self.base_file.__str__()
+        if hasattr(self, 'base_file'):
+            return self.base_file.__str__()
+        else:
+            return self.id
 
     class Meta:
         abstract = True
