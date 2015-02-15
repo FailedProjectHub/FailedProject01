@@ -27,5 +27,6 @@ class touch(baseplugin):
                 path=path_list
             )
         except Exception:
-            raise FileExists(path_list_to_str(path_list))
+            file_ = File.objects.get(path=path_list)
+            file_.save()
         return None
