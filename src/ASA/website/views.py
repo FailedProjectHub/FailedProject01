@@ -2,6 +2,7 @@ from django.http import HttpResponseBadRequest, \
     HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import View
 import video_cms
 from video_cms.models import *
 from django.contrib.auth.decorators import login_required
@@ -145,5 +146,25 @@ class DestroyView(video_cms.upload_views.DestroyView):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        raise (type(self))
         return super(DestroyView, self).dispatch(*args, **kwargs)
+
+
+class SessionsView(View):
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        return HttpResponse(json.dumps(list(
+            map(
+                lambda session: {
+                    'hash': session.filehash,
+                    'filename': session.filename,
+                    'size': session.size,
+                    'token': session.token
+                    },
+                user.sessionuploaderrecord_set.order_by('id')
+            )
+        )))
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(SessionsView, self).dispatch(*args, **kwargs)

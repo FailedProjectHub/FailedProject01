@@ -6,7 +6,7 @@ from cms.models import BaseFileAttrib
 
 class VideoFileAttrib(BaseFileAttrib):
     uploader = models.ForeignKey('auth.User', db_index=True)
-    video_file = models.OneToOneField(
+    video_file = models.ForeignKey(
         'video_cms.File',
         related_name="authattrib",
         db_index=True

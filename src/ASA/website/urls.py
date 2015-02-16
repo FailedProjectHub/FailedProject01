@@ -32,6 +32,12 @@ urlpatterns_upload = patterns(
         r'^upload/$',
         PageView.as_view(),
         name="upload"
+    ),
+
+    url(
+        r'^upload/session/$',
+        SessionsView.as_view(),
+        name='sessions'
     )
 )
 
