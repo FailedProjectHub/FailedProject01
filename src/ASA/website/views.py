@@ -155,11 +155,11 @@ class SessionsView(View):
         user = request.user
         return HttpResponse(json.dumps(list(
             map(
-                lambda session: {
-                    'hash': session.filehash,
-                    'filename': session.filename,
-                    'size': session.size,
-                    'token': session.token
+                lambda record: {
+                    'hash': record.session.filehash,
+                    'filename': record.session.filename,
+                    'size': record.session.size,
+                    'token': record.session.token
                     },
                 user.sessionuploaderrecord_set.order_by('id')
             )
