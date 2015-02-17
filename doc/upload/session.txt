@@ -8,8 +8,8 @@ URL: {url_prefix}/session/
 	200 OK
 	内容格式：
 		[
-			{"hash":"xxx", "filename":"xxx", "size":xxx, "token":"xxx"},
-			{"hash":"xxx", "filename":"xxx", "size":xxx, "token":"xxx"},
+			{"hash":"xxx", "filename":"xxx", "size":xxx, "token":"xxx","chunksize":xxx},
+			{"hash":"xxx", "filename":"xxx", "size":xxx, "token":"xxx","chunksize":xxx},
 			......
 		]
 
