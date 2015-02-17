@@ -1,4 +1,4 @@
-#Command-line-API for cms
+I#Command-line-API for cms
 
 ##概述
 
@@ -15,7 +15,10 @@ cms采用unix-like的命令操作。操作时，需要向服务器发送一个GE
 
 	^cms/(?P<path>(([a-z0-9A-Z-_]+/)*))(?P<command>([a-z0-9A-Z-_ /.])+)$
 	
-任何不匹配该模式串的url将返回错误（*需要明确错误返回，status 404?*）
+任何不匹配该模式串的url将返回错误
+
+前端遇到错误会有两种情况：第一种情况就是response.content不是json，不可解析，那么应该terminal显示“unknown error”, 如果该plugin对于这种情况有其他的处理，则把这部分的处理留给该plugin的前端部分来呈现。第二种情况则是response.content是一个json，可以解析，但是返回了{'status':'error', 'msg':'str'}，那么应该显示str的部分。
+我们称第一种错误为未知错误，第二种为正常错误。
 
 匹配该模式串的url将被服务器接收，并返回一个JSON。
 
@@ -25,8 +28,8 @@ cms采用unix-like的命令操作。操作时，需要向服务器发送一个GE
 2. 命令不存在或不合法
 3. 命令合法但因为权限等原因操作失败
 4. 命令合法且操作成功
-
-(*需要明确情况1、2的错误返回*)
+I
+四种错误都为正常错误，前端不需要了解期中的逻辑，只需要按照正常错误的显示格式显示即可。
 
 ##命令
 
