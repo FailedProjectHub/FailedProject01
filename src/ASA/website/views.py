@@ -159,8 +159,9 @@ class SessionsView(View):
                     'hash': record.session.filehash,
                     'filename': record.session.filename,
                     'size': record.session.size,
-                    'token': record.session.token
-                    },
+                    'token': record.session.token,
+                    'chunksize': record.session.chunk_size
+                },
                 user.sessionuploaderrecord_set.order_by('id')
             )
         )))
