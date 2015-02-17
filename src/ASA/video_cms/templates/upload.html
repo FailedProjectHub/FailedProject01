@@ -8,7 +8,10 @@
   <script>
 	function  handleFiles(files) {  
 		if(files.length) {
-			window.upload = new Uploader(files[0]);
+			var upload = new Uploader(files[0],function(obj){
+				document.getElementById("bar").style.width = obj.checksumprog+"%";
+				document.getElementById("bar2").style.width = obj.uploadprog+"%";
+			});
 		}  
 	} 
 
@@ -18,8 +21,6 @@
   </head>  
   <body>  
   <input type="file" id="file" onchange="handleFiles(this.files)">  
-  <div style="width:500px;height:20px;"><div id="bar" style="height:100%;width:0%;background-color:#02F;"></div></div>
-  <div id="filecontent"></div>  
-  <div id="sha"></div>
+  <div style="width:500px;height:20px;"><div id="bar" style="height:100%;width:0%;background-color:#02F;"></div><div id="bar2" style="height:100%;width:0%;background-color:#F00;"></div></div>
   </body>  
 </html>  

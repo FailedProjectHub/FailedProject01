@@ -1,12 +1,12 @@
 var Uploader;
 (function(){
-	Uploader = function(file){
+	Uploader = function(file, onStatusChange){
+		if (typeof onStatusChange != "function") onStatusChange=function(obj){};
 		var config = {
 			"chunksize":    65536,
 			"url"     :     window.location.origin+"/",
 			"filename":		"test_file",
 		};
-
 		/* get filename from full path */
 		function getFileName(path) {
 			var pos1 = path.lastIndexOf('/');
@@ -42,6 +42,8 @@ var Uploader;
 		var parseJSON = function(json){return eval('('+json+')');};
 		
 		/* init vars */
+		var obj=this;
+		
 		config.filename=getFileName(document.getElementById("file").value); 
 		var token;
 
@@ -56,9 +58,9 @@ var Uploader;
 
 		var sum;
 		
-		this.checksumprog=0;
-		this.uploadprog=0;
-		
+		var checksumprog=0;
+		var uploadprog=0;
+		onStatusChange(obj);
 		/* init promise */
 		var chain = new Promise(function(resolv,reject){sha256_init();resolv(0);});
 		/* calculate sha256sum */
@@ -67,7 +69,8 @@ var Uploader;
 				return new Promise(function(resolve, reject) {
 					var thischunk = pos+checksumchunk<file.size?checksumchunk:file.size-pos;
 					reader.onload=function() {
-						this.checksumprog=pos/file.size*100;
+						checksumprog=pos/file.size*100;
+						onStatusChange(obj);
 						sha256_update(this.result, thischunk);
 						resolve(pos+thischunk);
 					};
@@ -79,8 +82,8 @@ var Uploader;
 		chain = chain.then(function(){
 			sha256_final();
 			sum=sha256_encode_hex();
-			this.checksum = sum;
-			this.checksumprog=100;
+			checksumprog=100;
+			onStatusChange(obj);
 		})
 		/* get token from sessions && return last seq */
 		.then(function(){return ajax("GET", config.url+"upload/session/");})
@@ -118,12 +121,16 @@ var Uploader;
 					var chunksize=offset+config.chunksize*2<file.size?config.chunksize:file.size-offset;
 					var reader = new FileReader();
 					reader.onload=function(e) {
-						this.uploadprog = offset*100/file.size;
+						onStatusChange(obj);
 						var data = String.fromCharCode.apply(null, new Uint8Array(this.result));
 						var hash=sha256_digest(data);
 						ajax("PUT", config.url+"upload/chunk/"+token+"/?hash="+hash+"&seq="+seq, this.result, {
 							"Content-Type": "application/x-www-form-urlencoded"
-						}).then(function(m){console.log(m);}).then(function(){resolv(seq+1)});
+						}).then(function(m){
+							uploadprog = offset*100/file.size;
+							onStatusChange(obj);
+							//console.log(m);
+						}).then(function(){resolv(seq+1)});
 					};
 					reader.readAsArrayBuffer(file.slice(offset, offset+chunksize));
 				});
@@ -131,12 +138,23 @@ var Uploader;
 		}
 		/* finish upload */
 		chain = chain.then(function(seq) {
-			this.uploadprog = 100;
+			uploadprog = 100;
+			onStatusChange(obj);
 			return ajax("GET", config.url+"upload/store/"+token);
 		})
 		.then(function(m){console.log(m);})
 		.catch(function(e){
 			console.log(e);
+			onStatusChange(obj);
+		});
+		Object.defineProperty(this, "checksumprog", {
+			get: function() {return checksumprog;}
+		});
+		Object.defineProperty(this, "checksum", {
+			get: function() {return sum;}
+		});
+		Object.defineProperty(this, "uploadprog", {
+			get: function() {return uploadprog;}
 		});
 	};
 
