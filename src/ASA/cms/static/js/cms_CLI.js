@@ -8,7 +8,7 @@ $(function() {
 			var str = '';
 			for(var i = 0; i < o.length; i++){
 				for(var j = 0; j < o[i].length; j++)
-					str += o[i][j] + ' ';
+					str += o[i][j].split(session.pwd)[1] + ' ';
 				str += '\n';
 			}
 			//if(str.length) str.length--;
@@ -35,7 +35,6 @@ $(function() {
 	
     var prompt = function() {
         jqconsole.Prompt(true, function (input) {
-			jqconsole.prompt_label_main = session.username + '@' + session.host + ':' + session.pwd + ' >>> ';
 			input = input.replace(/^ */, "");
 			var config = configParser(input);
 			var com = input.split(' ')[0];
@@ -45,6 +44,7 @@ $(function() {
 			var next = function(text){
 				if(text)
 					jqconsole.Write(text, 'jqconsole-output');
+				jqconsole.prompt_label_main = session.username + '@' + session.host + ':' + session.pwd + ' >>> ';
 				prompt();
 			}
 			
