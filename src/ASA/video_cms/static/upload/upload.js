@@ -3,7 +3,7 @@ var Uploader;
 	Uploader = function(file, onStatusChange){
 		if (typeof onStatusChange != "function") onStatusChange=function(obj){};
 		var config = {
-			"chunksize":    262144, /* min=65536, max=262144 */
+			"chunksize":    65536, /* min=65536, max=??? */
 			"url"     :     window.location.origin+"/",
 			"filename":		"test_file",
 		};
