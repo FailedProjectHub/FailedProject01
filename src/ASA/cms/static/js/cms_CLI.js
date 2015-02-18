@@ -1,6 +1,6 @@
 $(function() {
 	var session = new Session('ASA.tv');
-	var jqconsole = $('#console').jqconsole('Log in @' + session.host + 'as ' + session.username + '\n',
+	var jqconsole = $('#console').jqconsole('Log in @' + session.host + ' as ' + session.username + '\n',
 											session.username + '@' + session.host + ':' + session.pwd + ' >>> '	);
 	
 	var stringify = {
