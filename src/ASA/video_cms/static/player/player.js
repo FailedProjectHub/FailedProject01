@@ -6,8 +6,7 @@ function render_player(token, callbacks){
     // enter channel
     socket.emit("enter_channel", token);
 
-    var inst = ABP.bind(document.getElementById("player"), isMobile());
-
+    
     $.get("/danmaku/"+token, function(data, status) {
         if (status!="success") {
             console.log("Network Error: "+status);

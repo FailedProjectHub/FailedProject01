@@ -19,32 +19,24 @@
         <script src="/static/player/player.js"></script>
 		<script type="text/javascript">
             $(function(){
+					var inst = ABP.create(document.getElementById("player"),{
+						"src":{
+							"playlist":[
+								{
+									"sources":{"video/mp4":"/download/{{token}}"},
+								},
+							],
+							"danmaku":"comment-otsukimi.xml",
+						},
+						"width":1280,
+						"height":640
+					});
                     render_player("{{token}}");
             })
 		</script>
 	</head>
 	<body>
-		<div id="player" class="ABP-Unit" style="width:640px;height:480px;" tabindex="1">
-			<div class="ABP-Video">
-				<div class="ABP-Container" id="player"></div>
-				<video id="abp-video" autobuffer="true" data-setup="{}">
-                <source src="/download/{{token}}" type="video/mp4" value={{token}}>
-					<p>Your browser does not support html5 video!</p>
-				</video>
-			</div>
-            <div class="ABP-Time"></div>
-			<div class="ABP-Text">
-				<input type="text" id="danmakutext">
-			</div>
-			<div class="ABP-Control">
-				<div class="button ABP-Play"></div>
-				<div class="progress-bar">
-					<div class="bar dark"></div>
-					<div class="bar"></div>
-				</div>
-				<div class="button ABP-CommentShow"></div>
-				<div class="button ABP-FullScreen"></div>
-			</div>
+		<div id="player">
 		</div>
 		<div id="toBeInjected"></div>
 	</body>
