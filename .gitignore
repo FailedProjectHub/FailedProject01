@@ -57,9 +57,9 @@ target/
 *.swp
 1.mp4
 src/Upload/test_file
-src/ASA/video_cms/chunks
-src/ASA/video_cms/files
-src/ASA/db.sqlite3
+src/video_cms/chunks
+src/video_cms/files
+src/db.sqlite3
 *.ropeproject
 *migrations
 
