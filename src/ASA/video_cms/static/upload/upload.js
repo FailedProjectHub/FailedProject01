@@ -112,33 +112,37 @@ var Uploader;
 					return seqnow;
 				});
 			}
-		});
+		})
 		/* upload chunks */
-		for (var i=seqnow;i<seqs;i++) {
-			chain = chain.then(function(seq) {
-				return new Promise(function(resolv,reject){
-					var offset=config.chunksize*seq;
-					var chunksize=offset+config.chunksize*2<=file.size?config.chunksize:file.size-offset;
-					console.log("chunk: "+seq+" "+offset+" "+chunksize+" "+offset+chunksize);
-					var reader = new FileReader();
-					reader.onload=function(e) {
-						onStatusChange(obj);
-						var data = String.fromCharCode.apply(null, new Uint8Array(this.result));
-						var hash=sha256_digest(data);
-						ajax("PUT", config.url+"upload/chunk/"+token+"/?hash="+hash+"&seq="+seq, this.result, {
-							"Content-Type": "application/x-www-form-urlencoded"
-						}).then(function(m){
-							uploadprog = offset*100/file.size;
+		.then(function(seqnow){
+			var upchain = new Promise(function(s,e){s(seqnow);});
+			for (var i=seqnow;i<seqs;i++) {
+				upchain = upchain.then(function(seq) {
+					return new Promise(function(resolv,reject){
+						var offset=config.chunksize*seq;
+						var chunksize=offset+config.chunksize*2<=file.size?config.chunksize:file.size-offset;
+						console.log("chunk: "+seq+" "+offset+" "+chunksize+" "+(offset+chunksize));
+						var reader = new FileReader();
+						reader.onload=function(e) {
 							onStatusChange(obj);
-							//console.log(m);
-						}).then(function(){resolv(seq+1)});
-					};
-					reader.readAsArrayBuffer(file.slice(offset, offset+chunksize));
+							var data = String.fromCharCode.apply(null, new Uint8Array(this.result));
+							var hash=sha256_digest(data);
+							ajax("PUT", config.url+"upload/chunk/"+token+"/?hash="+hash+"&seq="+seq, this.result, {
+								"Content-Type": "application/x-www-form-urlencoded"
+							}).then(function(m){
+								uploadprog = offset*100/file.size;
+								onStatusChange(obj);
+								//console.log(m);
+							}).then(function(){resolv(seq+1)});
+						};
+						reader.readAsArrayBuffer(file.slice(offset, offset+chunksize));
+					});
 				});
-			});
-		}
+			}
+			return upchain;
+		})
 		/* finish upload */
-		chain = chain.then(function(seq) {
+		.then(function(seq) {
 			uploadprog = 100;
 			onStatusChange(obj);
 			return ajax("GET", config.url+"upload/store/"+token);
