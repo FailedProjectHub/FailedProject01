@@ -1,19 +1,19 @@
 from django.db import models
 from hashlib import sha256
-from .exceptions import IncompleteUpload, ContentMismatch, ChunkSizeTooSmall, NoSuchSession, DuplicateChunk, FileNotFound, DuplicateFile
+from .exceptions import *
 from .settings import CHUNKS_DIR, FILES_DIR, MIN_CHUNK_SIZE, STREAM_CHUNK_SIZE
 import os
-from django.contrib import admin
 
 # Create your models here.
 
+
 class File(models.Model):
-    rec         = models.AutoField(primary_key=True)
-    size        = models.BigIntegerField()
-    token       = models.CharField(max_length=64, unique=True)
-    filehash    = models.CharField(max_length=64)
-    filename    = models.TextField(max_length=4096)
-    created_at  = models.DateTimeField()
+    rec = models.AutoField(primary_key=True)
+    size = models.BigIntegerField()
+    token = models.CharField(max_length=64, unique=True)
+    filehash = models.CharField(max_length=64)
+    filename = models.TextField(max_length=4096)
+    created_at = models.DateTimeField()
     finished_at = models.DateTimeField(auto_now_add=True)
 
     @staticmethod
@@ -31,23 +31,27 @@ class File(models.Model):
         try:
             with open(os.path.join(FILES_DIR, token), "rb") as f:
                 f.seek(stream_op, 0)
-                size = os.path.getsize(os.path.join(FILES_DIR,token))
+                size = os.path.getsize(os.path.join(FILES_DIR, token))
                 stream_ed = min(stream_op+STREAM_CHUNK_SIZE-1, size-1)
                 return stream_ed, f.read(STREAM_CHUNK_SIZE), size
-        except Exception as e:
-            raise FileNotFound("the file with the specified token does not exist")
+        except Exception:
+            raise FileNotFound(
+                "the file with the specified token does not exist"
+            )
+
 
 class Session(models.Model):
-    id          = models.IntegerField(primary_key=True)
-    size        = models.BigIntegerField()
-    chunk_size  = models.IntegerField()
-    token       = models.CharField(max_length=512, unique=True)
-    filehash    = models.CharField(max_length=64)
-    filename    = models.TextField(max_length=4096)
-    created_at  = models.DateTimeField(auto_now_add=True)
+    id = models.IntegerField(primary_key=True)
+    size = models.BigIntegerField()
+    chunk_size = models.IntegerField()
+    token = models.CharField(max_length=512, unique=True)
+    filehash = models.CharField(max_length=64)
+    filename = models.TextField(max_length=4096)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.token
+
     @staticmethod
     def new(size, hash, name, chunk_size):
         assert '/' not in name
@@ -82,7 +86,10 @@ class Session(models.Model):
                     hash_result.update(part)
             size += chunk.size
         if size != self.size:
-            raise ContentMismatch('size mismatch. expect=%d bytes, now=%d bytes' % (self.size, size))
+            raise ContentMismatch(
+                'size mismatch. expect=%d bytes, now=%d bytes' %
+                (self.size, size)
+            )
         if hash_result.hexdigest() != self.filehash:
             raise ContentMismatch('hash mismatch.')
         # Upload ok.
@@ -114,20 +121,28 @@ class Session(models.Model):
             chunk.delete()
         self.delete()
 
+
 class Chunk(models.Model):
-    id          = models.IntegerField(primary_key=True)
-    token       = models.CharField(max_length=64, unique=True)
-    chunkhash   = models.CharField(max_length=64)
-    chunk_seq   = models.IntegerField()
-    owner       = models.ForeignKey(Session, db_index=True, on_delete=models.PROTECT)
-    created_at  = models.DateTimeField(auto_now_add=True)
-    size        = models.BigIntegerField()
+    id = models.IntegerField(primary_key=True)
+    token = models.CharField(max_length=64, unique=True)
+    chunkhash = models.CharField(max_length=64)
+    chunk_seq = models.IntegerField()
+    owner = models.ForeignKey(Session, db_index=True, on_delete=models.PROTECT)
+    created_at = models.DateTimeField(auto_now_add=True)
+    size = models.BigIntegerField()
 
     @staticmethod
-    def new_chunk(content, chunkhash, chunk_seq, owner, replace_on_duplicate=False):
+    def new_chunk(content,
+                  chunkhash,
+                  chunk_seq,
+                  owner,
+                  replace_on_duplicate=False):
         size = len(content)
         if size < MIN_CHUNK_SIZE:
-            raise ChunkSizeTooSmall('expect %d bytes or larger, got %d bytes' % (MIN_CHUNK_SIZE, size))
+            raise ChunkSizeTooSmall(
+                'expect %d bytes or larger, got %d bytes' %
+                (MIN_CHUNK_SIZE, size)
+            )
         if sha256(content).hexdigest() != chunkhash:
             raise ContentMismatch('hash mismatch')
         if isinstance(owner, str):
@@ -154,41 +169,50 @@ class Chunk(models.Model):
 
 
 class Danmaku(models.Model):
-    id          = models.IntegerField(primary_key=True)
-    created_at  = models.DateTimeField(auto_now_add=True)
-    owner       = models.ForeignKey(File, db_index=True, on_delete=models.PROTECT)
-    mode        = models.IntegerField()
-    stime       = models.IntegerField()
-    text        = models.CharField(max_length=128)
-    size        = models.IntegerField()
-    color       = models.CharField(max_length=16)
+    id = models.IntegerField(primary_key=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    owner = models.ForeignKey(File, db_index=True, on_delete=models.PROTECT)
+    mode = models.IntegerField()
+    stime = models.IntegerField()
+    date = models.PositiveIntegerField()
+    text = models.CharField(max_length=128)
+    size = models.IntegerField()
+    color = models.CharField(max_length=16)
 
     @staticmethod
-    def new(owner=None, mode=1, stime=0, text="", size=30, color=0xffffff):
-        assert isinstance(owner, str) == True
-        assert isinstance(mode, int)  == True
-        assert isinstance(stime, int) == True
-        assert isinstance(text, str) == True
-        assert isinstance(size, int) == True
-        assert isinstance(color, str) == True
+    def new(owner=None,
+            date=None,
+            mode=1,
+            stime=0,
+            text="",
+            size=30,
+            color=0xffffff):
+        assert isinstance(owner, str) is True
+        assert isinstance(mode, int) is True
+        assert isinstance(stime, int) is True
+        assert isinstance(text, str) is True
+        assert isinstance(size, int) is True
+        assert isinstance(color, str) is True
+        assert isinstance(date, int) is True
         assert File.objects.filter(token=owner).count() == 1
         owner = File.objects.get(token=owner)
-        obj = Danmaku()
-        obj.owner    = owner
-        obj.mode     = mode
-        obj.stime    = stime
-        obj.text     = text
-        obj.size     = size
-        obj.color    = color
-        obj.save()
+        Danmaku.objects.create(
+            owner=owner,
+            mode=mode,
+            stime=stime,
+            text=text,
+            size=size,
+            color=color,
+            date=date
+        )
 
     @staticmethod
     def load_danmaku_by_video_token(token):
         assert File.objects.filter(token=token).count() == 1
         video = File.objects.get(token=token)
         danmaku = list(
-            map(lambda danmaku : {
-                #'owner': danmaku.owner,
+            map(lambda danmaku: {
+                # 'owner': danmaku.owner,
                 'mode': danmaku.mode,
                 'stime': danmaku.stime,
                 'text': danmaku.text,
@@ -199,12 +223,8 @@ class Danmaku(models.Model):
         return danmaku
 
 
-
 class Comment(models.Model):
-    id          = models.IntegerField(primary_key=True)
-    owner       = models.ForeignKey(File, db_index=True, on_delete=models.PROTECT)
-    created_at  = models.DateTimeField()
-    text        = models.CharField(max_length=1024)
-
-
-#admin.site.register(Danmaku)
+    id = models.IntegerField(primary_key=True)
+    owner = models.ForeignKey(File, db_index=True, on_delete=models.PROTECT)
+    created_at = models.DateTimeField()
+    text = models.CharField(max_length=1024)

@@ -81,8 +81,10 @@ class DanmakuView(View):
         assert 'text' in data
         assert 'color' in data
         assert 'size' in data
+        assert 'date' in data
         Danmaku.new(
             owner=token,
+            date=int(data['date']),
             mode=int(data['mode']),
             stime=int(data['stime']),
             text=data['text'],
