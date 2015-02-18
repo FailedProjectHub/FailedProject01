@@ -174,7 +174,6 @@ class DestroyView(View):
         try:
             owner = Session.objects.get(token=owner)
             owner.destroy()
-            owner.delete()
         except Session.DoesNotExist:
             pass
         return HttpResponse(

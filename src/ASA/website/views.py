@@ -137,9 +137,10 @@ class DestroyView(video_cms.upload_views.DestroyView):
         owner = owner.lower()
         environ = {'user': request.user, 'username': request.user.username}
         try:
-            check_auth(environ, owner)
+            auth_check(environ, owner)
             return super(DestroyView, self).get(request, owner, *args, **kwargs)
         except Exception as e:
+            raise e
             return HttpResponse(json.dumps({
                 'errstr': str(e)
             }))

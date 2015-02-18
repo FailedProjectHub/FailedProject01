@@ -7,7 +7,7 @@ import os
 class cd(baseplugin, metaclass=basepluginMetaclass):
 
     @staticmethod
-    def process(self, environ, args):
+    def process(environ, args):
         if len(args) == 0:
             raise Missarguments()
         if isinstance(args[0], str) is False:
