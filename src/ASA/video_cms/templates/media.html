@@ -14,26 +14,13 @@
         <script> 
 			var socketio = document.createElement('script');
 			socketio.setAttribute("src","http:\/\/" + window.location.hostname + ":4000/socket.io/socket.io.js");
+			socketio.onload=function(){
+				console.log(typeof io);
+				render_player("{{token}}");
+            };
 			document.getElementsByTagName("head")[0].appendChild(socketio);
 		</script>
         <script src="/static/player/player.js"></script>
-		<script type="text/javascript">
-            $(function(){
-					var inst = ABP.create(document.getElementById("player"),{
-						"src":{
-							"playlist":[
-								{
-									"sources":{"video/mp4":"/download/{{token}}"},
-								},
-							],
-							"danmaku":"comment-otsukimi.xml",
-						},
-						"width":1280,
-						"height":640
-					});
-                    render_player("{{token}}");
-            })
-		</script>
 	</head>
 	<body>
 		<div id="player">

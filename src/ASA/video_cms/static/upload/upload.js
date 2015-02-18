@@ -3,7 +3,7 @@ var Uploader;
 	Uploader = function(file, onStatusChange){
 		if (typeof onStatusChange != "function") onStatusChange=function(obj){};
 		var config = {
-			"chunksize":    65536,
+			"chunksize":    262144, /* min=65536, max=262144 */
 			"url"     :     window.location.origin+"/",
 			"filename":		"test_file",
 		};
@@ -99,6 +99,7 @@ var Uploader;
 				.then(function(res){token=res.token;return 0;})
 			} else {
 				token=sessions[f].token;
+				if (sessions[f].chunksize) config.chunksize=sessions[f].chunksize;
 				return ajax("GET", config.url+"upload/chunk/"+token)
 				.then(parseJSON)
 				.then(function(res) {
