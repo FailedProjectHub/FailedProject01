@@ -80,12 +80,9 @@ CMS由两个部分组成：用户系统，文件系统
 		mv <filepath_a> <filepath_b>: *剪切
 		mkdir <foldername>:建立一个文件夹 
 		cd <path>
-	POST operation:
-		init <filename>: 创建一个文件	(需要权限),发送一个描述文件信息的json
-		finish <filename>: 完成一个文件上传
-	PUT operation:
-		put <filename> <chunk_no>:
-			上传文件<filename>的第<chunk_no>个chunk
+		touch <filename>: 生成一个file
+		lna <app_label.model id filename>:
+			给path为filename的File添加一个类型为app_label.model，id为id的属性
 	
 =====================================
 另外之四:
@@ -95,7 +92,7 @@ CMS由两个部分组成：用户系统，文件系统
 	根据操作名调用cms.plugin内的process函数
 	规定对于操作的接口
 	def process(environ, args)
-	environ是一个字典对象, 现在已经规定的key-value为: "path":list, "username":str, "user":user(django自带的auth中的user对象)
+	environ是一个字典对象, 现在已经规定的key-value为: "path":str, "username":str, "user":user(django自带的auth中的user对象)
 	args命令参数，举例: mkdir -p /home/voidrank 命令，会调用../plugins/mkdir.py,传入参数为["-p","/home/voidrank"]
 	user是当前用户的信息
 	

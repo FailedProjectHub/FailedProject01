@@ -25,3 +25,4 @@ Body内容:
 	406 Not Acceptable
 		文件总长度或者文件Hash值不正确
 
+删除session，建立一个file，在cms创建对应的文件'/home/{{username}}/{{filename}}'

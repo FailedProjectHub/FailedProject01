@@ -5,7 +5,7 @@ class UploadException(Exception):
 	status_code = 403
 	def __init__(self, why):
 		self.reason = why
-		
+
 	def __str__(self):
 		return self.reason
 
@@ -50,4 +50,4 @@ class BarrageException(Exception):
 
 class BarrageMessageError(BarrageException):
     status_code = 400
-    
+

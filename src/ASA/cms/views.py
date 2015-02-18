@@ -4,10 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.conf import settings
 import importlib
-from .models import Folder
-from .plugins.exceptions import FolderNotFound
+from .plugins.exceptions import *
+from .plugins.base import *
 import re
-plugins = importlib.import_module(__package__+'.plugins')
+plugins = importlib.import_module(__package__+'.plugins').Register
 # import copy
 try:
     import simplejson as json
@@ -21,31 +21,6 @@ class NoSuchCommand(Exception):
         return "No such command"
 
 
-def check_path(path, session, user):
-    if Folder.objects.filter(path=path).exists() is True:
-        # check superuser
-        if user.is_superuser is True:
-            return True
-
-        folder = Folder.objects.get(path=path)
-        # check host user
-        if folder.user.username == user.username:
-            return True
-        # check host grp
-        if folder.group in user.group.objects.all():
-            if ((folder.mod >> 3) & 4) != 0:
-                return True
-            else:
-                return False
-        # check other
-        if ((folder.mod >> 6) & 4) != 0:
-            return True
-
-        return False
-    else:
-        return False
-
-
 def command_line_tool_ajax(request, path, command):
     if settings.DEBUG is True:
         try:
@@ -56,23 +31,29 @@ def command_line_tool_ajax(request, path, command):
     else:
         user = request.user
 
-    args = re.split(r' +', command.strip())
+    environ = {}
+    environ['user'] = user
+    environ['username'] = user.username
+    # check access permission
+
     try:
+        path = '/' + path
+        if access(environ, path, AUTH_FOR_READ+AUTH_FOR_EXECUTE) is False:
+            raise PermissionDenied(path)
+        environ['path'] = path
+        args = re.split(r' +', command.strip())
         try:
-            plugin = plugins.__dict__[args[0]]
+            plugin = plugins[args[0]]
         except Exception as e:
             raise NoSuchCommand()
         args.pop(0)
-        path = '/' + path
-        if check_path(path, request.session, user) is False:
-            raise FolderNotFound(path)
-        request.session['path'] = path
-        msg = plugin.process(request.session, args)
+        msg = plugin.process(environ, args)
     except Exception as e:
         raise e
         return HttpResponse(json.dumps({
             'status': 'error',
-            'msg': str(e)}))
+            'msg': str(e)}
+        ))
     return HttpResponse(json.dumps({'status': 'OK', "msg": msg}))
 
 

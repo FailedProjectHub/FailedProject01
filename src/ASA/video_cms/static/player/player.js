@@ -1,54 +1,57 @@
-function render_player(token, callbacks){
-    // websocket
-    var socket = new io.connect("http:\/\/" + window.location.hostname + ":4000/");
+function render_player(token, callbacks){	
+	// construct player
+	var inst = ABP.create(document.getElementById("player"),{
+		"src":{
+			"playlist":[
+				{
+					"sources":{"video/mp4":"/download/"+token},
+				},
+			],
+		},
+		"width":1280,
+		"height":640
+	});
     var owner = token;
-
-    // enter channel
-    socket.emit("enter_channel", token);
-
-    var inst = ABP.bind(document.getElementById("player"), isMobile());
-
-    $.get("/danmaku/"+token, function(data, status) {
+    var cm = inst.cmManager;
+	// load danmaku
+	$.get("/danmaku/"+token, function(data, status) {
         if (status!="success") {
             console.log("Network Error: "+status);
             return;
         }
+        console.log(data);
         var res = eval(data);
         var cdata = new Array();
         for (var i=0;i<res.length;++i) {
-            cdata.push(new CoreComment(cm, res[i]));
-        }
-        cm.load(cdata);
-    });
-
-    //subscribe live danmaku
-    socket.on("live_danmaku", function(danmaku){
-            console.log(danmaku);
-            cm.insert(danmaku);
-    });
-
-    inst.scripting = true;
-    inst.cmManager.start();
-    var cm = inst.cmManager;
-    $(inst.txtText).keyup(function(event){
-        if( event.which === 13){
-
-            var danmaku={
-                "owner": owner,
-                "mode": 1,
-                "stime": parseInt(inst.video.currentTime*1000),//to prevent dm not showing
-                "text": $(inst.txtText).val(),
-                "cindex": 0,
-                "motion": [],
-                "size": 25,
-                "color": 0xffffff,
-            };
-            cm.send(danmaku);
-            socket.emit("send_danmaku", danmaku);
-
-            $(inst.txtText).val("");
+            inst.dminsert(new CoreComment(cm, res[i]));
         }
     });
+
+
+	if (typeof io != "undefined") {
+		// websocket
+		var socket = new io.connect("http:\/\/" + window.location.hostname + ":4000/");
+
+		// enter channel
+		socket.emit("enter_channel", token);
+		//subscribe live danmaku
+		socket.on("live_danmaku", function(danmaku){
+				console.log(danmaku);
+				inst.dminsert(danmaku);
+		});
+		inst.addListener("senddanmaku",function(dm){
+			if (inst.playing) {
+				inst.dmsend(dm);
+				setTimeout(function(){socket.emit("send_danmaku", dm);}, 1000);
+			} else socket.emit("send_danmaku", dm);
+		});
+	}
+    
+    
+    
+
+    //inst.scripting = true;
+    
 
     if (callbacks != null)
         callbacks()

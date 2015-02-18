@@ -46,6 +46,8 @@ class Session(models.Model):
     filename    = models.TextField(max_length=4096)
     created_at  = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.token
     @staticmethod
     def new(size, hash, name, chunk_size):
         assert '/' not in name
@@ -107,9 +109,10 @@ class Session(models.Model):
 
     def destroy(self):
         # TODO: Implements destroy method.
-        for chunk in self.chunk_set:
+        for chunk in self.chunk_set.all():
             os.unlink(CHUNKS_DIR + '/' + chunk.token)
-        self.chunk_set.delete()
+            chunk.delete()
+        self.delete()
 
 class Chunk(models.Model):
     id          = models.IntegerField(primary_key=True)
@@ -132,8 +135,6 @@ class Chunk(models.Model):
                 owner = Session.objects.get(token=owner)
             except Session.DoesNotExist:
                 raise NoSuchSession('no such session: %s' % owner)
-        #if size != owner.chunk_size:
-        #    raise ContentMismatch('length mismatch: expect %d bytes, got %d bytes' % (owner.chunk_size, len(content)))
         obj = Chunk()
         if owner.chunk_set.filter(chunk_seq=chunk_seq).count() > 0:
             if not replace_on_duplicate:

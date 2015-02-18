@@ -20,3 +20,5 @@ Body内容:
 	403 Forbidden
 		上传文件请求被服务器拒绝，可能的原因为文件名包含非法字符，或参数类型不正确
 		响应body为一个json，其中包含一个errstr，为错误原因
+
+仅仅在video_cms中创建一个session

@@ -1,12 +1,13 @@
 __all__ = [
     'cd',
-    'rm',
     'ls',
     'mkdir',
-    'getfacl',
+    'rm',
     'chmod',
     'chown',
-    'chgrp'
+    'touch',
+    'lna'
 ]
 
 from . import *
+Register = base.basepluginMetaclass.Register
