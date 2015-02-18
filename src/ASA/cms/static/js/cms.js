@@ -47,11 +47,20 @@ Session.parseConfig = function(config){
 			if(config[i])
 				str += '-' + i + ' ';
 		return str;
-	},
+}
+
+Session.formatInput = function(str){
+	while(str && str[0] === '/')
+		str = str.slice(1);
+	while(str && str[str.length-1] === '/')
+		str.length --;
+	return str;
+}
 
 Session.prototype = {
 	constructor: Session,
 	cd: function(folder){
+		folder = Session.formatInput(folder);
 		if(typeof folder !== "string") throw TypeError();
 		var self = this;
 		return new Promise(function(resolve, reject){
@@ -93,6 +102,7 @@ Session.prototype = {
 		set config = {p:true} if -p option is on
 	*/
 	mkdir: function(folder, config){
+		folder = Session.formatInput(folder);
 		if(typeof folder !== "string" || (config && typeof config !== "object"))
 			throw TypeError();
 		var self = this;
@@ -120,6 +130,7 @@ Session.prototype = {
 		set config ={a:true, l:true} if -al option is on
 	*/
 	ls: function(folder, config){
+		folder = Session.formatInput(folder);
 		if(config && typeof config !== "object")
 			throw TypeError();
 		var self = this;
@@ -148,6 +159,7 @@ Session.prototype = {
 		set config = {r:true} if -r option is on
 	*/
 	rm: function(file, config){
+		file = Session.formatInput(file);
 		if(typeof file !== "string" || (config && typeof config !== "object"))
 			throw TypeError();
 		var self = this;
