@@ -1,26 +1,12 @@
-<html ng_app>
+<html>
 <head>
-	<meta http-equiv="content-type" content="text/html;charset=utf-8">
-	<link rel="stylesheet" type="text/css" href="/static/css/style.css" >
-	<script src="/static/js/angular.min.js"></script>
-	<script src="/static/js/angular-mocks.js"></script>
+<script src="/static/js/jquery-2.1.3.min.js"></script>
+<script src="/static/js/jqconsole.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/static/css/style.css">
 </head>
-<body ng-app="web_terminal" ng-controller="f">
-<div id="wrap">
-	<div id="OutputWrap">
-		<div ng-repeat="com in coms">
-			<div>
-				{$user$}@{$host$}:{$pwd$}$ {$com.inp$}
-			</div>
-			<ng-include src="'com_'+com.com_type+'.html'"></ng-include>
-		</div>
-		<div>{$user$}@{$host$}:{$pwd$}$ {$inp$}</div>
-	</div>
-	<div id="InputWrap">
-		<input type="text" ng-model="inp" ng-keypress="detectEnter($event)" />
-		<button ng-click="submit()">submit</button>
-	</div>
-	<script src="/static/js/web_terminal.js"></script>
-</div>
+<body>
+	<div id="console"></div>
+	<script src="/static/js/cms.js"></script>
+	<script src="/static/js/cms_CLI.js"></script>
 </body>
 </html>
