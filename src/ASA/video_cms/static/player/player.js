@@ -40,7 +40,6 @@ function render_player(token, callbacks){
 				inst.dminsert(danmaku);
 		});
 		inst.addListener("senddanmaku",function(dm){
-			dm.owner=token;
 			if (inst.playing) {
 				inst.dmsend(dm);
 				setTimeout(function(){socket.emit("send_danmaku", dm);}, 1000);
