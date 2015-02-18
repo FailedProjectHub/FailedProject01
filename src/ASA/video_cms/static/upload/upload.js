@@ -48,7 +48,7 @@ var Uploader;
 		var token;
 
 		var seqnow=0;
-		var seqs=parseInt((file.size-1)/config.chunksize);
+		var seqs=parseInt(file.size/config.chunksize);
 
 		var chunksize = config["chunksize"];
 		var pos=0;
@@ -118,7 +118,8 @@ var Uploader;
 			chain = chain.then(function(seq) {
 				return new Promise(function(resolv,reject){
 					var offset=config.chunksize*seq;
-					var chunksize=offset+config.chunksize*2<file.size?config.chunksize:file.size-offset;
+					var chunksize=offset+config.chunksize*2<=file.size?config.chunksize:file.size-offset;
+					console.log("chunk: "+seq+" "+offset+" "+chunksize+" "+offset+chunksize);
 					var reader = new FileReader();
 					reader.onload=function(e) {
 						onStatusChange(obj);
