@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import User
 from django.conf import settings
+from django.views.generic import View
+from django.utils.decorators import method_decorator
 import importlib
 from .plugins.exceptions import *
 from .plugins.base import *
@@ -21,40 +22,61 @@ class NoSuchCommand(Exception):
         return "No such command"
 
 
-def command_line_tool_ajax(request, path, command):
-    if settings.DEBUG is True:
-        try:
-            user = User.objects.filter(is_superuser=True)[0]
-        except Exception as e:
-            raise e
-            raise Exception("Please at least set one superuser")
-    else:
-        user = request.user
+def exec_command(environ, command):
+    try:
+        plugin = plugins[command[0]]
+    except Exception:
+        raise NoSuchCommand()
+    command.pop(0)
+    msg = plugin.process(environ, command)
+    return HttpResponse(json.dumps({'status': 'OK', "msg": msg}))
 
+
+def set_environ(user, path):
     environ = {}
     environ['user'] = user
     environ['username'] = user.username
-    # check access permission
+    if not path.startswith('/'):
+        raise Exception('Wrong path: path does not starts with "/"')
+    if access(environ, path, AUTH_FOR_READ+AUTH_FOR_EXECUTE) is False:
+        raise PermissionDenied(path)
+    environ['path'] = path
+    return environ
 
-    try:
-        path = '/' + path
-        if access(environ, path, AUTH_FOR_READ+AUTH_FOR_EXECUTE) is False:
-            raise PermissionDenied(path)
-        environ['path'] = path
-        args = re.split(r' +', command.strip())
+
+class command_line_tool_ajax(View):
+
+    def post(self, request):
+        content = json.loads(request.content)
         try:
-            plugin = plugins[args[0]]
+            assert 'command' in content
+            assert isinstance(content['command'], list)
+            assert 'path' in content
+            assert isinstance(content['path'], str)
+            set_environ(request.user, content['path'])
+            return exec_command(environ, command)
         except Exception as e:
-            raise NoSuchCommand()
-        args.pop(0)
-        msg = plugin.process(environ, args)
-    except Exception as e:
-        raise e
-        return HttpResponse(json.dumps({
-            'status': 'error',
-            'msg': str(e)}
-        ))
-    return HttpResponse(json.dumps({'status': 'OK', "msg": msg}))
+            return HttpResponse(json.dumps({
+                'status': 'error',
+                'msg': str(e)
+            }))
+
+    def get(self, request, path, command):
+        path = '/' + path
+        try:
+            command = re.split(r' +', command.strip())
+            environ = set_environ(request.user, path)
+            return exec_command(environ, command)
+        except Exception as e:
+            raise e
+
+    @method_decorator(login_required)
+    def dispatch(self, request, *args, **kwargs):
+        return super(command_line_tool_ajax, self).dispatch(
+            request,
+            *args,
+            **kwargs
+        )
 
 
 def command_line_tool(request):
