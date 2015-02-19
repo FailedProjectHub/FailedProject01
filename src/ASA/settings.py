@@ -101,3 +101,6 @@ LOGGING = {
         }
     }
 }
+
+# media url
+MEDIA_ROOT = 'website/media'
