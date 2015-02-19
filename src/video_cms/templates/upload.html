@@ -17,10 +17,9 @@
 				if (upload.checksumprog != 100) {
 					console.log(((upload.checksumprog - lastprog)*files[0].size/inter)+"B/s");
 					lastprog = upload.checksumprog;
-				} else 	{
-					if (lastprog==100 && upload.uploadprog != 100) {
+				} else 	if (lastprog==100 && upload.uploadprog != 100) {
 						lastprog=0;
-					}
+				} else {
 					console.log(((upload.uploadprog - lastprog)*files[0].size/inter)+"B/s");
 					lastprog = upload.uploadprog;
 				}
