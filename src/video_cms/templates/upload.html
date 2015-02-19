@@ -15,12 +15,12 @@
 			var lastprog=0,inter=5000;
 			setInterval(function(){
 				if (upload.checksumprog != 100) {
-					console.log(((upload.checksumprog - lastprog)*files[0].size/inter)+"B/s");
+					console.log(parseFloat((upload.checksumprog - lastprog)/100*files[0].size/inter).toFixed(3)+"KB/s");
 					lastprog = upload.checksumprog;
-				} else 	if (lastprog==100 && upload.uploadprog != 100) {
+				} else 	if (lastprog > upload.uploadprog) {
 						lastprog=0;
 				} else {
-					console.log(((upload.uploadprog - lastprog)*files[0].size/inter)+"B/s");
+					console.log(parseFloat((upload.uploadprog - lastprog)/100*files[0].size/inter).toFixed(3)+"KB/s");
 					lastprog = upload.uploadprog;
 				}
 			},inter);
