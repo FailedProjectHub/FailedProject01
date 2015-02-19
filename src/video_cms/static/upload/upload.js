@@ -122,7 +122,6 @@ var Uploader;
 					return new Promise(function(resolv,reject){
 						var offset=config.chunksize*seq;
 						var chunksize=offset+config.chunksize*2<=file.size?config.chunksize:file.size-offset;
-						console.log("chunk: "+seq+" "+offset+" "+chunksize+" "+(offset+chunksize));
 						var reader = new FileReader();
 						reader.onload=function(e) {
 							onStatusChange(obj);
@@ -133,7 +132,6 @@ var Uploader;
 							}).then(function(m){
 								uploadprog = offset*100/file.size;
 								onStatusChange(obj);
-								//console.log(m);
 							}).then(function(){resolv(seq+1)});
 						};
 						reader.readAsArrayBuffer(file.slice(offset, offset+chunksize));
