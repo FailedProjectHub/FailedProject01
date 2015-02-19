@@ -12,6 +12,19 @@
 				document.getElementById("bar").style.width = obj.checksumprog+"%";
 				document.getElementById("bar2").style.width = obj.uploadprog+"%";
 			});
+			var lastprog=0,inter=5000;
+			setInterval(function(){
+				if (upload.checksumprog != 100) {
+					console.log(((upload.checksumprog - lastprog)*files[0].size/inter)+"B/s");
+					lastprog = upload.checksumprog;
+				} else 	{
+					if (lastprog==100 && upload.uploadprog != 100) {
+						lastprog=0;
+					}
+					console.log(((upload.uploadprog - lastprog)*files[0].size/inter)+"B/s");
+					lastprog = upload.uploadprog;
+				}
+			},inter);
 		}  
 	} 
 
