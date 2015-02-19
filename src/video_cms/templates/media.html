@@ -13,11 +13,10 @@
         <script src="/static/jquery/js/jquery.min.js"></script>
         <script> 
 			var socketio = document.createElement('script');
-			socketio.setAttribute("src","http:\/\/" + window.location.hostname + ":4000/socket.io/socket.io.js");
 			socketio.onload=function(){
-				console.log(typeof io);
 				render_player("{{token}}");
             };
+			socketio.setAttribute("src","http:\/\/" + window.location.hostname + ":4000/socket.io/socket.io.js");
 			document.getElementsByTagName("head")[0].appendChild(socketio);
 		</script>
         <script src="/static/player/player.js"></script>
