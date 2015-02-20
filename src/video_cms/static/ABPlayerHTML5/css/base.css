@@ -173,6 +173,8 @@
 	top:-4px;
 	right:-6px;
 	content: "";
+	-webkit-box-shadow:0 0 5px #ccc;
+	        box-shadow:0 0 5px #ccc;
 }
 .ABP-Unit .bar .dark:after{
 	height:6px;
@@ -184,8 +186,6 @@
 	top:-1px;
 	right:-3px;
 	content: "";
-	-webkit-box-shadow:0 0 5px #ddd;
-	        box-shadow:0 0 5px #ddd;
 }
 .ABP-Unit .bar .load{
 	position:absolute;
@@ -439,6 +439,7 @@
 	overflow-y:scroll;
 	position:absollute;
 	width:100%;
+	height:613px; /* based on practice */
 	/* height: see js/ABPRestyle.js */
 }
 .ABP-CommentList .ABP-CommentList-Item {
