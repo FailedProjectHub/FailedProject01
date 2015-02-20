@@ -1,6 +1,5 @@
 from django.db import models
 from cms.models import BaseFileAttrib, ListField
-
 # Create your models here.
 
 
@@ -23,21 +22,29 @@ class SessionUploaderRecord(models.Model):
     )
 
 
-class BasePerInfoMetaclass(type):
+class AbstractBasePerInfoMetaclass(type):
 
     Register = {}
 
     def __init__(cls, name, base, nmspc):
-        super(BasePerInfoMetaclass, cls).__init__(name, name, base, nmspc)
-        BasePerInfoMetaclass.Register[name] = cls
+        super(AbstractBasePerInfoMetaclass, cls).__init__(name, base, nmspc)
+        AbstractBasePerInfoMetaclass.Register[name] = cls
 
 
-class BasePerInfo(models.Model, metaclass=BasePerInfoMetaclass):
+class AbstractBasePerInfo(object, metaclass=AbstractBasePerInfoMetaclass):
+    pass
 
+
+class MixinBasePerInfoModelMetaclass(type(models.Model), AbstractBasePerInfoMetaclass):
+    pass
+
+
+class BasePerInfo(models.Model, AbstractBasePerInfo,
+                  metaclass=MixinBasePerInfoModelMetaclass):
     user = models.OneToOneField('auth.User', related_name='%(class)s')
 
     class Meta:
-        Abstract = True
+        abstract = True
 
 
 class GenericPerInfo(BasePerInfo):
@@ -50,18 +57,14 @@ class AdvancedPerInfo(BasePerInfo):
     default_path = ListField()
 
 
-class SystemLogPerInfo(BasePerInfo):
-    pass
-
-
 class LoginLog(models.Model):
-    systemlogperinfo = models.foreignkey('SystemLogPerInfo')
+    user = models.ForeignKey('auth.User')
     login_ip = models.GenericIPAddressField()
     login_time = models.DateTimeField()
 
 
 class VisitVideoLog(models.Model):
-    systemlogperinfo = models.Foreignkey('SystemLogPerInfo')
+    user = models.ForeignKey('auth.User')
     visit_video = models.ForeignKey(
         'VideoFileAttrib', related_name='+')
     visit_time = models.DateTimeField()
@@ -69,6 +72,6 @@ class VisitVideoLog(models.Model):
 
 class FocusRelation(models.Model):
     focus = models.ForeignKey(
-        'auth.User', related_name='+')
+        'auth.User', related_name='focus')
     focused = models.ForeignKey(
-        'auth.User', related_name='+')
+        'auth.User', related_name='focused')
