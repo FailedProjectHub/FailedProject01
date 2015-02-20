@@ -1,5 +1,5 @@
 $(function() {
-	var session = new Session('ASA.tv', 'GET');
+	var session = new Session('ASA.tv', 'POST');
 	var jqconsole = $('#console').jqconsole('Log in @' + session.host + ' as ' + session.username + '\n',
 											session.username + '@' + session.host + ':' + session.pwd + ' >>> '	);
 	
@@ -26,7 +26,7 @@ $(function() {
 		return o;
 	}, errorHandler = {
 		ls: function(path){
-			return path + " does not exist.\n";
+			return path + '\n';
 		},
 		unknown: function(){
 			return 'encountered an unknown error.\n';
