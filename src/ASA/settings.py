@@ -38,7 +38,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'cms',
     'video_cms',
-    'website'
+    'website',
+    'userinfo'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -104,3 +105,4 @@ LOGGING = {
 
 # media url
 MEDIA_ROOT = 'website/media'
+MEDIA_URL = 'media/'

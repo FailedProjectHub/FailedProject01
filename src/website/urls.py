@@ -43,5 +43,5 @@ urlpatterns_upload = patterns(
 
 urlpatterns = patterns(
     r'',
-    url(r'', include(urlpatterns_upload))
+    url(r'', include(urlpatterns_upload)),
 )

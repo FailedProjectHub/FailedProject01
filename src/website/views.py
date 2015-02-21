@@ -1,5 +1,4 @@
-from django.http import HttpResponseBadRequest, \
-    HttpResponse
+from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
@@ -111,7 +110,7 @@ class FinalizeView(video_cms.upload_views.FinalizeView):
                 **kwargs
             )
             data = json.loads(response.content)
-            data['path'] = '/home/'+str(request.user.username)+'/'+filename
+            data['path'] = '/home/' + str(request.user.username) + '/' + filename
             if ('errstr' in data) is False:
                 av(environ, [data['path'], str(data['rec'])])
             return response

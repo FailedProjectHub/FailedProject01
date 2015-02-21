@@ -1,5 +1,7 @@
 from django.conf.urls import patterns, include, url
+from django.conf import settings
 from django.contrib import admin
+from django.conf.urls.static import static
 
 urlpatterns = patterns(
     '',
@@ -11,5 +13,7 @@ urlpatterns = patterns(
     url(r'^accounts/login/$', 'django.contrib.auth.views.login',
         {'template_name': 'admin/login.html'}),
     url(r'', include('website.urls')),
-    url(r'', include('video_cms'))
-)
+    url(r'', include('video_cms')),
+    url(r'', include('userinfo.urls')),
+) + \
+    static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
