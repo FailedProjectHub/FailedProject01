@@ -11,6 +11,9 @@ class VideoFileAttrib(BaseFileAttrib):
         db_index=True
     )
 
+    class Meta:
+        get_latest_by = "video_file.created_at"
+
 
 class SessionUploaderRecord(models.Model):
     session = models.OneToOneField(

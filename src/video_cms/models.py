@@ -32,7 +32,7 @@ class File(models.Model):
             with open(os.path.join(FILES_DIR, token), "rb") as f:
                 f.seek(stream_op, 0)
                 size = os.path.getsize(os.path.join(FILES_DIR, token))
-                stream_ed = min(stream_op+STREAM_CHUNK_SIZE-1, size-1)
+                stream_ed = min(stream_op + STREAM_CHUNK_SIZE - 1, size - 1)
                 return stream_ed, f.read(STREAM_CHUNK_SIZE), size
         except Exception:
             raise FileNotFound(

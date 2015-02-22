@@ -56,6 +56,9 @@ class File(models.Model):
         else:
             return r'/' + r'/'.join(self.path)
 
+    class Meta:
+        get_latest_by = "created_at"
+
 
 class BaseFileAttrib(models.Model):
     id = models.AutoField(primary_key=True)

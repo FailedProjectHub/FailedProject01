@@ -6,12 +6,14 @@ from .views import *
 
 urlpatterns_perinfo = patterns(
     r'',
-    url(r'^profile/ajax/(?P<infotype>[a-zA-Z0-9]+)$/?', PerInfoAJAX)
+    url(r'homepage/genericperinfo', genericperinfo),
+    url(r'homepage/advacedperinfo', advacedperinfo),
+    url(r'hompage/myupload/', myupload),
 )
 
 urlpatterns_register = patterns(
     r'',
-    url(r'^register$', register.as_view())
+    url(r'register/', register.as_view())
 )
 
 urlpatterns = patterns(

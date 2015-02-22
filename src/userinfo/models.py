@@ -25,11 +25,8 @@ class BasePerInfo(models.Model, metaclass=BasePerInfoMetaclass):
         return ret
 
 
-class GenericPerInfo(BasePerInfo):
-    avatar = models.ImageField(upload_to='avatar')
-    email = models.EmailField()
-
-    display = ('avatar', 'email')
+class AvatarPerInfo(BasePerInfo):
+    avatar = models.ImageField(upload_to='avatar', null=True, blank=True)
 
 
 class AdvancedPerInfo(BasePerInfo):

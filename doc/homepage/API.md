@@ -11,12 +11,16 @@ email
 
 放到一个form里头转成json发给服务器  
 POST {{hostname}}/register/  
+注册成功则返回
+{"status":"OK"}
 
 检查username是否重复  
 GET {{hostname}}/register/check_id/{{username}}  
 response json   
 {"status":"OK"}表示该id没有注册   
 {"status":"duplicated"}表示该id已被注册
+
+
 
 -----------------------------------------------
 
@@ -43,10 +47,9 @@ GET {{hostname}}/homepage/genericperinfo
 }
 
 高级设定信息  
-GET {{hostname}}/homepage/advancedpreinfo  
+GET {{hostname}}/homepage/advancedperinfo  
 {
-	chunksize: int,
-	path: str
+	chunksize: int
 }
 
 投稿信息  
