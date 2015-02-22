@@ -216,9 +216,9 @@ var ABP = {
 			}),
 			_("div", {
 				"className":"date",
-				"html":d.getMonth()+"-"+d.getDate()+" "+d.getHours()+":"+pad0(d.getMinutes(),2),
+				"html":(d.getMonth()+1)+"-"+d.getDate()+" "+d.getHours()+":"+pad0(d.getMinutes(),2),
 				"tooltip":_("div",{
-					"html":d.getFullYear()+"-"+d.getMonth()+"-"+d.getDate()+" "+d.getHours()+":"+pad0(d.getMinutes(),2)+":"+pad0(d.getSeconds(),2),
+					"html":d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()+" "+d.getHours()+":"+pad0(d.getMinutes(),2)+":"+pad0(d.getSeconds(),2),
 				}),
 			})
 		]);
@@ -774,7 +774,7 @@ var ABP = {
 			});
 			v.addEventListener("timeupdate", function() {
 				if (this.itemNo != ABPInst.currentItem) return;
-				if (waitting && ABPInst.cmManager) ABPInst.cmManager.startTimer();
+				if (waitting && ABPInst.cmManager && ABPInst.state.danmaku) ABPInst.cmManager.startTimer();
 				waitting = false;
 				var nowtime=this.currentTime;
 				for (var ii=0;ii<this.itemNo;ii++) nowtime+=ABPInst.videos[ii].duration;
