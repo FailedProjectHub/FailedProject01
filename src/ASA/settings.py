@@ -106,3 +106,7 @@ LOGGING = {
 # media url
 MEDIA_ROOT = 'website/media'
 MEDIA_URL = 'media/'
+
+# login redirect
+LOGIN_REDIRECT_URL = '/homepage/'
+LOGIN_URL = '/accounts/login'

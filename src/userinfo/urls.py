@@ -7,8 +7,9 @@ from .views import *
 urlpatterns_perinfo = patterns(
     r'',
     url(r'homepage/genericperinfo', genericperinfo),
-    url(r'homepage/advacedperinfo', advacedperinfo),
-    url(r'hompage/myupload/', myupload),
+    url(r'homepage/advancedperinfo', advacedperinfo),
+    url(r'homepage/myupload/', myupload),
+    url(r'homepage/mygroup/', mygroup),
 )
 
 urlpatterns_register = patterns(

@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.generic import View
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, UserManager
 
 from video_cms.settings import MIN_CHUNK_SIZE
 
@@ -30,15 +30,12 @@ class register(View):
             pass
         else:
             return HttpResponse(json.dumps({"status": "error", "msg": "duplicated"}))
-        user = User.objects.create(
+        UserManager.create_user(
             username=data['username'],
-            password=data['password'],
-            email=data['email']
+            email=data['email'],
+            password=['password']
         )
-        AvatarPerInfo.objects.create(
-            user=user
-        )
-        AdavancedPerInfo.objects.create(
+        AdvancedPerInfo.objects.create(
             user=user,
             default_chunksize=MIN_CHUNK_SIZE,
             default_path=['home', user.username]
@@ -47,6 +44,6 @@ class register(View):
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_active:
-            return HttpResponse("please first logout")
+            return render(request, "logged_in_register.html")
         else:
             return super(register, self).dispatch(request, *args, **kwargs)

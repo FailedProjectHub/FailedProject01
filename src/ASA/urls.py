@@ -12,6 +12,8 @@ urlpatterns = patterns(
     url(r'', include('cms.urls', namespace='cms')),
     url(r'^accounts/login/$', 'django.contrib.auth.views.login',
         {'template_name': 'admin/login.html'}),
+    url(r'^accounts/logout/$', 'django.contrib.auth.views.logout',
+        {'template_name': 'logged_out.html'}),
     url(r'', include('website.urls')),
     url(r'', include('video_cms')),
     url(r'', include('userinfo.urls')),

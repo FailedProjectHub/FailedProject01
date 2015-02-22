@@ -9,7 +9,6 @@ try:
 except:
     import json
 
-from cms.plugins.base import path_list_to_str
 from website.models import *
 
 
@@ -27,7 +26,7 @@ def genericperinfo(request):
         return HttpResponse(json.dumps({
             'username': request.user.username,
             'email': request.user.email,
-            'avatar': avatar_url
+            'avatar': (avatar_url is None) and "" or avatar_url
         }))
 
 
@@ -36,7 +35,6 @@ def advacedperinfo(request):
     info = AdvancedPerInfo.objects.get(user=request.user)
     return HttpResponse(json.dumps({
         'chunksize': info.default_chunksize,
-        'path': path_list_to_str(info.default_path)
     }))
 
 
@@ -44,7 +42,19 @@ def advacedperinfo(request):
 def myupload(request):
     assert 'op' in request.GET
     assert 'ed' in request.GET
-    return json.dumps(list(map(
+    op = int(request.GET['op'])
+    ed = int(request.GET['ed'])
+    return HttpResponse(json.dumps(list(map(
         lambda video: [video.video_file.rec, 'none'],
-        VideoFileAttrib.objects.filter(uploader=request.user).latest()[op:ed + 1]
-    )))
+        VideoFileAttrib.objects.filter(uploader=request.user).order_by('video_file__created_at')[op:ed + 1]
+    ))))
+
+
+@login_required
+def mygroup(request):
+    return HttpResponse(json.dumps(
+        list(map(
+            lambda group: group.name,
+            request.user.groups.all()
+        ))
+    ))

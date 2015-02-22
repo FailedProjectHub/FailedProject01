@@ -12,7 +12,7 @@ class VideoFileAttrib(BaseFileAttrib):
     )
 
     class Meta:
-        get_latest_by = "video_file.created_at"
+        get_latest_by = "video_file"
 
 
 class SessionUploaderRecord(models.Model):
