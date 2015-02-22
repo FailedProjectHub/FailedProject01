@@ -55,9 +55,13 @@ op,ed分别是显示的自己上传的视频的序号（按照上传时间降序
 response [ [rec号(int), 缩略图的url(str)], ... ]  
 如果不够的话就返回到最后一个为止
 
-社交信息  
+朋友信息  
 GET {{hostname}}/homepage/myfriends/?op=0&ed=9  
 response [ friendname0, friendname1, ...]
+
+社团信息
+GET {{hostname}}/homepage/mygroup/
+response [ group0, group1, group2 ...]
 
 修改头像  
 GET {{hostname}}/homepage/avatar/  
@@ -65,9 +69,9 @@ GET {{hostname}}/homepage/avatar/
 把这东西直接插进右边就好了
 
 修改密码   
-GET  {{hostname}}/homepage/passwd/
+POST  {{hostname}}/homepage/passwd/
 {
-	oldpasswd: str
+	oldpasswd: str,
 	newpasswd: str
 }
 
