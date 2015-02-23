@@ -65,24 +65,7 @@ CMS由两个部分组成：用户系统，文件系统
 		1.用户上传文件到/home/xxxxx_upload
 		2.group admin(super admin)看到视频，审核
 		3.审核通过，admin把文件移动到/public/xxxxx,并把原来在/home/xxxxx_upload的文件删除
-		
-======================================
-另外之三:
-	
-	与前端的交互
-	{{hostname}}/cms/<path>/<operation>
-	GET operation:
-		ls: 查看当前文件架(对该用户可见的)的所有信息.如果是一个视频文件则返回错误操作
-		ls <filename>: 返回这个文件的具体信息,如果是一个未上传完全的文件则response会包括已上传和未上传chunk的信息
-		rm <filename>: 删除当前文件(对该用户可见并可删除).如果是一个文件夹则需要"rm -r <foldername>"
-		get_url <filename>: 获得可以获得当前视频文件流的url
-		cp <filepath_a> <filepath_a>: 把file_a复制一份到filepath_b
-		mv <filepath_a> <filepath_b>: *剪切
-		mkdir <foldername>:建立一个文件夹 
-		cd <path>
-		touch <filename>: 生成一个file
-		lna <app_label.model id filename>:
-			给path为filename的File添加一个类型为app_label.model，id为id的属性
+
 	
 =====================================
 另外之四:
