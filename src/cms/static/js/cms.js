@@ -11,6 +11,7 @@ function Session(username, method){
 		username: username,
 		host: location.hostname,
 		preurl: '/cms',
+		posturl: '/cms/',
 		pwd: "/",
 		method: method
 	});
@@ -27,6 +28,9 @@ Session.ajax = function(method, url, data){
 	var self = this;
 	return new Promise(function(resolve,reject){
 		var req = new XMLHttpRequest();
+		
+		if(url[0] !='/')
+			url = url + '/';
 		
 		req.onreadystatechange = function(){
 			if(req.readyState == 4){
@@ -54,8 +58,11 @@ Session.ajax = function(method, url, data){
 Session.parseConfig = function(config){
 		var str = "";
 		for(var i in config)
-			if(config[i])
-				str += '-' + i + ' ';
+			if(config[i]){
+				if(!str)
+					str = '-';
+				str += i;
+			}
 		return str;
 }
 
@@ -67,20 +74,28 @@ Session.formatInput = function(str){
 	return str;
 }
 
-Session.spliceVoid = function(arr){
-	var i = 0;
-	while(i < arr.length){
-		if(!arr[i])
-			arr = arr.splice(i,1);
-		else
-			i++;
-	}
-	return arr;
-}
-
 Session.prototype = {
 	constructor: Session,
-	cd: function(folder){
+	send: function(com){
+		//erase extra space
+		com = com.replace(/^ +/, '');
+		com = com.replace(/ +$/, '');
+		//merge multiple space
+		com = com.replace(/ +/, ' ');
+		
+		var promise;
+		if(this.method === 'GET'){
+			var url = this.preurl + this.pwd + com;
+			promise = Session.ajax(this.method, encodeURI(url)); 
+		}
+		else if(this.method === 'POST'){
+			var url = this.posturl, data = { command: com.split(/ +/), path: this.pwd.slice(0,-1) || '/'};
+			promise = Session.ajax(this.method, encodeURI(url), JSON.stringify(data));
+		}
+	
+		return promise;
+	},
+	cd: function(config, folder){
 		
 		var self = this;
 		return new Promise(function(resolve, reject){
@@ -105,16 +120,7 @@ Session.prototype = {
 				return;
 			}	
 			
-			var promise;
-			
-			if(self.method === 'GET'){
-				var url = self.preurl + self.pwd + 'cd ' + folder;
-				promise = Session.ajax(self.method, encodeURI(url));
-			}
-			else if(self.method === 'POST'){
-				var url = self.preurl, data = { command: Session.spliceVoid(['cd', folder]), path: self.pwd.slice(1,-1) };
-				promise = Session.ajax(self.method, url, JSON.stringify(data));
-			}
+			var promise = self.send('cd ' + folder);
 			
 			promise.then(function(res){
 				if(res.status == "OK"){
@@ -122,11 +128,11 @@ Session.prototype = {
 					resolve();
 				}
 				else
-					reject(Error(data));
+					reject(res.msg);
 			});
 			
 			promise.catch(function(code){
-				reject(Error("Unknown error: HTTP status " + code));
+				reject("Unknown error: HTTP status " + code);
 			});
 		});
 	},
@@ -134,7 +140,7 @@ Session.prototype = {
 		mkdir
 		set config = {p:true} if -p option is on
 	*/
-	mkdir: function(folder, config){
+	mkdir: function(config, folder){
 		
 		var self = this;
 		return new Promise(function(resolve, reject){
@@ -144,25 +150,17 @@ Session.prototype = {
 				return;
 			}
 			
-			var promise;
-			if(self.method === 'GET'){
-				var url = self.preurl + self.pwd + 'mkdir ' + Session.parseConfig(config) + folder;
-				promise = Session.ajax(self.method, encodeURI(url));
-			}
-			else if(self.method === 'POST'){
-				var url = self.preurl, data = { command: Session.spliceVoid(['mkdir', Session.parseConfig(config), folder]), path:self.pwd.slice(1,-1) };
-				promise = Session.ajax(self.method, url, JSON.stringify(data));
-			}
+			var promise = self.send('mkdir ' + Session.parseConfig(config) + ' ' + folder);
 			
 			promise.then(function(res){
 				if(res.status == "OK")
 					resolve();
 				else
-					reject(Error(res));
+					reject(res.msg);
 			});
 			
 			promise.catch(function(code){
-				reject(Error("Unknown error: HTTP status " + code));
+				reject("Unknown error: HTTP status " + code);
 			});
 		});
 	},
@@ -170,7 +168,7 @@ Session.prototype = {
 		ls
 		set config ={a:true, l:true} if -al option is on
 	*/
-	ls: function(folder, config){
+	ls: function(config, folder){
 		
 		var self = this;
 		return new Promise(function(resolve, reject){
@@ -183,25 +181,17 @@ Session.prototype = {
 			folder = folder || "";
 			config = config || {a:false, l:false};
 			
-			var promise;
-			if(self.method === 'GET'){
-				var url = self.preurl + self.pwd + 'ls ' + Session.parseConfig(config) + folder;
-				promise = Session.ajax(self.method, url);
-			}
-			else if(self.method === 'POST'){
-				var url = self.preurl + '/', data = { command: Session.spliceVoid(['ls', Session.parseConfig(config), folder]), path: self.pwd.slice(1,-1) || '/'};
-				promise = Session.ajax(self.method, url, JSON.stringify(data));
-			}
+			var promise = self.send('ls ' + Session.parseConfig(config) + ' ' + folder);
 			
 			promise.then(function(res){
 				if(res.status == "OK")
 					resolve(res.msg);
 				else
-					resolve(Error(res.meg));
+					reject(res.msg);
 			});
 			
 			promise.catch(function(code){
-				reject(Error("Unknown error: HTTP status " + code));
+				reject("Unknown error: HTTP status " + code);
 			});
 		});
 	},
@@ -209,7 +199,7 @@ Session.prototype = {
 		rm
 		set config = {r:true} if -r option is on
 	*/
-	rm: function(file, config){
+	rm: function(config, file){
 		
 		var self = this;
 		return new Promise(function(resolve, reject){
@@ -219,29 +209,21 @@ Session.prototype = {
 				return;
 			}
 			
-			var promise;
-			if(self.method === 'GET'){
-				var url = self.preurl + self.pwd + 'rm ' + Session.parseConfig(config) + file;
-				promise = Session.ajax(self.method, url);
-			}
-			else if(self.method === 'POST'){
-				var url = self.preurl, data = { command: Session.spliceVoid(['rm', Session.parseConfig(config), file]), path: self.pwd.slice(1,-1) };
-				promise = Session.ajax(self.method, url, JSON.stringify(data));
-			}
+			var promise = self.send('rm ' + Session.parseConfig(config) + ' ' + file);
 			
 			promise.then(function(res){
 				if(res.status == "OK")
 					resolve();
 				else
-					reject(Error(res));
+					reject(res.msg);
 			});
 			
 			promise.catch(function(code){
-				reject(Error("Unknown error: HTTP status " + code));
+				reject("Unknown error: HTTP status " + code);
 			});
 		});
 	},
-	chown : function(owner, group, file, config){
+	chown : function(config, owner, group, file){
 		var self = this;
 		return new Promise(function(resolve, reject){
 			file = Session.formatInput(file);
@@ -262,29 +244,21 @@ Session.prototype = {
 					return;
 			}
 				
-			var promise;
-			if(method === 'GET'){
-				var url = self.preurl + self.pwd + 'chown ' + Session.parseConfig(config) + owner + ':' + group + file;
-				promise = Session.ajax(self.method, url);
-			}
-			else if(method === 'POST'){
-				var url = self.preurl, data = { command: Session.spliceVoid(['chown', Session.parseConfig(config), owner + ':' + group, file]), path: self.pwd.slice(1,-1) };
-				promise = Session.ajax(self.method, url, JSON.stringify(data));
-			}
+			var promise = self.send('chown ' + Session.parseConfig(config) + ' ' + owner + ':' + group + ' ' + file);
 			
 			promise.then(function(res){
 				if(res.status == "OK")
 					resolve();
 				else
-					reject(Error(res));
+					reject(res.msg);
 			});
 			
 			promise.catch(function(code){
-				reject(Error("Unknown error: HTTP status " + code));
+				reject("Unknown error: HTTP status " + code);
 			});
 		});
 	},
-	chmod : function(mode, file, config){
+	chmod : function(config, mode, file){
 		var self = this;
 		return new Promise(function(resolve, reject){
 			file = Session.formatInput(file);
@@ -297,25 +271,17 @@ Session.prototype = {
 		       (config && typeof config !== 'object'))
 					reject('invalid input.');
 				
-			var promise;
-			if(method === 'GET'){
-				var url = self.preurl + self.pwd + 'chmod ' + Session.parseConfig(config) + mode + file;
-				promise = Session.ajax(self.method, url);
-			}
-			else if(method === 'POST'){
-				var url = self.preurl, data = { command: Session.spliceVoid(['chmod', Session.parseConfig(config), mode, file]), path: self.pwd.slice(1,-1) };
-				promise = Session.ajax(self.method, url, JSON.stringify(data));
-			}
+			var promise = self.send('chmod ' + Session.parseConfig(config) + ' ' + mode + ' ' + file);
 			
 			promise.then(function(res){
 				if(res.status == "OK")
 					resolve();
 				else
-					reject(Error(res));
+					reject(res.msg);
 			});
 			
 			promise.catch(function(code){
-				reject(Error("Unknown error: HTTP status " + code));
+				reject("Unknown error: HTTP status " + code);
 			});
 		});
 	}
