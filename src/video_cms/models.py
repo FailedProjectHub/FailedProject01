@@ -218,6 +218,7 @@ class Danmaku(models.Model):
                 'text': danmaku.text,
                 'size': danmaku.text,
                 'color': danmaku.color,
+                'date': danmaku.date
             }, video.danmaku_set.all())
         )
         return danmaku

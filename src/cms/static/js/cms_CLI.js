@@ -1,5 +1,5 @@
 $(function() {
-	var session = new Session('ASA.tv');
+	var session = new Session('ASA.tv', 'POST');
 	var jqconsole = $('#console').jqconsole('Log in @' + session.host + ' as ' + session.username + '\n',
 											session.username + '@' + session.host + ':' + session.pwd + ' >>> '	);
 	
@@ -8,7 +8,7 @@ $(function() {
 			var str = '';
 			for(var i = 0; i < o.length; i++){
 				for(var j = 0; j < o[i].length; j++)
-					str += o[i][j].split(session.pwd)[1] + ' ';
+					str += o[i][j].replace(session.pwd,"") + ' ';
 				str += '\n';
 			}
 			//if(str.length) str.length--;
@@ -26,7 +26,7 @@ $(function() {
 		return o;
 	}, errorHandler = {
 		ls: function(path){
-			return path + " does not exist.\n";
+			return path + '\n';
 		},
 		unknown: function(){
 			return 'encountered an unknown error.\n';
@@ -44,11 +44,13 @@ $(function() {
 			var next = function(text){
 				if(text)
 					jqconsole.Write(text, 'jqconsole-output');
-				jqconsole.prompt_label_main = session.username + '@' + session.host + ':' + session.pwd + ' >>> ';
+				jqconsole.prompt_label_main = session.username + '@' + session.host + ':' + (session.pwd.slice(0,-1) || '/') + ' >>> ';
 				prompt();
 			}
 			
-			if(!session[com])
+			if(!com)
+				next('');
+			else if(!session[com])
 				next('No such command.\n');
 			else{
 				var promise = session[com](argv, config);

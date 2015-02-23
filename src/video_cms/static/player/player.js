@@ -19,11 +19,10 @@ function render_player(token, callbacks){
             console.log("Network Error: "+status);
             return;
         }
-        console.log(data);
         var res = eval(data);
-        var cdata = new Array();
         for (var i=0;i<res.length;++i) {
-            inst.dminsert(new CoreComment(cm, res[i]));
+			if (typeof res[i].date == "undefined") res[i].date=parseInt(new Date(0).getTime()/1000);
+            inst.dminsert(res[i]);
         }
     });
 
@@ -40,10 +39,14 @@ function render_player(token, callbacks){
 				inst.dminsert(danmaku);
 		});
 		inst.addListener("senddanmaku",function(dm){
+			dm.owner=token;
 			if (inst.playing) {
 				inst.dmsend(dm);
 				setTimeout(function(){socket.emit("send_danmaku", dm);}, 1000);
-			} else socket.emit("send_danmaku", dm);
+			} else {
+				dm.stime+=500;
+				socket.emit("send_danmaku", dm);
+			}
 		});
 	}
     
