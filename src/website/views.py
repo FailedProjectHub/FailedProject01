@@ -1,12 +1,11 @@
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 import video_cms
 from video_cms.models import *
 from django.contrib.auth.decorators import login_required
 from cms.plugins.exceptions import *
-from .models import SessionUploaderRecord
+from .models import *
 from .cms_plugins import av
 try:
     import simplejson as json
@@ -38,7 +37,6 @@ class InitView(video_cms.upload_views.InitView):
         except Exception as e:
             return HttpResponse(json.dumps({'status': 'error', 'msg': str(e)}))
 
-    @method_decorator(csrf_exempt)
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(InitView, self).dispatch(request, *args, **kwargs)
@@ -53,7 +51,6 @@ def auth_check(environ, owner):
 
 class ChunkView(video_cms.upload_views.ChunkView):
 
-    @method_decorator(csrf_exempt)
     def put(self, request, owner, *args, **kwargs):
         environ = {'user': request.user, 'username': request.user.username}
         try:
@@ -86,7 +83,6 @@ class ChunkView(video_cms.upload_views.ChunkView):
             }))
         return response
 
-    @method_decorator(csrf_exempt)
     @method_decorator(login_required)
     def dispatch(self, request, owner, *args, **kwargs):
         return super(ChunkView, self).dispatch(request, owner, *args, **kwargs)

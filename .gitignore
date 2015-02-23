@@ -60,7 +60,7 @@ src/Upload/test_file
 src/video_cms/chunks
 src/video_cms/files
 src/db.sqlite3
-src/video_cms/nodejs/log.html
+src/website/nodejs/log.html
 src/website/media
 *.ropeproject
 *migrations
