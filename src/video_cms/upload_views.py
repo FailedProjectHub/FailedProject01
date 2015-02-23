@@ -61,9 +61,8 @@ class InitView(View):
             data = json.loads(request.body)
             assert isinstance(data, dict)
         except (ValueError, AssertionError):
-            return HttpResponseBadRequest(json.dumps({
-                'errstr': 'invalid json format'
-                }),
+            return HttpResponseBadRequest(
+                json.dumps({'errstr': 'invalid json format'}),
                 content_type='application/json'
             )
         return super(InitView, self).dispatch(request, data, *args, **kwargs)

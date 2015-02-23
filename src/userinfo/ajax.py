@@ -1,8 +1,12 @@
-# from django.db.models.fields import Field
+import os
+
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.views.generic import View
+from django.utils.decorators import method_decorator
 
 from .models import *
+from .settings import AVATAR_ROOT
 
 try:
     import simplejson as json
@@ -58,3 +62,23 @@ def mygroup(request):
             request.user.groups.all()
         ))
     ))
+
+
+class AvatarView(View):
+
+    def get(self, request):
+        try:
+            with open(os.path.join(AVATAR_ROOT, request.user.username), "rb") as f:
+                return HttpResponse(f.read(), content_type='image/jpeg')
+        except Exception as e:
+            raise e
+            return HttpResponse(json.dumps({'status': 'error', 'reason': 'file not found'}))
+
+    def post(self, request):
+        with open(os.path.join(AVATAR_ROOT, request.user.username), "wb") as f:
+            f.write(request.body)
+        return HttpResponse(json.dumps({'status': 'OK'}))
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(AvatarView, self).dispatch(*args, **kwargs)

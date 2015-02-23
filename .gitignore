@@ -61,6 +61,7 @@ src/video_cms/chunks
 src/video_cms/files
 src/db.sqlite3
 src/website/media
+src/userinfo/avatar
 *.ropeproject
 *migrations
 

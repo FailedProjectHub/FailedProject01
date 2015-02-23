@@ -38,7 +38,7 @@ response register.html
 
 通过ajax渲染右边内容  
 
-基本信息  
+不可修改的基本信息  
 GET {{hostname}}/homepage/genericperinfo  
 {
 	"username": str,
@@ -47,9 +47,20 @@ GET {{hostname}}/homepage/genericperinfo
 }
 
 高级设定信息  
-GET {{hostname}}/homepage/advancedperinfo  
+GET {{hostname}}/homepage/advancedperinfo/  
 {
 	chunksize: int
+}
+
+POST {{hostname}}/homepage/advacedperinfo/  
+格式同GET
+
+
+修改密码   
+POST  {{hostname}}/homepage/passwd/  
+{
+	oldpasswd: str,
+	newpasswd: str
 }
 
 投稿信息  
@@ -71,16 +82,16 @@ GET {{hostname}}/homepage/avatar/
 后台会返回一段html代码，里面是一个配置好的form label的上传代码
 把这东西直接插进右边就好了
 
-修改密码   
-POST  {{hostname}}/homepage/passwd/
-{
-	oldpasswd: str,
-	newpasswd: str
-}
+=====================================
+关于response
 
-非正常返回  
-response
+非正常返回 
 {
 	"status": "error",
 	"msg": reason
+}
+
+正常返回
+{
+	"status": "OK"
 }

@@ -44,16 +44,15 @@ class DownloadView(View):
         try:
             stream_ed, content, size = File.get_chunk_by_token(token, stream_op)
         except Exception as e:
-            return HttpResponse(json.dumps({
-                'errstr': str(e)
-                }),
+            return HttpResponse(
+                json.dumps({'errstr': str(e)}),
                 status_code=e.status_code
             )
         response = HttpResponse(content, content_type='video/mp4')
         response.status_code = 206
         print(response.status_code)
         response['Accept-Ranges'] = 'bytes'
-        response['Content-Length'] = stream_ed-stream_op+1
+        response['Content-Length'] = stream_ed - stream_op + 1
         response['Content-Range'] = 'bytes %s-%s/%s' % \
             (stream_op, stream_ed, size)
         return response

@@ -10,6 +10,7 @@ urlpatterns_perinfo = patterns(
     url(r'homepage/advancedperinfo', advacedperinfo),
     url(r'homepage/myupload/', myupload),
     url(r'homepage/mygroup/', mygroup),
+    url(r'homepage/avatar/', AvatarView.as_view()),
 )
 
 urlpatterns_register = patterns(
