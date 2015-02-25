@@ -77,10 +77,9 @@ response [ friendname0, friendname1, ...]
 GET {{hostname}}/homepage/mygroup/
 response [ group0, group1, group2 ...]
 
-修改头像  
-GET {{hostname}}/homepage/avatar/  
-后台会返回一段html代码，里面是一个配置好的form label的上传代码
-把这东西直接插进右边就好了
+获取头像
+GET {{hostname}}/homepage/avatar/
+得到头像
 
 =====================================
 关于response

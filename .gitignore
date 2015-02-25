@@ -62,7 +62,8 @@ src/video_cms/files
 src/db.sqlite3
 src/website/media
 src/userinfo/avatar
-src/video_cms/nodejs/log.html
+src/website/nodejs/log.html
+src/website/nodejs/node_modules
 src/website/media
 *.ropeproject
 *migrations
