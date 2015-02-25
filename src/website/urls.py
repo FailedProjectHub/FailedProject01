@@ -46,7 +46,7 @@ urlpatterns_danmaku = patterns(
     '',
     url(
         r'danmaku/(?P<token>[a-zA-Z0-9]{64})/?',
-        csrf_exempt(DanmakuView.as_view())
+        DanmakuView.as_view()
     ),
 )
 
