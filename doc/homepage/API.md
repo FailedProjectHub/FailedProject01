@@ -52,12 +52,12 @@ GET {{hostname}}/homepage/advancedperinfo/
 	chunksize: int
 }
 
-POST {{hostname}}/homepage/advacedperinfo/  
+Patch {{hostname}}/homepage/advacedperinfo/  
 格式同GET
 
 
 修改密码   
-POST  {{hostname}}/homepage/passwd/  
+Patch  {{hostname}}/homepage/passwd/  
 {
 	oldpasswd: str,
 	newpasswd: str
@@ -79,7 +79,8 @@ response [ group0, group1, group2 ...]
 
 获取头像
 GET {{hostname}}/homepage/avatar/
-得到头像
+修改头像
+Patch {{hostname}}/homepage/avatar/
 
 =====================================
 关于response
