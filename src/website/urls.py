@@ -54,8 +54,5 @@ urlpatterns_danmaku = patterns(
 urlpatterns = patterns(
     r'',
     url(r'', include(urlpatterns_upload)),
-<<<<<<< HEAD
-=======
     url(r'', include(urlpatterns_danmaku))
->>>>>>> master
 )

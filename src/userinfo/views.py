@@ -47,3 +47,7 @@ class register(View):
             return render(request, "logged_in_register.html")
         else:
             return super(register, self).dispatch(request, *args, **kwargs)
+
+
+def homepage(request):
+    return render(request, 'homepage.html')

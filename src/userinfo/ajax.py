@@ -18,20 +18,10 @@ from website.models import *
 
 @login_required
 def genericperinfo(request):
-    try:
-        avatar_url = AvatarPerInfo.objects.get(user=request.user).avatar
-    except AvatarPerInfo.DoesNotExist:
-        return HttpResponse(json.dumps({
-            'username': request.user.username,
-            'email': request.user.email,
-            'avatar': 'none'
-        }))
-    else:
-        return HttpResponse(json.dumps({
-            'username': request.user.username,
-            'email': request.user.email,
-            'avatar': (avatar_url is None) and "" or avatar_url
-        }))
+    return HttpResponse(json.dumps({
+        'username': request.user.username,
+        'email': request.user.email,
+    }))
 
 
 @login_required

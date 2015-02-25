@@ -1,0 +1,39 @@
+<html>
+  <head>
+    <script src="{{ STATIC_URL }}bower_components/jquery/dist/jquery.min.js"></script>
+    <link href="{{ STATIC_URL }}bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="{{ STATIC_URL }}bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="{{ STATIC_URL }}angularjs/angular.min.js"></script>
+    <script src="{{ STATIC_URL }}homepage/js/homepage.js"></script>
+  </head>
+
+  <body ng-app="homepage" ng-controller="homepage" ng-style='body.style'>
+    <div ng-style=top_container.style class="top-container">
+      <img src="{{ STATIC_URL }}homepage/ASA.tv.png">
+    </div>
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-1" ng-style='leftMargin.style'></div>
+        <div class="col-md-2">
+          <img src="/homepage/avatar/" ng-style="avatar.style">
+        </div>
+        <div class="col-md-4">
+          <div class="col">
+            <div class="row-md-1" ng-style='username.style'>
+              用户名: 
+              <u>
+                {$ genericperinfo.username $}
+              </u>
+            </div>
+            <div class="row-md-1" ng-style="email.style">
+              email: 
+              <u>
+                {$ genericperinfo.email $}
+              </u>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
