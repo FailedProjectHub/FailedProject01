@@ -54,7 +54,7 @@ class DownloadView(View):
         response['Accept-Ranges'] = 'bytes'
         response['Content-Length'] = stream_ed - stream_op + 1
         response['Content-Range'] = 'bytes %s-%s/%s' % \
-            (stream_op, size-1, size)
+            (stream_op, size - 1, size)
         return response
 
 

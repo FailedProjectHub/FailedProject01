@@ -5,7 +5,7 @@ import video_cms
 from video_cms.models import *
 from django.contrib.auth.decorators import login_required
 from cms.plugins.exceptions import *
-from .models import SessionUploaderRecord
+from .models import *
 from .cms_plugins import av
 try:
     import simplejson as json
@@ -165,3 +165,38 @@ class SessionsView(View):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(SessionsView, self).dispatch(*args, **kwargs)
+
+
+class DanmakuView(View):
+    @staticmethod
+    def get(request, token):
+        danmaku_list = Danmaku.load_danmaku_by_video_token(token)
+        return HttpResponse(json.dumps(danmaku_list))
+
+    @staticmethod
+    def post(request, token):
+        try:
+            data = request.POST
+            assert isinstance(data, dict)
+        except (ValueError, AssertionError):
+            return HttpResponseBadRequest(
+                {'errstr': 'invalid json format'},
+                content_type='application/json'
+            )
+
+        assert 'mode' in data
+        assert 'stime' in data
+        assert 'text' in data
+        assert 'color' in data
+        assert 'size' in data
+        assert 'date' in data
+        Danmaku.new(
+            owner=token,
+            date=int(data['date']),
+            mode=int(data['mode']),
+            stime=int(data['stime']),
+            text=data['text'],
+            color=data['color'],
+            size=int(data['size'])
+        )
+        return HttpResponse(json.dumps({'status': 'OK'}))

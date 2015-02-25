@@ -41,7 +41,21 @@ urlpatterns_upload = patterns(
     )
 )
 
+
+urlpatterns_danmaku = patterns(
+    '',
+    url(
+        r'danmaku/(?P<token>[a-zA-Z0-9]{64})/?',
+        DanmakuView.as_view()
+    ),
+)
+
+
 urlpatterns = patterns(
     r'',
     url(r'', include(urlpatterns_upload)),
+<<<<<<< HEAD
+=======
+    url(r'', include(urlpatterns_danmaku))
+>>>>>>> master
 )
