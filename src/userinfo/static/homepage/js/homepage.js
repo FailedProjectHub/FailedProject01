@@ -17,13 +17,30 @@ homepage.controller('homepage', function homepage($scope, $http){
   $scope.userinfo = {};
   $scope.body = {};
   $scope.top_pic = {};
+  $scope.tab_container = {};
+  $scope.main_area = {};
   $http.get('/homepage/genericperinfo/').success(
     function(response){
-      console.log(response.username);
       $scope.username.content = response.username;
       $scope.email.content = response.email;
     }
   );
+
+  /* tab responsive */
+
+
+  $scope.tab_container.active = 0;
+  $scope.tab_container.old_active = 0;
+  $scope.tab_container.tab0 = {'class':"active"};
+  $scope.tab_container.tab1 = {'class':""};
+  $scope.tab_container.tab2 = {'class':""};
+  $scope.tab_container.tab3 = {'class':""};
+
+  $scope.tab_container.change_tab = function(new_tab_id){
+    $scope.tab_container["tab"+parseInt($scope.tab_container.active)].class = "";
+    $scope.tab_container["tab"+parseInt(new_tab_id)].class = "active";
+    $scope.tab_container.active = new_tab_id;
+  }
 
   /* css */
   $scope.top_container.style = {
@@ -54,4 +71,13 @@ homepage.controller('homepage', function homepage($scope, $http){
   $scope.top_pic.style = {
     'width': '100%'
   }
+  $scope.tab_container.style = {
+    'margin-top': 32
+  }
+  $scope.main_area.style = {
+    'height': 700,
+    'margin-left': -5,
+    'margin-right': -15
+  }
+
 });
