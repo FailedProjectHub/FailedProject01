@@ -49,5 +49,6 @@ class register(View):
             return super(register, self).dispatch(request, *args, **kwargs)
 
 
+@login_required
 def homepage(request):
     return render(request, 'homepage.html')
