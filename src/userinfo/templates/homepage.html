@@ -5,33 +5,36 @@
     <script src="{{ STATIC_URL }}bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="{{ STATIC_URL }}angularjs/angular.min.js"></script>
     <script src="{{ STATIC_URL }}homepage/js/homepage.js"></script>
+    <link href="{{ STATIC_URL }}bower_components/flat-ui/dist/css/flat-ui.min.css" rel="stylesheet">
+    <script src="{{ STATIC_URL }}bower_components/flat-ui/dist/js/flat-ui.min.js"></script>
   </head>
 
-  <body ng-app="homepage" ng-controller="homepage" ng-style='body.style'>
-    <div ng-style=top_container.style class="top-container">
-      <img src="{{ STATIC_URL }}homepage/ASA.tv.png">
+  <body ng-app="homepage" ng-controller="homepage" ng-style="body.style">
+    <div ng-style="top_container.style" class="top-container">
+      <img src="{{ STATIC_URL }}homepage/ASA.tv.png" ng-style="top_pic.style">
     </div>
     <div class="container-fluid">
       <div class="row">
         <div class="col-md-1" ng-style='leftMargin.style'></div>
-        <div class="col-md-2">
-          <img src="/homepage/avatar/" ng-style="avatar.style">
-        </div>
         <div class="col-md-4">
-          <div class="col">
-            <div class="row-md-1" ng-style='username.style'>
-              用户名: 
-              <u>
-                {$ genericperinfo.username $}
-              </u>
+          <nav class="navbar navbar-default" role="navigation" ng-style="userinfo.style">
+            <div class="col-md-3">
+              <img src="/homepage/avatar/" ng-style="avatar.style">
             </div>
-            <div class="row-md-1" ng-style="email.style">
-              email: 
-              <u>
-                {$ genericperinfo.email $}
-              </u>
+            <div class="col-md-3">
+            <div class="col">
+              <div class="row-md-1" ng-style='username.style'>
+                <a href="/homepage/">
+                  {$ username.content $}
+                </a>
+              </div>
+              <div class="row-md-1" ng-style="email.style">
+                <b>{$ email.content $}</b>
+              </div>
             </div>
-          </div>
+          </nav>
+        </div>
+        <div class="navbar navbar-default" role="navigation">
         </div>
       </div>
     </div>
