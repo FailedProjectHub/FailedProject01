@@ -50,7 +50,8 @@ function submitAvatar()
                 if (xhr.status == 200)
                     alert("Upload successfully");
                 else
-                    document.getElementById("ccc").innerHTML = xhr.response;
+                    //document.getElementById("ccc").innerHTML = xhr.response;
+                    alert("Faile uploading");
             }
         }
     }
