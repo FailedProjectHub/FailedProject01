@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.views.generic import View
 from django.contrib.auth.models import User, UserManager
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 from video_cms.settings import MIN_CHUNK_SIZE
 

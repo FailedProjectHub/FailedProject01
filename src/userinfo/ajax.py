@@ -1,4 +1,6 @@
 import os
+import io
+from PIL import Image
 
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -6,7 +8,7 @@ from django.views.generic import View
 from django.utils.decorators import method_decorator
 
 from .models import *
-from .settings import AVATAR_ROOT
+from .settings import AVATAR_ROOT, AVATAR_SIZE_LIMIT
 
 try:
     import simplejson as json
@@ -63,6 +65,23 @@ class AvatarView(View):
         except Exception as e:
             raise e
             return HttpResponse(json.dumps({'status': 'error', 'reason': 'file not found'}))
+
+    def patch(self, request):
+        assert 'x1' in request.META
+        assert isinstance(request.META['x1'], int) is True
+        assert 'y1' in request.META
+        assert isinstance(request.META['y1'], int) is True
+        assert 'x2' in request.META
+        assert isinstance(request.META['x2'], int) is True
+        assert 'y2' in request.META
+        assert isinstance(request.META['y2'], int) is True
+        img = io.BytesIO(request.body)
+        assert img.seek(0, 2) < AVATAR_SIZE_LIMIT
+        img.seek(0, 0)
+        img = Image.open(img)
+        img = img.crop((x1, y1, x2, y2))
+        img.save(AVATAR_ROOT + request.user.username, img.format)
+        return HttpResponse({"status": "OK"})
 
     def post(self, request):
         with open(os.path.join(AVATAR_ROOT, request.user.username), "wb") as f:

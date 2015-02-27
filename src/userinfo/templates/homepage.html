@@ -7,6 +7,7 @@
     <script src="{{ STATIC_URL }}homepage/js/homepage.js"></script>
     <link href="{{ STATIC_URL }}bower_components/flat-ui/dist/css/flat-ui.min.css" rel="stylesheet">
     <script src="{{ STATIC_URL }}bower_components/flat-ui/dist/js/flat-ui.min.js"></script>
+    <script src="{{ STATIC_URL }}homepage/js/uploadAvatar.js"></script>
   </head>
 
   <body ng-app="homepage" ng-controller="homepage" ng-style="body.style">
@@ -18,32 +19,21 @@
 
         <!-- homepage header -->
         <div class="col-md-1" ng-style='leftMargin.style'></div>
-          <div class="col-md-4">
-            <nav class="navbar navbar-default" role="navigation" ng-style="userinfo.style">
+          <div class="col-md-2">
               <div class="col-md-3">
                 <img src="/homepage/avatar/" ng-style="avatar.style">
               </div>
-              <div class="col-md-3">
-              <div class="col">
-                <div class="row-md-1" ng-style='username.style'>
-                  <a href="/homepage/">
-                    {$ username.content $}
-                  </a>
-                </div>
-                <div class="row-md-1" ng-style="email.style">
-                  <b>{$ email.content $}</b>
-                </div>
-              </div>
-            </nav>
           </div>
-          <div class="col-md-7">
+          <div class="col-md-9">
             <div class="navbar navbar-default" role="navigation" ng-style="tab_container.style">
               <ul class="nav navbar-nav">
 
-                <li ng-click="tab_container.change_tab(0)" ng-class="tab_container.tab0.class"><a>我的好友</a></li>
-                <li ng-click="tab_container.change_tab(1)" ng-class="tab_container.tab1.class"><a>我的投稿组</a></li>
-                <li ng-click="tab_container.change_tab(2)" ng-class="tab_container.tab2.class"><a>我的上传</a></li>
-                <li ng-click="tab_container.change_tab(3)" ng-class="tab_container.tab3.class"><a>我的收藏</a></li>
+                <li ng-click="tab_container.change_tab(0)" ng-class="tab_container.tab0.class"><a href="">我的关注</a></li>
+                <li ng-click="tab_container.change_tab(1)" ng-class="tab_container.tab1.class"><a href="">我的投稿组</a></li>
+                <li ng-click="tab_container.change_tab(2)" ng-class="tab_container.tab2.class"><a href="">我的上传</a></li>
+                <li ng-click="tab_container.change_tab(3)" ng-class="tab_container.tab3.class"><a href="">我的收藏</a></li>
+                <li ng-click="tab_container.change_tab(4)" ng-class="tab_container.tab4.class"><a href="">我要上传</a></li>
+                <li ng-click="tab_container.change_tab(5)" ng-class="tab_container.tab4.class"><a href="">我要上传</a></li>
               </ul>
             </div>
           </div>
@@ -52,10 +42,30 @@
 
         <!-- homepage main area -->
         <div class="col-md-1" ng-style='leftMargin.style'></div>
-        <div class="col-md-4"></div>
+        <div class="col-md-2"></div>
 
-        <div class="col-md-7">
+        <div class="col-md-9">
           <nav class="navbar navbar-default" role="navigation"  ng-style="main_area.style">
+
+              <!-- 我的上传 tab2  -->
+              <div ng-style="myupload" ng-show="tab_container.tab2.active">
+                <div>aksdjfhaksjdhf</div>
+              </div>
+              <!--           -->
+
+              <!-- 我要上传 tab4  -->
+              <div ng-style="to_upload" ng-show="tab_container.tab4.active">
+              </div>
+              <!--           -->
+
+              <!-- 个人资料设置 tab5  -->
+              <div ng-style="setting" ng-show="tab_container.tab5.active">
+                <div id="upload-avatar">
+                </div>
+              </div>
+              <!--                -->
+
+            
           </nav>
         </div>
 

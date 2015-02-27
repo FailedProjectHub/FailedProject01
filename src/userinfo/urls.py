@@ -20,7 +20,7 @@ urlpatterns_register = patterns(
 
 urlpatterns_homepage = patterns(
     r'',
-    url(r'homepage/', homepage)
+    url(r'homepage/', homepage),
 )
 
 urlpatterns = patterns(
