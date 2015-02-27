@@ -1,25 +1,15 @@
-<html>
-  <head>
-    <script src="{{ STATIC_URL }}bower_components/jquery/dist/jquery.min.js"></script>
-    <link href="{{ STATIC_URL }}bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="{{ STATIC_URL }}bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <script src="{{ STATIC_URL }}angularjs/angular.min.js"></script>
+{% extends 'ASA/base.html' %}
+{% block head %}
     <script src="{{ STATIC_URL }}homepage/js/homepage.js"></script>
-    <link href="{{ STATIC_URL }}bower_components/flat-ui/dist/css/flat-ui.min.css" rel="stylesheet">
-    <script src="{{ STATIC_URL }}bower_components/flat-ui/dist/js/flat-ui.min.js"></script>
     <script src="{{ STATIC_URL }}homepage/js/uploadAvatar.js"></script>
     <script src="{{ STATIC_URL }}bower_components/jcrop/js/jquery.Jcrop.min.js"></script>
     <link href="{{ STATIC_URL }}bower_components/jcrop/css/jquery.Jcrop.min.css" rel="stylesheet">
-  </head>
+{% endblock %}
 
-  <body ng-app="homepage" ng-controller="homepage" ng-style="body.style">
-    <div ng-style="top_container.style" class="top-container">
-      <img src="{{ STATIC_URL }}homepage/ASA.tv.png" ng-style="top_pic.style">
-    </div>
+{% block content %}
+  <div ng-app="homepage" ng-controller="homepage" ng-style="body.style">
     <div class="container-fluid">
       <div class="row">
-
-        <!-- homepage header -->
         <div class="col-md-1" ng-style='leftMargin.style'></div>
           <div class="col-md-2">
               <div class="col-md-3">
@@ -73,5 +63,5 @@
 
       </div>
     </div>
-  </body>
-</html>
+  </div>
+{% endblock %}

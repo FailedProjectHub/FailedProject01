@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'ASA',
     'cms',
     'video_cms',
     'website',
@@ -104,9 +105,9 @@ LOGGING = {
 }
 
 # media url
-MEDIA_ROOT = 'website/media'
+MEDIA_ROOT = 'website/media/'
 MEDIA_URL = 'media/'
 
 # login redirect
 LOGIN_REDIRECT_URL = '/homepage/'
-LOGIN_URL = '/accounts/login'
+LOGIN_URL = '/accounts/login/'

@@ -44,10 +44,6 @@ homepage.controller('homepage', function homepage($scope, $http){
 
 
   /* css */
-  $scope.top_container.style = {
-    'width': "100%",
-    'height': 150
-  };
   $scope.avatar.style = {
     'height': 80, 
     'width': 80,
