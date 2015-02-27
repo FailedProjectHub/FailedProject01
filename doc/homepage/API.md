@@ -81,6 +81,8 @@ response [ group0, group1, group2 ...]
 GET {{hostname}}/homepage/avatar/
 修改头像
 Patch {{hostname}}/homepage/avatar/
+request.header = {x1: 整型左上坐标x值, y1: 整型左上坐标y值, x2: 整型右下坐标x值, y2: 整型右下坐标y值}
+request.body = 二进制图片文件
 
 =====================================
 关于response
