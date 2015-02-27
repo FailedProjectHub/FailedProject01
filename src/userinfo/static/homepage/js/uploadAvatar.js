@@ -1,6 +1,17 @@
 // dom_id = 'upload-avatar'
 $(function(){
-  document.getElementById('upload-avatar').innerHTML = '<div id="preview" ></div><div id="preview1" style="width:30px;height:30px;overflow:hidden;"></div><div id="preview2" style="width:80px;height:80px;overflow:hidden;"></div><div id="preview3" style="width:150px;height:150px;overflow:hidden;"></div><input type="file" onchange="preview(this)" name="up_img"/><input type="hidden" id="x" name="x" /><input type="hidden" id="y" name="y" /><input type="hidden" id="w" name="w" /><input type="hidden" id="h" name="h" /><input type="button" value="confirm uploading avatar" onclick="submitAvatar()"/>';
+  document.getElementById('upload-avatar').innerHTML =
+  '<div id="preview"></div>'
+  +'<div id="preview1" style="width:30px;height:30px;overflow:hidden;"></div>'
+  +'<div id="preview2" style="width:80px;height:80px;overflow:hidden;"></div>'
+  +'<div id="preview3" style="width:150px;height:150px;overflow:hidden;"></div>'
+  +'<input type="file" onchange="preview(this)" name="up_img"/>'
+  +'<input type="hidden" id="x" name="x" />'
+  +'<input type="hidden" id="y" name="y" />'
+  +'<input type="hidden" id="w" name="w" />'
+  +'<input type="hidden" id="h" name="h" />'
+  +'<input type="button" value="confirm uploading avatar" onclick="submitAvatar()"/>'
+  +'<div id="ccc"></div>';
 });
 
 function submitAvatar()
@@ -21,24 +32,27 @@ function submitAvatar()
     reader.onload = function(e){
         data = e.target.result;
         if (checkCoords() == false) return false;
-        
+
         var xhr = new XMLHttpRequest();
-        xhr.open("Patch", "{{hostname}}/homepage/avatar/", true);
+        xhr.open("patch", "/homepage/avatar/", true);
         var x1 =parseInt(jQuery('#x').val());
         var y1 =parseInt(jQuery('#y').val());
         var x2 =(parseInt(jQuery('#x').val())+parseInt(jQuery('#w').val()));
         var y2 =(parseInt(jQuery('#y').val())+parseInt(jQuery('#h').val()));
-        xhr.setRequestHeader("x1",x1.toString());
-        xhr.setRequestHeader("y1",y1.toString());
-        xhr.setRequestHeader("x2",x2.toString());
-        xhr.setRequestHeader("y2",y2.toString());
+        xhr.setRequestHeader("x1",x1);
+        xhr.setRequestHeader("y1",y1);
+        xhr.setRequestHeader("x2",x2);
+        xhr.setRequestHeader("y2",y2);
         
         xhr.send(data);
         xhr.onreadystatechange = function() {
-            if (xhr.readyState == 4 && xhr.status == 200)
-                alert("Upload successfully");
-            else
-                alert("Failed uploading");
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200)
+                    alert("Upload successfully");
+                else
+                    //document.getElementById("ccc").innerHTML = xhr.response;
+                    alert("Faile uploading");
+            }
         }
     }
 }
@@ -106,7 +120,7 @@ function preview(file)
     {
         var reader = new FileReader();
         reader.onload = function(evt){
-            prevDiv.innerHTML = '<img src="' + evt.target.result + '" id="jcrop_target" />';
+            prevDiv.innerHTML = '<img src="' + evt.target.result + '" id="jcrop_target"/>';
             prevDiv1.innerHTML = '<img src="' + evt.target.result + '" id="preimg1"/>';
             prevDiv2.innerHTML = '<img src="' + evt.target.result + '" id="preimg2"/>';
             prevDiv3.innerHTML = '<img src="' + evt.target.result + '" id="preimg3"/>';
@@ -115,6 +129,8 @@ function preview(file)
                                             onChange: updateCoords,
                                             onSelect: updateCoords,
                                             onRelease: hidePreview,
+                                            boxWidth: 320,
+                                            boxHeight: 320,
                                             aspectRatio: 1
                                             });
               
