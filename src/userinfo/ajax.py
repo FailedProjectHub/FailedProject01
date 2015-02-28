@@ -67,14 +67,14 @@ class AvatarView(View):
             return HttpResponse(json.dumps({'status': 'error', 'reason': 'file not found'}))
 
     def patch(self, request):
-        assert 'x1' in request.META
-        assert isinstance(request.META['x1'], int) is True
-        assert 'y1' in request.META
-        assert isinstance(request.META['y1'], int) is True
-        assert 'x2' in request.META
-        assert isinstance(request.META['x2'], int) is True
-        assert 'y2' in request.META
-        assert isinstance(request.META['y2'], int) is True
+        assert 'x1' in request.GET
+        x1 = int(request.GET['x1'])
+        assert 'y1' in request.GET
+        y1 = int(request.GET['y1'])
+        assert 'x2' in request.GET
+        x2 = int(request.GET['x2'])
+        assert 'y2' in request.GET
+        y2 = int(request.GET['y2'])
         img = io.BytesIO(request.body)
         assert img.seek(0, 2) < AVATAR_SIZE_LIMIT
         img.seek(0, 0)
