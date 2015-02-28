@@ -44,7 +44,7 @@ var Uploader;
 		/* init vars */
 		var obj=this;
 		
-		config.filename=getFileName(document.getElementById("file").value); 
+		config.filename=file.name; 
 		var token;
 
 		var seqnow=0;
