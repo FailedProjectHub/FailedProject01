@@ -1,5 +1,7 @@
 {% extends 'ASA/base.html' %}
 {% block head %}
+    <script src="{{ STATIC_URL }}upload/sha256.js"></script>
+    <script src="{{ STATIC_URL }}upload/upload.js"></script>
     <script src="{{ STATIC_URL }}homepage/js/homepage.js"></script>
     <script src="{{ STATIC_URL }}homepage/js/uploadAvatar.js"></script>
     <script src="{{ STATIC_URL }}bower_components/jcrop/js/jquery.Jcrop.min.js"></script>
@@ -47,6 +49,21 @@
 
               <!-- 我要上传 tab4  -->
               <div ng-style="to_upload" ng-show="tab_container.tab4.active">
+                <div>
+                  <div class="col-md-4">
+                    <input type="file" id="upload-file" ng-style="tab_container.tab4.upload.file.style">
+                  </div>
+                  <div class="col-md-8">
+                    <div class="progress">
+                      <div class="progress-bar" id="video-upload-bar" style="width:10%"></div>
+                    </div>
+                    <div class="progress">
+                      <div class="progress-bar" id="video-sha256-bar" style="width:10%"></div>
+                    </div>
+                  </div>
+
+                  <button ng-click="tab_container.tab4.upload.submit()">上传啦~~~</button>
+                </div>
               </div>
               <!--           -->
 

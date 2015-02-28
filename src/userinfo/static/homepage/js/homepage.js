@@ -42,6 +42,34 @@ homepage.controller('homepage', function homepage($scope, $http){
     $scope.tab_container.active = new_tab_id;
   }
 
+  /* upload files */
+  $scope.tab_container.tab4.upload = {};
+  $scope.tab_container.tab4.upload.submit = function(){
+    var files = document.getElementById("upload-file").files;
+    if (files.length){
+      var upload = new Uploader(files[0], function(obj){
+        console.log(obj);
+        document.getElementById("video-sha256-bar").style.width = obj.checksumprog+"%";
+        document.getElementById("video-upload-bar").style.width = obj.uploadprog+"%";
+      });
+
+      var lastprog=0, inter=5000;
+      setInterval(function(){
+        if (upload.checksumprog != 100){
+          console.log(parseFloat((upload.checksumprog - lastprog)/100*files[0].size/inter).toFixed(3)+"KB/s");
+          lastprog = upload.checksumprog;
+        }
+        else if (lastprog > upload.checksumprog){
+          lastprog = 0;
+        }
+        else {
+          console.log(parseFloat((upload.uploadprog - lastprog)/100 * files[0].size/inter).toFixed(3)+"KB/s");
+          lastprog = upload.uploadprog;
+        }
+      }, inter);
+    }
+  };
+
 
   /* css */
   $scope.avatar.style = {
@@ -65,9 +93,6 @@ homepage.controller('homepage', function homepage($scope, $http){
   }
   $scope.userinfo.style = {
   }
-  $scope.top_pic.style = {
-    'width': '100%'
-  }
   $scope.tab_container.style = {
     'margin-top': 32
   }
@@ -75,6 +100,11 @@ homepage.controller('homepage', function homepage($scope, $http){
     'height': 700,
     'margin-left': -10,
     'margin-right': -13
+  }
+  $scope.tab_container.tab4.upload.file = {
+    'style': {
+      'margin-right':20
+    }
   }
 
 });
