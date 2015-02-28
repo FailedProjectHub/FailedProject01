@@ -10,9 +10,8 @@ $(function(){
   +'<input type="hidden" id="y" name="y" />'
   +'<input type="hidden" id="w" name="w" />'
   +'<input type="hidden" id="h" name="h" />'
-  +'<input type="button" value="confirm uploading avatar" onclick="submitAvatar()"/>'
-  +'<div id="ccc"></div>';
-});
+  +'<input type="button" value="confirm uploading avatar" onclick="submitAvatar()"/>';
+  });
 
 function submitAvatar()
 {
@@ -32,18 +31,13 @@ function submitAvatar()
     reader.onload = function(e){
         data = e.target.result;
         if (checkCoords() == false) return false;
-
+        
         var xhr = new XMLHttpRequest();
-        xhr.open("patch", "/homepage/avatar/", true);
         var x1 =parseInt(jQuery('#x').val());
         var y1 =parseInt(jQuery('#y').val());
         var x2 =(parseInt(jQuery('#x').val())+parseInt(jQuery('#w').val()));
         var y2 =(parseInt(jQuery('#y').val())+parseInt(jQuery('#h').val()));
-        xhr.setRequestHeader("x1",x1);
-        xhr.setRequestHeader("y1",y1);
-        xhr.setRequestHeader("x2",x2);
-        xhr.setRequestHeader("y2",y2);
-        
+        xhr.open("patch", "/homepage/avatar/?"+"x1="+x1.toString()+"&y1="+y1.toString()+"&x2="+x2.toString()+"&y2="+y2.toString(), true);
         xhr.send(data);
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4) {
