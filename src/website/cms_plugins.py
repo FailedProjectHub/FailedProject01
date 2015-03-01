@@ -26,7 +26,7 @@ class av(baseplugin):
             video_file=video_file
         )
         touch.touch.process(environ, [path])
-        lna.lna.process(
+        return lna.lna.process(
             environ,
             ['website.videofileattrib', str(attrib.id), path]
         )

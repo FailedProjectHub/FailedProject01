@@ -200,3 +200,9 @@ class DanmakuView(View):
             size=int(data['size'])
         )
         return HttpResponse(json.dumps({'status': 'OK'}))
+
+
+def load_index(request):
+    path = json.loads(request.data)
+    assert isinstance(path, list) is True
+    path = str(['public'] + path)

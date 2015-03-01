@@ -54,7 +54,7 @@ urlpatterns_danmaku = patterns(
 urlpatterns_index = patterns(
     '',
     url(
-        r'',
+        r'^$',
         indexpage
     )
 )

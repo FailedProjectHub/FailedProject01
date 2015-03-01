@@ -9,12 +9,12 @@ import importlib
 from .plugins.exceptions import *
 from .plugins.base import *
 import re
-plugins = importlib.import_module(__package__+'.plugins').Register
-# import copy
 try:
     import simplejson as json
 except:
     import json
+
+plugins = importlib.import_module(__package__ + '.plugins').Register
 
 
 class NoSuchCommand(Exception):
@@ -39,7 +39,7 @@ def set_environ(user, path):
     environ['username'] = user.username
     if not path.startswith('/'):
         raise Exception('Wrong path: path does not starts with "/"')
-    if access(environ, path, AUTH_FOR_READ+AUTH_FOR_EXECUTE) is False:
+    if access(environ, path, AUTH_FOR_READ + AUTH_FOR_EXECUTE) is False:
         raise PermissionDenied(path)
     environ['path'] = path
     return environ
