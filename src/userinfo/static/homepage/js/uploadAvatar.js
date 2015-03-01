@@ -10,8 +10,8 @@ $(function(){
   +'<input type="hidden" id="y" name="y" />'
   +'<input type="hidden" id="w" name="w" />'
   +'<input type="hidden" id="h" name="h" />'
-  +'<input type="button" value="confirm uploading avatar" onclick="submitAvatar()"/>'
-  +'<div id="ccc"></div>';
+  +'<input type="button" value="confirm uploading avatar" onclick="submitAvatar()"/>';
+  //+'<div id="ccc"></div>';
   });
 
 function submitAvatar()
@@ -45,8 +45,8 @@ function submitAvatar()
                 if (xhr.status == 200)
                     alert("Upload successfully");
                 else
-                    document.getElementById("ccc").innerHTML = xhr.response;
-                    alert("Faile uploading");
+                    //document.getElementById("ccc").innerHTML = xhr.response;
+                    alert(xhr.response.reason);
             }
         }
     }
