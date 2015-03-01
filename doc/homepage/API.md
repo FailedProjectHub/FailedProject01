@@ -85,6 +85,14 @@ x1,y1 indicate the left-top point of cropped area
 x2,y2 indicate the right-bottom point of cropped area 
 request.body = 二进制图片文件
 
+response  
+正常返回 {"status": "OK"}
+非正常返回  
+ 1. status不等于200的    
+ 2. {"status": "error", "reason": "{{reason}}"}  
+    可能的有原因有:
+    1. 图片大小超过限定大小(512kb)
+
 =====================================
 关于response
 
