@@ -18,8 +18,14 @@ urlpatterns_register = patterns(
     url(r'register/', register.as_view())
 )
 
+urlpatterns_homepage = patterns(
+    r'',
+    url(r'homepage/', homepage),
+)
+
 urlpatterns = patterns(
     r'',
     url(r'', include(urlpatterns_perinfo)),
-    url(r'', include(urlpatterns_register))
+    url(r'', include(urlpatterns_register)),
+    url(r'', include(urlpatterns_homepage)),
 )

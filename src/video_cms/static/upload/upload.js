@@ -7,14 +7,6 @@ var Uploader;
 			"url"     :     window.location.origin+"/",
 			"filename":		"test_file",
 		};
-		/* get filename from full path */
-		function getFileName(path) {
-			var pos1 = path.lastIndexOf('/');
-			var pos2 = path.lastIndexOf('\\');
-			var pos = Math.max(pos1, pos2);
-			if (pos==0&&path[0]!='/'&&path[0]!='\\') return path;
-			else return path.substring(pos+1);
-		}
 
 		/* make ajax */
 		function ajax(method, url, data, headers) {
@@ -44,7 +36,7 @@ var Uploader;
 		/* init vars */
 		var obj=this;
 		
-		config.filename=getFileName(document.getElementById("file").value); 
+		config.filename=file.name; 
 		var token;
 
 		var seqnow=0;

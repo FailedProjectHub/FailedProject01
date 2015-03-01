@@ -1,4 +1,6 @@
 import os
+import io
+from PIL import Image
 
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -6,7 +8,7 @@ from django.views.generic import View
 from django.utils.decorators import method_decorator
 
 from .models import *
-from .settings import AVATAR_ROOT
+from .settings import AVATAR_ROOT, AVATAR_SIZE_LIMIT
 
 try:
     import simplejson as json
@@ -18,20 +20,10 @@ from website.models import *
 
 @login_required
 def genericperinfo(request):
-    try:
-        avatar_url = AvatarPerInfo.objects.get(user=request.user).avatar
-    except AvatarPerInfo.DoesNotExist:
-        return HttpResponse(json.dumps({
-            'username': request.user.username,
-            'email': request.user.email,
-            'avatar': 'none'
-        }))
-    else:
-        return HttpResponse(json.dumps({
-            'username': request.user.username,
-            'email': request.user.email,
-            'avatar': (avatar_url is None) and "" or avatar_url
-        }))
+    return HttpResponse(json.dumps({
+        'username': request.user.username,
+        'email': request.user.email,
+    }))
 
 
 @login_required
@@ -73,6 +65,23 @@ class AvatarView(View):
         except Exception as e:
             raise e
             return HttpResponse(json.dumps({'status': 'error', 'reason': 'file not found'}))
+
+    def patch(self, request):
+        assert 'x1' in request.GET
+        x1 = int(request.GET['x1'])
+        assert 'y1' in request.GET
+        y1 = int(request.GET['y1'])
+        assert 'x2' in request.GET
+        x2 = int(request.GET['x2'])
+        assert 'y2' in request.GET
+        y2 = int(request.GET['y2'])
+        img = io.BytesIO(request.body)
+        assert img.seek(0, 2) < AVATAR_SIZE_LIMIT
+        img.seek(0, 0)
+        img = Image.open(img)
+        img = img.crop((x1, y1, x2, y2))
+        img.save(AVATAR_ROOT + request.user.username, img.format)
+        return HttpResponse({"status": "OK"})
 
     def post(self, request):
         with open(os.path.join(AVATAR_ROOT, request.user.username), "wb") as f:

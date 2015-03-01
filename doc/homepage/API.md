@@ -52,12 +52,12 @@ GET {{hostname}}/homepage/advancedperinfo/
 	chunksize: int
 }
 
-POST {{hostname}}/homepage/advacedperinfo/  
+Patch {{hostname}}/homepage/advacedperinfo/  
 格式同GET
 
 
 修改密码   
-POST  {{hostname}}/homepage/passwd/  
+Patch  {{hostname}}/homepage/passwd/  
 {
 	oldpasswd: str,
 	newpasswd: str
@@ -79,7 +79,11 @@ response [ group0, group1, group2 ...]
 
 获取头像
 GET {{hostname}}/homepage/avatar/
-得到头像
+修改头像
+Patch {{hostname}}/homepage/avatar/?x1= &y1= &x2= &y2= 
+x1,y1 indicate the left-top point of cropped area
+x2,y2 indicate the right-bottom point of cropped area 
+request.body = 二进制图片文件
 
 =====================================
 关于response

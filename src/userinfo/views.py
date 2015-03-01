@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.generic import View
 from django.contrib.auth.models import User, UserManager
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 
 from video_cms.settings import MIN_CHUNK_SIZE
 
@@ -47,3 +49,8 @@ class register(View):
             return render(request, "logged_in_register.html")
         else:
             return super(register, self).dispatch(request, *args, **kwargs)
+
+
+@login_required
+def homepage(request):
+    return render(request, 'homepage.html')

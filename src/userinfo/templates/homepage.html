@@ -1,0 +1,84 @@
+{% extends 'ASA/base.html' %}
+{% block head %}
+    <script src="{{ STATIC_URL }}upload/sha256.js"></script>
+    <script src="{{ STATIC_URL }}upload/upload.js"></script>
+    <script src="{{ STATIC_URL }}homepage/js/homepage.js"></script>
+    <script src="{{ STATIC_URL }}homepage/js/uploadAvatar.js"></script>
+    <script src="{{ STATIC_URL }}bower_components/jcrop/js/jquery.Jcrop.min.js"></script>
+    <link href="{{ STATIC_URL }}bower_components/jcrop/css/jquery.Jcrop.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+  <div ng-app="homepage" ng-controller="homepage" ng-style="body.style">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-1" ng-style='leftMargin.style'></div>
+          <div class="col-md-2">
+              <div class="col-md-3">
+                <img src="/homepage/avatar/" ng-style="avatar.style">
+              </div>
+          </div>
+          <div class="col-md-9">
+            <div class="navbar navbar-default" role="navigation" ng-style="tab_container.style">
+              <ul class="nav navbar-nav">
+
+                <li ng-click="tab_container.change_tab(0)" ng-class="tab_container.tab0.class"><a href="">我的关注</a></li>
+                <li ng-click="tab_container.change_tab(1)" ng-class="tab_container.tab1.class"><a href="">我的投稿组</a></li>
+                <li ng-click="tab_container.change_tab(2)" ng-class="tab_container.tab2.class"><a href="">我的上传</a></li>
+                <li ng-click="tab_container.change_tab(3)" ng-class="tab_container.tab3.class"><a href="">我的收藏</a></li>
+                <li ng-click="tab_container.change_tab(4)" ng-class="tab_container.tab4.class"><a href="">我要上传</a></li>
+                <li ng-click="tab_container.change_tab(5)" ng-class="tab_container.tab5.class"><a href="">个人设置</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- homepage main area -->
+        <div class="col-md-1" ng-style='leftMargin.style'></div>
+        <div class="col-md-2"></div>
+
+        <div class="col-md-9">
+          <nav class="navbar navbar-default" role="navigation"  ng-style="main_area.style">
+
+              <!-- 我的上传 tab2  -->
+              <div ng-style="myupload" ng-show="tab_container.tab2.active">
+                <div>aksdjfhaksjdhf</div>
+              </div>
+              <!--           -->
+
+              <!-- 我要上传 tab4  -->
+              <div ng-style="to_upload" ng-show="tab_container.tab4.active">
+                <div>
+                  <div class="col-md-4">
+                    <input type="file" id="upload-file" ng-style="tab_container.tab4.upload.file.style">
+                  </div>
+                  <div class="col-md-8">
+                    <div class="progress">
+                      <div class="progress-bar" id="video-upload-bar" style="width:10%"></div>
+                    </div>
+                    <div class="progress">
+                      <div class="progress-bar" id="video-sha256-bar" style="width:10%"></div>
+                    </div>
+                  </div>
+
+                  <button ng-click="tab_container.tab4.upload.submit()">上传啦~~~</button>
+                </div>
+              </div>
+              <!--           -->
+
+              <!-- 个人资料设置 tab5  -->
+              <div ng-style="setting" ng-show="tab_container.tab5.active">
+                <div id="upload-avatar">
+                </div>
+              </div>
+              <!--                -->
+
+            
+          </nav>
+        </div>
+
+      </div>
+    </div>
+  </div>
+{% endblock %}
