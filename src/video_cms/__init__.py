@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, url, include
-from .upload_views import InitView, ChunkView, FinalizeView, \
-    DestroyView, PageView
+from .upload_views import (InitView,
+                           ChunkView, FinalizeView,
+                           DestroyView, PageView)
 from .player_views import MediaView, DownloadView, DanmakuView
 from django.views.decorators.csrf import csrf_exempt
 

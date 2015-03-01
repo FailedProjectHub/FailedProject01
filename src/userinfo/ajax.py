@@ -86,7 +86,7 @@ class AvatarView(View):
         img.seek(0, 0)
         img = Image.open(img)
         img = img.crop((x1, y1, x2, y2))
-        img.save(os.path.join(AVATAR_ROOT + request.user.username + '.png'))
+        img.save(os.path.join(AVATAR_ROOT, request.user.username + '.png'))
         return HttpResponse({"status": "OK"})
 
     def post(self, request):
