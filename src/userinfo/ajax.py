@@ -60,8 +60,8 @@ class AvatarView(View):
 
     def get(self, request):
         try:
-            with open(os.path.join(AVATAR_ROOT, request.user.username), "rb") as f:
-                return HttpResponse(f.read(), content_type='image/jpeg')
+            with open(os.path.join(AVATAR_ROOT, request.user.username + '.png'), "rb") as f:
+                return HttpResponse(f.read(), content_type='image/png')
         except Exception as e:
             raise e
             return HttpResponse(json.dumps({'status': 'error', 'reason': 'file not found'}))
@@ -76,11 +76,17 @@ class AvatarView(View):
         assert 'y2' in request.GET
         y2 = int(request.GET['y2'])
         img = io.BytesIO(request.body)
-        assert img.seek(0, 2) < AVATAR_SIZE_LIMIT
+        if img.seek(0, 2) > AVATAR_SIZE_LIMIT:
+            return HttpResponse(
+                {
+                    "status": "error",
+                    "reason": "Image size exceeds %d b" % (AVATAR_SIZE_LIMIT,)
+                }
+            )
         img.seek(0, 0)
         img = Image.open(img)
         img = img.crop((x1, y1, x2, y2))
-        img.save(AVATAR_ROOT + request.user.username, img.format)
+        img.save(os.path.join(AVATAR_ROOT + request.user.username + '.png'))
         return HttpResponse({"status": "OK"})
 
     def post(self, request):
