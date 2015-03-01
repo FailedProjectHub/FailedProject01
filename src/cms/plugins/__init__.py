@@ -9,5 +9,13 @@ __all__ = [
     'lna'
 ]
 
+
 from . import *
+
 Register = base.basepluginMetaclass.Register
+
+
+def print_docs():
+    for k, v in Register.items():
+        print(k)
+        v.parser.print_help()

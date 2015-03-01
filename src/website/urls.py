@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, url, include
 from .views import *
+from .ajax import *
 
 
 urlpatterns_upload = patterns(
@@ -50,12 +51,18 @@ urlpatterns_danmaku = patterns(
     ),
 )
 
+urlpatterns_index = patterns(
+    '',
+    url(
+        r'',
+        indexpage
+    )
+)
+
 
 urlpatterns = patterns(
     r'',
     url(r'', include(urlpatterns_upload)),
-<<<<<<< HEAD
-=======
-    url(r'', include(urlpatterns_danmaku))
->>>>>>> master
+    url(r'', include(urlpatterns_danmaku)),
+    url(r'', include(urlpatterns_index)),
 )
