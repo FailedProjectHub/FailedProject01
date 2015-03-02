@@ -75,11 +75,13 @@ option:
 
 -r 当制定了--sort后才会生效，表示反向返回结果
 
---op=a,  --ed=b : 显示从序号从op到ed的文件
+--op=a 显示从a开始的文件，默认a=0
 
 -l 每行指列出一个文件
 
 --display=attrib, 展示的属性，同--sort一样是一个字符串(当-l存在是才有)
+
+--ignore=str, 相当于File.objects.exclude(str)
 
 打印path指向的目录下的文件（夹），同unix-like系统的操作
 
