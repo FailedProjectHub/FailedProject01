@@ -2,6 +2,7 @@ from .base import *
 from .exceptions import *
 from ..models import *
 from optparse import OptionParser
+import os
 
 
 class touch(baseplugin):
@@ -14,7 +15,7 @@ class touch(baseplugin):
     def process(environ, args):
         if len(args) == 0:
             raise Missarguments()
-        path_list = path_str_to_list(args[0])
+        path_list = path_str_to_list(os.path.join(environ['path'], args[0]))
         folder_path_list = path_list[:-1]
         if access(environ, folder_path_list, 0o2) is False:
             raise PermissionDenied(path_list_to_str(folder_path_list))

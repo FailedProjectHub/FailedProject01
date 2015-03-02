@@ -203,6 +203,6 @@ class DanmakuView(View):
 
 
 def load_index(request):
-    path = json.loads(request.data)
-    assert isinstance(path, list) is True
-    path = str(['public'] + path)
+    args = json.loads(request.data)
+    args = ['ils'] + args
+    return run_command(request, args)

@@ -8,6 +8,7 @@ class lna(baseplugin):
 
     '''
         lna app_label.model id filename
+        app_label.model means a file attrib
     '''
 
     @staticmethod

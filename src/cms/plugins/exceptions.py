@@ -50,6 +50,15 @@ class WrongArgument(Exception):
         return "WrongArgument at %d" % (self.index,)
 
 
+class WrongOption(Exception):
+
+    def __init__(self, option):
+        self.index = option
+
+    def __str__(self):
+        return "WrongOption %s" % (self.option,)
+
+
 class UserNotFound(Exception):
 
     def __init__(self, username):

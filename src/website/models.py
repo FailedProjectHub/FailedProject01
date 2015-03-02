@@ -12,8 +12,8 @@ class VideoFileAttrib(BaseFileAttrib):
         related_name="authattrib",
         db_index=True
     )
-    # hits = models.IntegerField()
-    # collected = models.IntegerField()
+    hits = models.IntegerField(default=0)
+    collected = models.IntegerField(default=0)
 
 
 class SessionUploaderRecord(models.Model):

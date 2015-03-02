@@ -29,13 +29,16 @@ class ls(baseplugin):
                       help="specify the serial number for the \
                       first listed file", type="int")
 
-    parser.add_option("--ed", dest="ed",
+    parser.add_option("--ct", dest="ct",
                       help="specify the serial number for the \
                       last listed file", type="int")
 
     parser.add_option("--display", dest="display",
                       action="append",
                       help="display attrib of file")
+
+    parser.add_option("--ignore", dest="ignore",
+                      action="append")
 
     @staticmethod
     def process(environ, args):
@@ -58,7 +61,7 @@ class ls(baseplugin):
 
         # recursive or not
         if options.recursive is True:
-            query_set = File.objects.filter(path__startswith=str(path_list)[:-1] + ',')
+            query_set = File.objects.filter(path__startswith=str(path_list)[:-1])
         else:
             query_set = File.objects.filter(parent_folder__path=path_list)
 
@@ -70,11 +73,18 @@ class ls(baseplugin):
         if options.reverse is True:
             query_set = query_set.reverse()
 
-        # op & ed
-        if options.op is not None and options.ed is not None:
-            result = query_set[options.op: options.ed + 1]
-        else:
-            result = list(query_set)
+        # filter
+        if options.ignore is not None:
+            query_set = query_set.filter(**{k: None for k in options.ignore})
+
+        # op & ct
+        if options.op is None:
+            options.op = 0
+        if options.ct is None:
+            options.ct = 10
+        elif options.ct > 20:
+            options.ct = 20
+        result = query_set[options.op: options.op + options.ct]
 
         # -l line
         if options.line is not None:
