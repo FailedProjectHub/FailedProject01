@@ -27,7 +27,7 @@ class baseplugin(object, metaclass=basepluginMetaclass):
 
 
 def path_list_to_str(list_path):
-    return '/'+'/'.join(list_path)
+    return '/' + '/'.join(list_path)
 
 
 def path_str_to_list(str_path):

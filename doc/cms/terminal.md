@@ -1,6 +1,6 @@
 API
 
-	GET: {{hostname}}/cms/<path>/<command> (不推荐)
+	GET: {{hostname}}/cms/<path>/<command> (将在released 版本中删除)
 	POST: (推荐)
 		content为一个json:
 		{
@@ -12,3 +12,4 @@ API
 	
 	现在已有的一些plugin:
 		ls, rm, chown, chmod, mkdir, cd
+

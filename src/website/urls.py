@@ -1,5 +1,6 @@
 from django.conf.urls import patterns, url, include
 from .views import *
+from .ajax import *
 
 
 urlpatterns_upload = patterns(
@@ -50,9 +51,27 @@ urlpatterns_danmaku = patterns(
     ),
 )
 
+urlpatterns_index = patterns(
+    '',
+    url(
+        r'^$',
+        indexpage
+    )
+)
+
+urlpatterns_video_cover = patterns(
+    '',
+    url(
+        r'^video_cover/(?P<rec>[0-9]+)/$',
+        VideoCoverView.as_view()
+    )
+)
+
 
 urlpatterns = patterns(
     r'',
     url(r'', include(urlpatterns_upload)),
-    url(r'', include(urlpatterns_danmaku))
+    url(r'', include(urlpatterns_danmaku)),
+    url(r'', include(urlpatterns_index)),
+    url(r'', include(urlpatterns_video_cover)),
 )

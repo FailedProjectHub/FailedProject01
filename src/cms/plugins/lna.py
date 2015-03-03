@@ -8,6 +8,7 @@ class lna(baseplugin):
 
     '''
         lna app_label.model id filename
+        app_label.model means a file attrib
     '''
 
     @staticmethod
@@ -24,5 +25,6 @@ class lna(baseplugin):
             file_ = File.objects.get(path=path_str_to_list(args[2]))
         else:
             raise PermissionDenied(args[2])
+        attrib.base_file = file_
         attrib.save()
         return None
