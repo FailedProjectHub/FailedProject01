@@ -15,9 +15,7 @@ homepage.controller('homepage', function homepage($scope, $http){
   $scope.avatar = {};
   $scope.leftMargin = {};
   $scope.email = {};
-  $scope.userinfo = {};
   $scope.body = {};
-  $scope.top_pic = {};
   $scope.tab_container = {};
   $scope.main_area = {};
   $http.get('/homepage/genericperinfo/').success(
@@ -27,11 +25,27 @@ homepage.controller('homepage', function homepage($scope, $http){
     }
   );
 
-  /* tab responsive */
+  /* ajax */
+  $scope.ajax = {};
+  $scope.ajax.myupload = {};
+  //$scope.ajax.myupload.content = [1, 2, 3];
+  $scope.ajax.myupload.fresh = function(op, ct){
+    $http.get(
+      '/homepage/myupload/?op=' + parseInt(op) + '&ct=' + parseInt(ct)
+    ).success(
+      function(response){
+        $scope.ajax.myupload.content = response;
+        console.log(response);
+      }
+    )
+  };
+  $scope.ajax.myupload.fresh(0, 10);
+  console.log($scope.ajax.myupload.content);
 
+  /* tab responsive */
   $scope.tab_container.active = 0;
   $scope.tab_container.tab_total = 5;
-  $scope.tab_container.tab0 = {'class':"active", 'active':1};
+  $scope.tab_container.tab0 = {};
   for (var i = 1; i <= 5; ++i)
     $scope.tab_container['tab'+parseInt(i)] = {'class':"", 'active':0};
 
@@ -41,6 +55,9 @@ homepage.controller('homepage', function homepage($scope, $http){
     $scope.tab_container["tab"+parseInt(new_tab_id)].class = "active";
     $scope.tab_container["tab"+parseInt(new_tab_id)].active = 1;
     $scope.tab_container.active = new_tab_id;
+    if (new_tab_id == 2){
+      $scope.ajax.myupload.fresh(0, 10);
+    }
   }
 
   /* upload files */
@@ -92,8 +109,6 @@ homepage.controller('homepage', function homepage($scope, $http){
     'font-size': '20px',
     'height': 40,
   }
-  $scope.userinfo.style = {
-  }
   $scope.tab_container.style = {
     'margin-top': 32
   }
@@ -102,10 +117,46 @@ homepage.controller('homepage', function homepage($scope, $http){
     'margin-left': -10,
     'margin-right': -13
   }
-  $scope.tab_container.tab4.upload.file = {
+  $scope.tab_container.tab2.video_cover = {
     'style': {
-      'margin-right':20
+      'height': 150,
+      'width': 150,
+      'margin-top': 20,
+      'margin-left': 20,
+      'margin-right': 20
     }
   }
-
+  $scope.tab_container.tab2.filename = {
+    'style': {
+      'margin-left': 25,
+      'margin-right': 20,
+      'height': 50
+    }
+  }
+  $scope.tab_container.tab4.upload.file = {
+    'style': {
+      'margin': 30,
+      'width': 200
+    }
+  }
+  $scope.tab_container.tab4.upload.button = {
+    'style': {
+      'margin-top': 20,
+      'margin-bottom': 20,
+      'height': 105,
+      'width': 260
+    }
+  };
+  $scope.tab_container.tab4.upload.progress = {
+    'style': {
+      'margin-top': 30,
+      'margin-left': 5,
+      'margin-right': 5
+    }
+  }
+  $scope.tab_container.tab4.upload.progress_cover = {
+    'style': {
+      'margin-top': 20
+    }
+  }
 });

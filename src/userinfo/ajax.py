@@ -37,12 +37,17 @@ def advacedperinfo(request):
 @login_required
 def myupload(request):
     assert 'op' in request.GET
-    assert 'ed' in request.GET
+    assert 'ct' in request.GET
     op = int(request.GET['op'])
-    ed = int(request.GET['ed'])
+    ct = int(request.GET['ct'])
+    if ct > 20:
+        ct = 20
     return HttpResponse(json.dumps(list(map(
-        lambda video: [video.video_file.rec, 'none'],
-        VideoFileAttrib.objects.filter(uploader=request.user).order_by('video_file__created_at')[op:ed + 1]
+        lambda video: {
+            'rec': video.video_file.rec,
+            'filename': video.video_file.filename
+        },
+        VideoFileAttrib.objects.filter(uploader=request.user).order_by('video_file__rec')[op: ct + 1]
     ))))
 
 

@@ -64,9 +64,9 @@ Patch  {{hostname}}/homepage/passwd/
 }
 
 投稿信息  
-GET {{hostname}}/homepage/myupload/?op=0&ed=9  
-op,ed分别是显示的自己上传的视频的序号（按照上传时间降序返回）  
-response [ [rec号(int), 缩略图的url(str)], ... ]  
+GET {{hostname}}/homepage/myupload/?op=int&ct=int
+ct <= 20, ct > 20时自动变成20, 按照rec号排序  
+response [ [rec号(int), filename0], [rec号(int), filename1] ... ]  
 如果不够的话就返回到最后一个为止
 
 投稿(视频)封面

@@ -6,6 +6,7 @@
     <script src="{{ STATIC_URL }}homepage/js/uploadAvatar.js"></script>
     <script src="{{ STATIC_URL }}bower_components/jcrop/js/jquery.Jcrop.min.js"></script>
     <link href="{{ STATIC_URL }}bower_components/jcrop/css/jquery.Jcrop.min.css" rel="stylesheet">
+    <script src="{{ STATIC_URL }}homepage/js/uploadCover.js"></script>
 {% endblock %}
 
 {% block content %}
@@ -43,26 +44,40 @@
 
               <!-- 我的上传 tab2  -->
               <div ng-style="myupload" ng-show="tab_container.tab2.active">
-                <div>aksdjfhaksjdhf</div>
+                <div ng-repeat="video in ajax.myupload.content track by $index" class="col-md-3">
+                  <a  href="/rec/{$ video.rec $}">
+                    <img ng-src="/video_cover/{$ video.rec $}" ng-style="tab_container.tab2.video_cover.style">
+                  </a>
+                  <div ng-style="tab_container.tab2.filename.style">
+                    <a href="/rec/{$ video.rec $}" >{$ video.filename $}</a>
+                  </div>
+                </div>
               </div>
               <!--           -->
 
               <!-- 我要上传 tab4  -->
               <div ng-style="to_upload" ng-show="tab_container.tab4.active">
                 <div>
+
                   <div class="col-md-4">
-                    <input type="file" id="upload-file" ng-style="tab_container.tab4.upload.file.style">
+                    <input type="file" id="upload-file" ng-style="tab_container.tab4.upload.file.style" value="">
                   </div>
-                  <div class="col-md-8">
-                    <div class="progress">
-                      <div class="progress-bar" id="video-upload-bar" style="width:10%"></div>
-                    </div>
-                    <div class="progress">
-                      <div class="progress-bar" id="video-sha256-bar" style="width:10%"></div>
-                    </div>
+                  <div class="col-md-4">
+                    <button class="btn btn-success" ng-click="tab_container.tab4.upload.submit()" ng-style="tab_container.tab4.upload.button.style">
+                      上传啦~~~
+                    </button>
+                  </div>
+                  <div class="col-md-4" ng-style="tab_container.tab4.upload.progress_cover.style">
+                    <nav class="navbar navbar-inverse navbar-embossed">
+                      <div class="progress"  ng-style="tab_container.tab4.upload.progress.style">
+                        <div class="progress-bar" id="video-upload-bar"></div>
+                      </div>
+                      <div class="progress" ng-style="tab_container.tab4.upload.progress.style">
+                        <div class="progress-bar" id="video-sha256-bar" ></div>
+                      </div>
+                    </nav>
                   </div>
 
-                  <button ng-click="tab_container.tab4.upload.submit()">上传啦~~~</button>
                 </div>
               </div>
               <!--           -->
