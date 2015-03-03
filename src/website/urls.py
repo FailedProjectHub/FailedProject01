@@ -59,10 +59,19 @@ urlpatterns_index = patterns(
     )
 )
 
+urlpatterns_video_cover = patterns(
+    '',
+    url(
+        r'^video_cover/(?P<rec>[0-9]+)/$',
+        VideoCoverView.as_view()
+    )
+)
+
 
 urlpatterns = patterns(
     r'',
     url(r'', include(urlpatterns_upload)),
     url(r'', include(urlpatterns_danmaku)),
     url(r'', include(urlpatterns_index)),
+    url(r'', include(urlpatterns_video_cover)),
 )

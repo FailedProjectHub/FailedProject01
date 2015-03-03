@@ -81,7 +81,9 @@ option:
 
 --display=attrib, 展示的属性，同--sort一样是一个字符串(当-l存在是才有)
 
---ignore=str, 相当于File.objects.exclude(str)
+--ignore=str, 相当于File.objects.filter(str=None)
+
+--include=str, 相当于File.objects.exclude(str=None)
 
 打印path指向的目录下的文件（夹），同unix-like系统的操作
 

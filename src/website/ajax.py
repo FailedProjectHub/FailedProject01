@@ -1,3 +1,4 @@
+import os
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.generic import View
@@ -7,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from cms.plugins.exceptions import *
 from .models import *
 from .cms_plugins import av
+from .settings import VIDEO_COVER_DIR
 try:
     import simplejson as json
 except Exception:
@@ -206,3 +208,36 @@ def load_index(request):
     args = json.loads(request.data)
     args = ['ils'] + args
     return run_command(request, args)
+
+
+class VideoCoverView(View):
+
+    def get(self, request, rec, *args, **kwargs):
+        try:
+            f = open(os.path.join(VIDEO_COVER_DIR, rec), "rb")
+        except Exception:
+            f = open(os.path.join(VIDEO_COVER_DIR, 'default'), "rb")
+        return HttpResponse(f.read(), content_type='image')
+
+    def post(self, request, rec, *args, **kwargs):
+        try:
+            video_ = VideoFileAttrib.objects.get(rec=int(rec))
+        except Exception:
+            return HttpResponse(json.dumps({
+                'status': 'error',
+                'reason': 'video file does not exists'
+            }))
+        if video_.uploader == request.user:
+            f = open(os.path.join(VIDEO_COVER_DIR, rec), "wb")
+            f.write(request.body)
+            return HttpResponse(json.dumps({
+                'status': 'OK'
+            }))
+        else:
+            return HttpResponse(json.dumps({
+                'status': 'error',
+                'reason': 'Permission Denied: you are not the uploader'
+            }))
+
+    def dispatch(self, *args, **kwargs):
+        return super(VideoCoverView, self).dispatch(*args, **kwargs)

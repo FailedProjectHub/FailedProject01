@@ -5,7 +5,8 @@ var homepage = angular.module('homepage', []).config(
   function($interpolateProvider){
     $interpolateProvider.startSymbol('{$');
     $interpolateProvider.endSymbol('$}');
-});
+  }
+);
 
 homepage.controller('homepage', function homepage($scope, $http){
   /* element */

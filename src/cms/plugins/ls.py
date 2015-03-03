@@ -40,6 +40,9 @@ class ls(baseplugin):
     parser.add_option("--ignore", dest="ignore",
                       action="append")
 
+    parser.add_option("--include", dest="include",
+                      action="append")
+
     @staticmethod
     def process(environ, args):
         options, args = ls.parser.parse_args(args)
@@ -76,6 +79,10 @@ class ls(baseplugin):
         # filter
         if options.ignore is not None:
             query_set = query_set.filter(**{k: None for k in options.ignore})
+
+        # exclude
+        if options.include is not None:
+            query_set = query_set.exclude(**{k: None for k in options.include})
 
         # op & ct
         if options.op is None:
