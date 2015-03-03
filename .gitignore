@@ -64,5 +64,6 @@ src/userinfo/avatar
 src/website/nodejs/log.html
 src/website/nodejs/node_modules
 src/website/media
+src/website/video_cover
 *.ropeproject
 *migrations

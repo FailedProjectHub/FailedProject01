@@ -69,6 +69,19 @@ op,ed分别是显示的自己上传的视频的序号（按照上传时间降序
 response [ [rec号(int), 缩略图的url(str)], ... ]  
 如果不够的话就返回到最后一个为止
 
+投稿(视频)封面
+获得图片  
+GET {{hostname}}/video_cover/{{rec}}/  
+{{rec}}为视频编号  
+上传/修改图片  
+POST {{hostname}}/video_cover/{{rec}}/  
+{{rec}}为视频编号  
+正常response  
+{
+	"status": "OK"
+}
+
+
 朋友信息  
 GET {{hostname}}/homepage/myfriends/?op=0&ed=9  
 response [ friendname0, friendname1, ...]
