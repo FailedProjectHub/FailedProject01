@@ -39,6 +39,9 @@ class File(models.Model):
                 "the file with the specified token does not exist"
             )
 
+    def __str__(self):
+        return self.filename
+
 
 class Session(models.Model):
     id = models.IntegerField(primary_key=True)

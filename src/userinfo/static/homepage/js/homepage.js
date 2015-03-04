@@ -45,7 +45,7 @@ homepage.controller('homepage', function homepage($scope, $http){
   /* tab responsive */
   $scope.tab_container.active = 2;
   $scope.tab_container.tab_total = 5;
-  for (var i = 1; i <= 5; ++i)
+  for (var i = 0; i <= 5; ++i)
     if (i != $scope.tab_container.active)
       $scope.tab_container['tab'+parseInt(i)] = {'class':"", 'active':0};
     else

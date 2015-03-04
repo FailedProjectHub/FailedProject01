@@ -14,7 +14,7 @@ class lna(baseplugin):
     @staticmethod
     def process(environ, args):
         if len(args) < 3:
-            raise Missarguments()
+            raise MissArguments()
         app_label, model = args[0].split('.')
         attrib_type = ContentType.objects.get(
             app_label=app_label,

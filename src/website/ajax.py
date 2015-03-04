@@ -109,10 +109,12 @@ class FinalizeView(video_cms.upload_views.FinalizeView):
             )
             data = json.loads(response.content)
             data['path'] = '/home/' + str(request.user.username) + '/' + filename
+            environ['path'] = data['path']
             if ('errstr' in data) is False:
                 av(environ, [data['path'], str(data['rec'])])
             return response
         except Exception as e:
+            raise e
             return HttpResponse(json.dumps({
                 'errstr': str(e)
             }))
