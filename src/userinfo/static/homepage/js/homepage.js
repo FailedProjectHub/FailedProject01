@@ -79,7 +79,9 @@ homepage.controller('homepage', function homepage($scope, $http){
           document.getElementById("video-upload-bar").style.width = obj.uploadprog+"%";
         },
         // callback
-        submitCover
+        function(response){
+          submitCover(response.rec);
+        }
       );
 
       var lastprog=0, inter=5000;

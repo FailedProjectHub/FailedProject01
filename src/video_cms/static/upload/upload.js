@@ -139,12 +139,17 @@ var Uploader;
 			onStatusChange(obj);
 			return ajax("GET", config.url+"upload/store/"+token);
 		})
-		.then(function(m){console.log(m);})
-    .then(callback)
+    .then(parseJSON)
+		.then(function(m){
+      console.log(m);
+      callback(m);
+    });
+    /*
 		.catch(function(e){
 			console.log(e);
 			onStatusChange(obj);
 		});
+    */
 		Object.defineProperty(this, "checksumprog", {
 			get: function() {return checksumprog;}
 		});

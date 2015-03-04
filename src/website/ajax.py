@@ -223,15 +223,15 @@ class VideoCoverView(View):
 
     def post(self, request, rec, *args, **kwargs):
         try:
-            video_ = VideoFileAttrib.objects.get(rec=int(rec))
+            video_ = VideoFileAttrib.objects.get(video_file__rec=int(rec))
         except Exception:
             return HttpResponse(json.dumps({
                 'status': 'error',
                 'reason': 'video file does not exists'
             }))
         if video_.uploader == request.user:
-            f = open(os.path.join(VIDEO_COVER_DIR, rec), "wb")
-            f.write(request.body)
+            with open(os.path.join(VIDEO_COVER_DIR, rec), "wb") as f:
+                f.write(request.body)
             return HttpResponse(json.dumps({
                 'status': 'OK'
             }))

@@ -32,10 +32,10 @@ function submitCover(rec)
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4) {
                 if (xhr.status == 200)
-                    alert("Upload successfully");
+                  console.log(xhr)
                 else
-                    //document.getElementById("ccc").innerHTML = xhr.response;
-                    alert("Failed uploading");
+                  //document.getElementById("ccc").innerHTML = xhr.response;
+                  consol.log(xhr);
             }
         }
     }
