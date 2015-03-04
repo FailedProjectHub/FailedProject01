@@ -45,7 +45,8 @@ def myupload(request):
     return HttpResponse(json.dumps(list(map(
         lambda video: {
             'rec': video.video_file.rec,
-            'filename': video.video_file.filename
+            'filename': video.video_file.filename,
+            'click_counts': video.hits
         },
         VideoFileAttrib.objects.filter(uploader=request.user).order_by('video_file__rec')[op: ct + 1]
     ))))

@@ -43,11 +43,13 @@ homepage.controller('homepage', function homepage($scope, $http){
   console.log($scope.ajax.myupload.content);
 
   /* tab responsive */
-  $scope.tab_container.active = 0;
+  $scope.tab_container.active = 2;
   $scope.tab_container.tab_total = 5;
-  $scope.tab_container.tab0 = {};
   for (var i = 1; i <= 5; ++i)
-    $scope.tab_container['tab'+parseInt(i)] = {'class':"", 'active':0};
+    if (i != $scope.tab_container.active)
+      $scope.tab_container['tab'+parseInt(i)] = {'class':"", 'active':0};
+    else
+      $scope.tab_container['tab'+parseInt(i)] = {'class':"", 'active':1};
 
   $scope.tab_container.change_tab = function(new_tab_id){
     $scope.tab_container["tab"+parseInt($scope.tab_container.active)].class = "";
@@ -65,11 +67,20 @@ homepage.controller('homepage', function homepage($scope, $http){
   $scope.tab_container.tab4.upload.submit = function(){
     var files = document.getElementById("upload-file").files;
     if (files.length){
-      var upload = new Uploader(files[0], function(obj){
-        console.log(obj);
-        document.getElementById("video-sha256-bar").style.width = obj.checksumprog+"%";
-        document.getElementById("video-upload-bar").style.width = obj.uploadprog+"%";
-      });
+      if (files[0].name.indexOf(' ') >= 0){
+        alert("文件名不能带空格");
+        return false;
+      }
+      var upload = new Uploader(files[0], 
+        // status
+        function(obj){
+          console.log(obj);
+          document.getElementById("video-sha256-bar").style.width = obj.checksumprog+"%";
+          document.getElementById("video-upload-bar").style.width = obj.uploadprog+"%";
+        },
+        // callback
+        submitCover
+      );
 
       var lastprog=0, inter=5000;
       setInterval(function(){
@@ -104,19 +115,19 @@ homepage.controller('homepage', function homepage($scope, $http){
   $scope.username.style = {
     'font-size': '35px',
     'height': 45,
-  }
+  };
   $scope.email.style = {
     'font-size': '20px',
     'height': 40,
-  }
+  };
   $scope.tab_container.style = {
     'margin-top': 32
-  }
+  };
   $scope.main_area.style = {
     'height': 700,
     'margin-left': -10,
     'margin-right': -13
-  }
+  };
   $scope.tab_container.tab2.video_cover = {
     'style': {
       'height': 150,
@@ -125,20 +136,70 @@ homepage.controller('homepage', function homepage($scope, $http){
       'margin-left': 20,
       'margin-right': 20
     }
-  }
+  };
   $scope.tab_container.tab2.filename = {
     'style': {
-      'margin-left': 25,
-      'margin-right': 20,
-      'height': 50
+      'margin-left': 5,
+      'margin-right': 0,
+      'padding-right': 0,
+      'height': 50,
+      'overflow': 'hidden',
+      'font-size': 10,
+      'width': 120
     }
-  }
+  };
+  $scope.tab_container.tab2.click = {
+    'style': {
+      'height': 15,
+      'width': 15,
+      'margin-left': 5,
+      'margin-top': 0,
+    }
+  };
+  $scope.tab_container.tab2.click_cover = {
+    'style': {
+      'margin-left': 0,
+      'padding-left': 0,
+      'padding-right': 0,
+      'padding-top': 5,
+      'width': 45,
+      'font-size': 7,
+    }
+  };
+  $scope.tab_container.tab2.click_counts = {
+    'style': {
+      'width': 20,
+    }
+  };
   $scope.tab_container.tab4.upload.file = {
     'style': {
       'margin': 30,
       'width': 200
     }
+  };
+  $scope.tab_container.tab4.upload.video_cover_div = {
+    'style': {
+      'height': 550,
+      'margin-top': 20
+    }
   }
+  $scope.tab_container.tab4.upload.video_cover_nav = {
+    'style': {
+      'margin-top': 20,
+      'height': 530
+    }
+  };
+  $scope.tab_container.tab4.upload.video_cover_file = {
+    'style': {
+      'margin-top': 20
+    }
+  };
+  $scope.tab_container.tab4.upload.video_cover_preview = {
+    'style': {
+      "height": 400,
+      "width": 400
+    }
+  };
   $scope.tab_container.tab4.upload.button = {
     'style': {
       'margin-top': 20,
@@ -153,10 +214,10 @@ homepage.controller('homepage', function homepage($scope, $http){
       'margin-left': 5,
       'margin-right': 5
     }
-  }
+  };
   $scope.tab_container.tab4.upload.progress_cover = {
     'style': {
       'margin-top': 20
     }
-  }
+  };
 });

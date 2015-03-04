@@ -44,12 +44,17 @@
 
               <!-- 我的上传 tab2  -->
               <div ng-style="myupload" ng-show="tab_container.tab2.active">
-                <div ng-repeat="video in ajax.myupload.content track by $index" class="col-md-3">
+                <div ng-repeat="video in ajax.myupload.content track by $index" class="col-md-3" title="{$ video.filename $}">
                   <a  href="/rec/{$ video.rec $}">
                     <img ng-src="/video_cover/{$ video.rec $}" ng-style="tab_container.tab2.video_cover.style">
                   </a>
-                  <div ng-style="tab_container.tab2.filename.style">
+                  <div ng-style="tab_container.tab2.filename.style" class="col-md-2">
                     <a href="/rec/{$ video.rec $}" >{$ video.filename $}</a>
+                  </div>
+                  <div class="col-md-1" ng-style="tab_container.tab2.click_cover.style">
+                    <img src="{{ STATIC_URL }}img/click.jpeg" ng-style="tab_container.tab2.click.style">
+                    {$ video.click_counts $}
+                    <div ng-style="tab_container.tab2.click_counts.style"></div>
                   </div>
                 </div>
               </div>
@@ -60,14 +65,22 @@
                 <div>
 
                   <div class="col-md-4">
-                    <input type="file" id="upload-file" ng-style="tab_container.tab4.upload.file.style" value="">
+                    <input type="file" id="upload-file" ng-style="tab_container.tab4.upload.file.style">
+                  </div>
+                  <div class="col-md-8" ng-style="tab_container.tab4.upload.video_cover_div.style">
+                    <nav class="navbar navbar-inverse navbar-embossed" role="navigation" ng-style="tab_container.tab4.upload.video_cover_nav.style">
+                      <div class="col-md-8">
+                        <input type="file" id="upload-video-cover" ng-style="tab_container.tab4.upload.video_cover_file.style" onchange="previewCover(this)">
+                        <img id="video-cover-preview" ng-style="tab_container.tab4.upload.video_cover_preview.style">
+                      </div>
+                    </nav>
                   </div>
                   <div class="col-md-4">
                     <button class="btn btn-success" ng-click="tab_container.tab4.upload.submit()" ng-style="tab_container.tab4.upload.button.style">
                       上传啦~~~
                     </button>
                   </div>
-                  <div class="col-md-4" ng-style="tab_container.tab4.upload.progress_cover.style">
+                  <div class="col-md-8" ng-style="tab_container.tab4.upload.progress_cover.style">
                     <nav class="navbar navbar-inverse navbar-embossed">
                       <div class="progress"  ng-style="tab_container.tab4.upload.progress.style">
                         <div class="progress-bar" id="video-upload-bar"></div>

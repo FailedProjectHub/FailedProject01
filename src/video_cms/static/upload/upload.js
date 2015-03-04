@@ -1,7 +1,8 @@
 var Uploader;
 (function(){
-	Uploader = function(file, onStatusChange){
+	Uploader = function(file, onStatusChange, callback){
 		if (typeof onStatusChange != "function") onStatusChange=function(obj){};
+    if (typeof callback != "function") callback=function(){};
 		var config = {
 			"chunksize":    65536, /* min=65536, max=??? */
 			"url"     :     window.location.origin+"/",
@@ -139,6 +140,7 @@ var Uploader;
 			return ajax("GET", config.url+"upload/store/"+token);
 		})
 		.then(function(m){console.log(m);})
+    .then(callback)
 		.catch(function(e){
 			console.log(e);
 			onStatusChange(obj);
