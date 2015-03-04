@@ -13,7 +13,7 @@ ls /public/ --include=folderfileattrib
 ils path
 返回该分类下按照点击数排序的信息
 [
-	[filename0, rec0],
-	[filename1, rec1],
+	[filename0, rec0, hits],
+	[filename1, rec1, hits],
 	...
 ]

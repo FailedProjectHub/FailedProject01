@@ -13,23 +13,48 @@
           <div class="col-md-8" ng-style="style.collections">
 
             <nav class="navbar navbar-default" ng-style="style.collections">
-              <a class="navbar-brand" href="">
-                {$ col $}
-              </a>
 
-              <div class="pagination pagination-minimal">
-                <ul>
-                  <li></li>
-                  <li><a href="">1</a></li>
-                  <li><a href="">2</a></li>
-                  <li><a href="">3</a></li>
-                  <li><a href="">4</a></li>
-                  <li><a href="">5</a></li>
-                  <li><a href="">6</a></li>
-                  <li><a href="">7</a></li>
-                  <li></li>
-                </ul>
+              <!-- collection name -->
+              <div class="col-md-2">
+                <a class="navbar-brand" href="">
+                  {$ col.name $}
+                </a>
               </div>
+
+              <!-- pagination --> 
+              <div class="col-md-8">
+                <div class="pagination pagination-minimal" ng-style="style.pagination">
+                  <ul>
+                    <li></li>
+                    <li><a href="">1</a></li>
+                    <li><a href="">2</a></li>
+                    <li><a href="">3</a></li>
+                    <li><a href="">4</a></li>
+                    <li><a href="">5</a></li>
+                    <li><a href="">6</a></li>
+                    <li><a href="">7</a></li>
+                    <li></li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- video message -->
+              <div>
+                <div ng-repeat="video in col.content track by $index" class="col-md-3" title="{$ video.filename $}">
+                  <a  href="/rec/{$ video.rec $}">
+                    <img ng-src="/video_cover/{$ video.rec $}" ng-style="">
+                  </a>
+                  <div ng-style="tab_container.tab2.filename.style" class="col-md-2">
+                    <a href="/rec/{$ video.rec $}" >{$ video.filename $}</a>
+                  </div>
+                  <div class="col-md-1" ng-style="tab_container.tab2.click_cover.style">
+                    <img src="{{ STATIC_URL }}img/click.jpeg" ng-style="tab_container.tab2.click.style">
+                    {$ video.click_counts $}
+                    <div ng-style="tab_container.tab2.click_counts.style"></div>
+                  </div>
+                </div>
+              </div>
+
             </nav>
           </div>
         </div>

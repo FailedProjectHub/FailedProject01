@@ -12,7 +12,7 @@ var index = angular.module('index', []).config(
 
 index.controller('index', function index($scope, $http){
   /* element */
-  $scope.collections = [];
+  $scope.collections = []; 
   $http.post(
     '/cms/', 
     {
@@ -22,7 +22,7 @@ index.controller('index', function index($scope, $http){
   ).success(
     function(response){
       for (var i in response.msg[0]){
-        $scope.collections.push(response.msg[0][i].substr(8));
+        $scope.collections.push({'name': response.msg[0][i].substr(8)});
       }
       console.log($scope.collections);
     }
@@ -37,5 +37,8 @@ index.controller('index', function index($scope, $http){
   $scope.style.collections = {
     'height': 300,
     'margin-bottom': 20
+  }
+  $scope.style.pagination = {
+    'margin-top': 10
   }
 });
