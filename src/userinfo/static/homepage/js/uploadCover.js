@@ -1,3 +1,13 @@
+function previewCover(file) {
+    if (file.files && file.files[0])
+    {
+        var reader = new FileReader();
+        reader.onload = function(evt){
+            document.getElementById('video-cover-preview').setAttribute("src",evt.target.result);
+        }
+        reader.readAsDataURL(file.files[0]);
+    }
+}
 function submitCover(rec)
 {
     var files = $('input[name="upload-video-cover"]').prop('files');
