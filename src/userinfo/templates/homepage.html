@@ -7,91 +7,49 @@
     <script src="{{ STATIC_URL }}bower_components/jcrop/js/jquery.Jcrop.min.js"></script>
     <link href="{{ STATIC_URL }}bower_components/jcrop/css/jquery.Jcrop.min.css" rel="stylesheet">
     <script src="{{ STATIC_URL }}homepage/js/uploadCover.js"></script>
+    <link href="{{ STATIC_URL }}homepage/css/homepage.css" rel="stylesheet"></link>
 {% endblock %}
 
 {% block content %}
   <div ng-app="homepage" ng-controller="homepage" ng-style="body.style">
-    <div class="container-fluid">
+    <div class="container">
       <div class="row">
-        <div class="col-md-1" ng-style='leftMargin.style'></div>
           <div class="col-md-2">
-              <div class="col-md-3">
-                <img src="/homepage/avatar/" ng-style="avatar.style">
-              </div>
-          </div>
-          <div class="col-md-9">
-            <div class="navbar navbar-default" role="navigation" ng-style="tab_container.style">
-              <ul class="nav navbar-nav">
+              <ul class="nav nav-pills nav-stacked" data-spy="affix">
 
-                <li ng-click="tab_container.change_tab(0)" ng-class="tab_container.tab0.class"><a href="">我的关注</a></li>
-                <li ng-click="tab_container.change_tab(1)" ng-class="tab_container.tab1.class"><a href="">我的投稿组</a></li>
-                <li ng-click="tab_container.change_tab(2)" ng-class="tab_container.tab2.class"><a href="">我的上传</a></li>
-                <li ng-click="tab_container.change_tab(3)" ng-class="tab_container.tab3.class"><a href="">我的收藏</a></li>
-                <li ng-click="tab_container.change_tab(4)" ng-class="tab_container.tab4.class"><a href="">我要上传</a></li>
-                <li ng-click="tab_container.change_tab(5)" ng-class="tab_container.tab5.class"><a href="">个人设置</a></li>
+                <li role="presentation" ng-click="tab_container.change_tab(0)" ng-class="tab_container.tab0.class"><a href="">我的关注</a></li>
+                <li role="presentation" ng-click="tab_container.change_tab(1)" ng-class="tab_container.tab1.class"><a href="">我的投稿组</a></li>
+                <li role="presentation" ng-click="tab_container.change_tab(2)" ng-class="tab_container.tab2.class"><a href="">我的上传</a></li>
+                <li role="presentation" ng-click="tab_container.change_tab(3)" ng-class="tab_container.tab3.class"><a href="">我的收藏</a></li>
+                <li role="presentation" ng-click="tab_container.change_tab(4)" ng-class="tab_container.tab4.class"><a href="">我要上传</a></li>
+                <li role="presentation" ng-click="tab_container.change_tab(5)" ng-class="tab_container.tab5.class"><a href="">个人设置</a></li>
               </ul>
-            </div>
           </div>
-        </div>
 
 
         <!-- homepage main area -->
-        <div class="col-md-1" ng-style='leftMargin.style'></div>
-        <div class="col-md-2"></div>
-
         <div class="col-md-9">
-          <nav class="navbar navbar-default" role="navigation"  ng-style="main_area.style">
+          <nav class="navbar navbar-default main-area" role="navigation">
 
               <!-- 我的上传 tab2  -->
-              <div ng-style="myupload" ng-show="tab_container.tab2.active">
+              <div class="tab2" ng-show="tab_container.tab2.active" class="main-area">
                 <div ng-repeat="video in ajax.myupload.content track by $index" class="col-md-3" title="{$ video.filename $}">
                   <a  href="/rec/{$ video.rec $}">
-                    <img ng-src="/video_cover/{$ video.rec $}" ng-style="tab_container.tab2.video_cover.style">
+                    <img ng-src="/video_cover/{$ video.rec $}" class="video-cover">
                   </a>
-                  <div ng-style="tab_container.tab2.filename.style" class="col-md-2">
+                  <div class="col-md-2 filename">
                     <a href="/rec/{$ video.rec $}" >{$ video.filename $}</a>
                   </div>
-                  <div class="col-md-1" ng-style="tab_container.tab2.click_cover.style">
-                    <img src="{{ STATIC_URL }}img/click.jpeg" ng-style="tab_container.tab2.click.style">
+                  <span class="glyphicon glyphicon-play click">
                     {$ video.click_counts $}
-                    <div ng-style="tab_container.tab2.click_counts.style"></div>
-                  </div>
+                  </span>
                 </div>
               </div>
               <!--           -->
 
               <!-- 我要上传 tab4  -->
-              <div ng-style="to_upload" ng-show="tab_container.tab4.active">
-                <div>
-
-                  <div class="col-md-4">
-                    <input type="file" id="upload-file" ng-style="tab_container.tab4.upload.file.style">
-                  </div>
-                  <div class="col-md-8" ng-style="tab_container.tab4.upload.video_cover_div.style">
-                    <nav class="navbar navbar-inverse navbar-embossed" role="navigation" ng-style="tab_container.tab4.upload.video_cover_nav.style">
-                      <div class="col-md-8">
-                        <input type="file" name="upload-video-cover" ng-style="tab_container.tab4.upload.video_cover_file.style" onchange="previewCover(this)">
-                        <img id="video-cover-preview" ng-style="tab_container.tab4.upload.video_cover_preview.style">
-                      </div>
-                    </nav>
-                  </div>
-                  <div class="col-md-4">
-                    <button class="btn btn-success" ng-click="tab_container.tab4.upload.submit()" ng-style="tab_container.tab4.upload.button.style">
-                      上传啦~~~
-                    </button>
-                  </div>
-                  <div class="col-md-8" ng-style="tab_container.tab4.upload.progress_cover.style">
-                    <nav class="navbar navbar-inverse navbar-embossed">
-                      <div class="progress"  ng-style="tab_container.tab4.upload.progress.style">
-                        <div class="progress-bar" id="video-upload-bar"></div>
-                      </div>
-                      <div class="progress" ng-style="tab_container.tab4.upload.progress.style">
-                        <div class="progress-bar" id="video-sha256-bar" ></div>
-                      </div>
-                    </nav>
-                  </div>
-
-                </div>
+              <div ng-show="tab_container.tab4.active" class="tab4 main-area">
+                <span class="glyphicon glyphicon-plus-sign add"></span>
               </div>
               <!--           -->
 

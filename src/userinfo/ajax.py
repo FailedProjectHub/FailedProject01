@@ -48,7 +48,7 @@ def myupload(request):
             'filename': video.video_file.filename,
             'click_counts': video.hits
         },
-        VideoFileAttrib.objects.filter(uploader=request.user).order_by('video_file__rec')[op: ct + 1]
+        VideoFileAttrib.objects.filter(uploader=request.user).order_by('video_file__rec')[op: op + ct]
     ))))
 
 

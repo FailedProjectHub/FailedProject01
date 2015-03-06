@@ -13,3 +13,7 @@ if exists(AVATAR_ROOT):
         raise ValueError('not a directory: %s' % AVATAR_ROOT)
 else:
     makedirs(AVATAR_ROOT)
+
+DEFAULT_INDEX = '/'
+INDEX = getattr(settings, 'INDEX', DEFAULT_INDEX)
+settings.INDEX = INDEX
