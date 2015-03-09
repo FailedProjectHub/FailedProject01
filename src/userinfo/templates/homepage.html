@@ -33,7 +33,7 @@
 
               <!-- 我的上传 tab2  -->
               <div class="tab2" ng-show="tab_container.tab2.active" class="main-area">
-                <div ng-repeat="video in ajax.myupload.content track by $index" class="col-md-3" title="{$ video.filename $}">
+                <div ng-repeat="video in tab2.myupload.content track by $index" class="col-md-3" title="{$ video.filename $}">
                   <a  href="/rec/{$ video.rec $}">
                     <img ng-src="/video_cover/{$ video.rec $}" class="video-cover">
                   </a>
@@ -49,8 +49,23 @@
 
               <!-- 我要上传 tab4  -->
               <div ng-show="tab_container.tab4.active" class="tab4 main-area">
-                <span class="glyphicon glyphicon-plus-sign add"></span>
+                <input type="file" id='video-upload' multiple />
+                <div class="add" id="video-upload-icon">
+                  <img src="{{ STATIC_URL }}upload/upload.png">
+                  <div>选择上传的文件</div>
+                </div>
+                <div class="container-fluid">
+                  <div class="row">
+                    <nav class="navbar navbar-default bootstrap-tagsinput files_list col-md-12">
+                      <span ng-repeat="file in tab4.upload.files_list" class="tag label laber-info">
+                        {$ file.name $}
+                        <span class="remove-files" ng-click="tab4.upload.remove_file($index)"></span>
+                      </span>
+                    </nav>
+                  </div>
+                </div>
               </div>
+              <button ng-click="test()">
               <!--           -->
 
               <!-- 个人资料设置 tab5  -->

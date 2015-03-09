@@ -14,48 +14,49 @@ homepage.controller('homepage', function homepage($scope, $http){
   $scope.email = {};
   $scope.top_container = {};
   $scope.main_area = {};
-  $http.get('/homepage/genericperinfo/').success(
-    function(response){
-      $scope.username.content = response.username;
-      $scope.email.content = response.email;
-    }
-  );
 
-  /* ajax */
-  $scope.ajax = {};
-  $scope.ajax.myupload = {};
-  $scope.ajax.myupload.fresh = function(op, ct){
+  /* tab2 */
+  $scope.tab2 = {};
+  $scope.tab2.myupload = {};
+  $scope.tab2.myupload.fresh = function(op, ct){
     $http.get(
       '/homepage/myupload/?op=' + parseInt(op) + '&ct=' + parseInt(ct)
     ).success(
       function(response){
-        $scope.ajax.myupload.content = response;
+        $scope.tab2.myupload.content = response;
         console.log(response);
       }
     )
   };
 
-  /* tab responsive */
-  $scope.tab_container = {};
-  $scope.tab_container.active = 4;
-  $scope.tab_container.tab_total = 5;
-  for (var i = 0; i <= 5; ++i)
-    $scope.tab_container['tab'+parseInt(i)] = {'class':""};
+  /* tab4 */
+  $scope.tab4 = {};
+  $scope.tab4.upload = {};
+  $scope.tab4.upload.files_list = [];
+  $scope.tab4.upload.files_dom = {};
 
-  $scope.tab_container.change_tab = function(new_tab_id){
-    $scope.tab_container["tab"+parseInt($scope.tab_container.active)].class = "";
-    $scope.tab_container["tab"+parseInt($scope.tab_container.active)].active = 0;
-    $scope.tab_container["tab"+parseInt(new_tab_id)].class = "active";
-    $scope.tab_container["tab"+parseInt(new_tab_id)].active = 1;
-    $scope.tab_container.active = new_tab_id;
-    if (new_tab_id == 2){
-      $scope.ajax.myupload.fresh(0, 12);
+  // add files
+  document.getElementById('video-upload').onchange = function(){
+    files = this.files;
+    console.log(files);
+    for (var i = 0; i < files['length']; ++i){
+      $scope.tab4.upload.files_list.push(files[i]);
     }
+    $scope.$apply();
+  };
+
+  // add Icon
+  document.getElementById('video-upload-icon').onclick = function(){
+    document.getElementById('video-upload').click();
   }
 
-  /* upload files */
-  $scope.tab_container.tab4.upload = {};
-  $scope.tab_container.tab4.upload.submit = function(){
+  // remove file
+  $scope.tab4.upload.remove_file = function($index){
+    $scope.tab4.upload.files_list.splice($index, 1);
+    console.log($scope.tab4.upload.files_list);
+  };
+
+  $scope.tab4.upload.submit = function(){
     var files = document.getElementById("upload-file").files;
     if (files.length){
       if (files[0].name.indexOf(' ') >= 0){
@@ -92,53 +93,51 @@ homepage.controller('homepage', function homepage($scope, $http){
     }
   };
 
+  /* tab responsive */
+  $scope.tab_container = {};
+  $scope.tab_container.active = 4;
+  $scope.tab_container.tab_total = 5;
+  for (var i = 0; i <= 5; ++i)
+    $scope.tab_container['tab'+parseInt(i)] = {
+      'class': "",
+      'http': 0
+    };
 
+  $scope.tab_container.change_tab = function(new_tab_id){
+    $scope.tab_container["tab"+parseInt($scope.tab_container.active)].class = "";
+    $scope.tab_container["tab"+parseInt($scope.tab_container.active)].active = 0;
+    $scope.tab_container["tab"+parseInt(new_tab_id)].class = "active";
+    $scope.tab_container["tab"+parseInt(new_tab_id)].active = 1;
+    $scope.tab_container.active = new_tab_id;
+    if (new_tab_id == 2){
+      if ($scope.tab_container.tab2.http == 0){
+        $scope.tab_container.tab2.http = 1;
+        $scope.tab2.myupload.fresh(0, 12);
+      }
+    }
+  };
+
+  $scope.test_model = [];
+  $scope.test = function(){
+    console.log($scope.tab4.upload.files_list);
+    console.log($scope.tab4.upload.files_dom);
+    console.log(document.getElementById('video-upload'));
+  };
+
+
+
+  // async
   main = new Promise(function(){
     $scope.tab_container.change_tab($scope.tab_container.active);
+  })
+  // genericperinfo
+  .then(function(){
+    $http.get('/homepage/genericperinfo/').success(
+      function(response){
+        $scope.username.content = response.username;
+        $scope.email.content = response.email;
+      }
+    );
   });
-
-  /* css */
-  $scope.tab_container.tab4.upload.video_cover_div = {
-    'style': {
-      'height': 550,
-      'margin-top': 20
-    }
-  }
-  $scope.tab_container.tab4.upload.video_cover_nav = {
-    'style': {
-      'margin-top': 20,
-      'height': 530
-    }
-  };
-  $scope.tab_container.tab4.upload.video_cover_file = {
-    'style': {
-      'margin-top': 20
-    }
-  };
-  $scope.tab_container.tab4.upload.video_cover_preview = {
-    'style': {
-      "height": 400,
-      "width": 400
-    }
-  };
-  $scope.tab_container.tab4.upload.button = {
-    'style': {
-      'margin-top': 20,
-      'margin-bottom': 20,
-      'height': 105,
-      'width': 260
-    }
-  };
-  $scope.tab_container.tab4.upload.progress = {
-    'style': {
-      'margin-top': 30,
-      'margin-left': 5,
-      'margin-right': 5
-    }
-  };
-  $scope.tab_container.tab4.upload.progress_cover = {
-    'style': {
-      'margin-top': 20
-    }
-  };
+  // file_handle binding
 });

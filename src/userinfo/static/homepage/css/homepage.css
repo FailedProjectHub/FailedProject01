@@ -5,6 +5,7 @@ body {
 .main-area {
   height: 700;
   position: relative;
+  box-shadow: 10px 10px 8px;
 }
 
 .main-area .tab2 .video-cover {
@@ -38,11 +39,20 @@ body {
 }
 
 .main-area .tab4 .add {
-  position: relative;
-  right: 10px;
-  top: 100;
+  margin-left: 200;
+  margin-right: 200;
+  text-align: center;
+  height: auto;
+  width: auto;
+  font-size: 20;
+  cursor: pointer;
 }
 
-.main-area .tab4 {
+.main-area .tab4 #video-upload{
+  display: none;
+}
 
+.main-area .tab4 .files_list{
+  margin-top: 50;
+  height: 200;
 }
