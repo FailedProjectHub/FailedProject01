@@ -13,12 +13,12 @@ var Uploader;
 		function ajax(method, url, data, headers) {
 			if (typeof data == "undefined") data=null;
 			if (typeof headers == "undefined") headers={};
-			return new Promise(function(resolv, reject){
+			return new Promise(function(resolve, reject){
 				var xhr=new XMLHttpRequest();
 				xhr.onreadystatechange=function() {
 					if (xhr.readyState==4) {
 						if (xhr.status>0 && xhr.status<400) {
-							resolv(xhr.responseText);
+							resolve(xhr.responseText);
 						} else {
 							reject(Error(xhr.responseText));
 						}
@@ -54,8 +54,9 @@ var Uploader;
 		var checksumprog=0;
 		var uploadprog=0;
 		onStatusChange(obj);
+		sha256_init();
 		/* init promise */
-		var chain = new Promise(function(resolv,reject){sha256_init();resolv(0);});
+		var chain = Promise.resolve(0);
 		/* calculate sha256sum */
 		for (var p=0;p<parseInt((file.size-1)/checksumchunk+1);p++) {
 			chain = chain.then(function(pos) {
@@ -109,10 +110,10 @@ var Uploader;
 		})
 		/* upload chunks */
 		.then(function(seqnow){
-			var upchain = new Promise(function(s,e){s(seqnow);});
+			var upchain = Promise.resolve(seqnow);
 			for (var i=seqnow;i<seqs;i++) {
 				upchain = upchain.then(function(seq) {
-					return new Promise(function(resolv,reject){
+					return new Promise(function(resolve, reject){
 						var offset=config.chunksize*seq;
 						var chunksize=offset+config.chunksize*2<=file.size?config.chunksize:file.size-offset;
 						var reader = new FileReader();
@@ -125,7 +126,7 @@ var Uploader;
 							}).then(function(m){
 								uploadprog = offset*100/file.size;
 								onStatusChange(obj);
-							}).then(function(){resolv(seq+1)});
+							}).then(function(){resolve(seq+1)});
 						};
 						reader.readAsArrayBuffer(file.slice(offset, offset+chunksize));
 					});
