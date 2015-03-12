@@ -29,13 +29,13 @@
 
         <!-- homepage main area -->
         <div class="col-md-9">
-          <nav class="navbar navbar-default main-area" role="navigation">
+          <nav class="navbar navbar-default main-area" role="navigation" id="main-area">
 
               <!-- 我的上传 tab2  -->
-              <div class="tab2" ng-show="tab_container.tab2.active" class="main-area">
-                <div ng-repeat="video in tab2.myupload.content track by $index" class="col-md-3" title="{$ video.filename $}">
-                  <a  href="/rec/{$ video.rec $}">
-                    <img ng-src="/video_cover/{$ video.rec $}" class="video-cover">
+              <div class="tab2 main-area" ng-show="tab_container.tab2.active">
+                <div ng-repeat="video in tab2.myupload.content track by $index" class="col-md-3 video" title="{$ video.filename $}">
+                  <a  href="/rec/{$ video.rec $}" class="thumbnail">
+                    <img ng-src="/video_cover/{$ video.rec $}" class="">
                   </a>
                   <div class="col-md-2 filename">
                     <a href="/rec/{$ video.rec $}" >{$ video.filename $}</a>
@@ -49,21 +49,37 @@
 
               <!-- 我要上传 tab4  -->
               <div ng-show="tab_container.tab4.active" class="tab4 main-area">
+
                 <input type="file" id='video-upload' multiple />
                 <div class="add" id="video-upload-icon">
-                  <img src="{{ STATIC_URL }}upload/upload.png">
-                  <div>选择上传的文件</div>
+                  <img src="{{ STATIC_URL }}upload/upload.png" id="video-cover-preview">
+                  <div>添加上传的文件</div>
                 </div>
-                <div class="container-fluid">
-                  <div class="row">
-                    <nav class="navbar navbar-default bootstrap-tagsinput files_list col-md-12">
-                      <span ng-repeat="file in tab4.upload.files_list" class="tag label laber-info">
-                        {$ file.name $}
-                        <span class="remove-files" ng-click="tab4.upload.remove_file($index)"></span>
-                      </span>
-                    </nav>
+
+                <div class="bootstrap-tagsinput files_list col-md-12">
+                  <span ng-repeat="file in tab4.upload.files_list" class="tag label laber-info">
+                    {$ file.name $}
+                    <span class="remove-files" ng-click="tab4.upload.remove_file($index)"></span>
+                  </span>
+                </div>
+
+                <div>
+                  <div class="col-md-2">
+                    <button class="btn btn-primary" ng-click="tab4.upload.start()">开始上传</button>
+                  </div>
+                  <div class="col-md-2">
+                    <button class="btn btn-info" id="video-cover-upload-icon">添加封面</button>
+                    <input type='file' id="video-cover-upload">
+                  </div>
+                  <div class="col-md-8">
+                    <div class="progress">
+                      <div class="progress-bar" ng-style='tab4.upload.progress'>
+                      </div>
+                      <div id="progress-text" >等待上传</div>
+                    </div>
                   </div>
                 </div>
+
               </div>
               <button ng-click="test()">
               <!--           -->

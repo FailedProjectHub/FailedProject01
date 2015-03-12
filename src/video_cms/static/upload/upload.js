@@ -1,6 +1,15 @@
 var Uploader;
 (function(){
 	Uploader = function(file, onStatusChange, callback){
+		Object.defineProperty(this, "checksumprog", {
+			get: function() {return checksumprog;}
+		});
+		Object.defineProperty(this, "checksum", {
+			get: function() {return sum;}
+		});
+		Object.defineProperty(this, "uploadprog", {
+			get: function() {return uploadprog;}
+		});
 		if (typeof onStatusChange != "function") onStatusChange=function(obj){};
     if (typeof callback != "function") callback=function(){};
 		var config = {
@@ -151,15 +160,6 @@ var Uploader;
 			onStatusChange(obj);
 		});
     */
-		Object.defineProperty(this, "checksumprog", {
-			get: function() {return checksumprog;}
-		});
-		Object.defineProperty(this, "checksum", {
-			get: function() {return sum;}
-		});
-		Object.defineProperty(this, "uploadprog", {
-			get: function() {return uploadprog;}
-		});
 	};
 
 })();

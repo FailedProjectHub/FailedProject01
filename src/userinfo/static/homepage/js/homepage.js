@@ -56,40 +56,56 @@ homepage.controller('homepage', function homepage($scope, $http){
     console.log($scope.tab4.upload.files_list);
   };
 
-  $scope.tab4.upload.submit = function(){
-    var files = document.getElementById("upload-file").files;
-    if (files.length){
-      if (files[0].name.indexOf(' ') >= 0){
-        alert("文件名不能带空格");
-        return false;
-      }
-      var upload = new Uploader(files[0], 
-        // status
-        function(obj){
-          console.log(obj);
-          document.getElementById("video-sha256-bar").style.width = obj.checksumprog+"%";
-          document.getElementById("video-upload-bar").style.width = obj.uploadprog+"%";
-        },
-        // callback
-        function(response){
-          submitCover(response.rec);
-        }
-      );
+  // video cover
+  document.getElementById('video-cover-upload-icon').onclick = function(){
+    t = document.getElementById('video-cover-upload');
+    document.getElementById('video-cover-upload').click();
+    console.log(t);
+  }
+  var uploadVideoCover = UploadVideoCover(
+      document.getElementById('video-cover-upload'),
+      document.getElementById('video-cover-preview')
+  );
 
-      var lastprog=0, inter=5000;
-      setInterval(function(){
-        if (upload.checksumprog != 100){
-          console.log(parseFloat((upload.checksumprog - lastprog)/100*files[0].size/inter).toFixed(3)+"KB/s");
-          lastprog = upload.checksumprog;
+  // start uploading
+  $scope.tab4.upload.progress = {'width': 0};
+  $scope.tab4.upload.start = function(){
+    var files = document.getElementById("video-upload").files;
+    if (files.length){
+      for (var i = 0; i < files.length; ++i)
+        if (files[i].name.indexOf(' ') >= 0){
+          alert("文件名不能带空格");
+          console.log("这一行看到了吗！     " + files[i].name);
+          return false;
         }
-        else if (lastprog > upload.checksumprog){
-          lastprog = 0;
-        }
-        else {
-          console.log(parseFloat((upload.uploadprog - lastprog)/100 * files[0].size/inter).toFixed(3)+"KB/s");
-          lastprog = upload.uploadprog;
-        }
-      }, inter);
+      var now = 0;
+      var total = files.length;
+      console.log(total);
+      var progress = document.getElementById('progress-text');
+      for (var i = 0; i < files.length; ++i){
+        (function(){
+          var previous_prog = 0;
+          var upload = new Uploader(files[i], 
+            // status
+            function(obj){
+              console.log(obj);
+              console.log(now);
+              console.log(obj.uploadprog);
+              now += obj.uploadprog - previous_prog;
+              previous_prog = obj.uploadprog;
+              if (now > 0){
+                document.getElementById('progress-text').innerHTML = (now/total).toFixed(0).toString() + "%"
+              }
+              $scope.tab4.upload.progress.width = parseFloat(now/total)+'%';
+              $scope.$apply();
+            },
+            // callback
+            function(response){
+              submitCover(response.rec);
+            }
+          );
+        })();
+      }
     }
   };
 
@@ -116,7 +132,9 @@ homepage.controller('homepage', function homepage($scope, $http){
       }
     }
   };
+  $scope.tab_container.change_tab($scope.tab_container.active);
 
+  // test
   $scope.test_model = [];
   $scope.test = function(){
     console.log($scope.tab4.upload.files_list);
@@ -124,20 +142,13 @@ homepage.controller('homepage', function homepage($scope, $http){
     console.log(document.getElementById('video-upload'));
   };
 
+  // tab5
+  $http.get('/homepage/genericperinfo/')
+  .success(
+    function(response){
+      $scope.username.content = response.username;
+      $scope.email.content = response.email;
+    }
+  )
 
-
-  // async
-  main = new Promise(function(){
-    $scope.tab_container.change_tab($scope.tab_container.active);
-  })
-  // genericperinfo
-  .then(function(){
-    $http.get('/homepage/genericperinfo/').success(
-      function(response){
-        $scope.username.content = response.username;
-        $scope.email.content = response.email;
-      }
-    );
-  });
-  // file_handle binding
 });
