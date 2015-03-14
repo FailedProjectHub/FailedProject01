@@ -1,255 +1,261 @@
-(function() {
-  "use strict";
-  // Adapted from https://github.com/progranism/Bitcoin-JavaScript-Miner/blob/master/sha256.js
-  // Heap structure (in 32-bit numbers)
-  //    0 -  63: K array
-  //   64 - 127: W array
-  //  128 - 135: H array
-  //  136      : Number of blocks
-  //  137 - ...: blocks
-  function module(stdlib, foreign, heap) {
-    "use asm";
+/*
+* A JavaScript implementation of the SHA256 hash function.
+*
+* FILE:	sha256.js
+* VERSION:	0.8
+* AUTHOR:	Christoph Bichlmeier <informatik@zombiearena.de>
+*
+* NOTE: This version is not tested thoroughly!
+*
+* Copyright (c) 2003, Christoph Bichlmeier
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions
+* are met:
+* 1. Redistributions of source code must retain the above copyright
+*    notice, this list of conditions and the following disclaimer.
+* 2. Redistributions in binary form must reproduce the above copyright
+*    notice, this list of conditions and the following disclaimer in the
+*    documentation and/or other materials provided with the distribution.
+* 3. Neither the name of the copyright holder nor the names of contributors
+*    may be used to endorse or promote products derived from this software
+*    without specific prior written permission.
+*
+* ======================================================================
+*
+* THIS SOFTWARE IS PROVIDED BY THE AUTHORS ''AS IS'' AND ANY EXPRESS
+* OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+* ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+* BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+* WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE
+* OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+* EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 
-    var H = new stdlib.Int32Array(heap);
-    var B = new stdlib.Uint8Array(heap);
+"use strict";
+function sha256_module() {
+	"use asm";
+	/* SHA256 logical functions */
+	function rotateRight(n,x) {
+		n=n|0;x=x|0;
+		return ((x >>> n) | (x << (32 - n)))|0;
+	}
+	function choice(x,y,z) {
+		x=x|0;y=y|0;z=z|0;
+		return ((x & y) ^ (~x & z))|0;
+	}
+	function majority(x,y,z) {
+		x=x|0;y=y|0;z=z|0;
+		return ((x & y) ^ (x & z) ^ (y & z))|0;
+	}
+	function sha256_Sigma0(x) {
+		x=x|0;
+		return (rotateRight(2, x|0) ^ rotateRight(13, x|0) ^ rotateRight(22, x|0))|0;
+	}
+	function sha256_Sigma1(x) {
+		x=x|0;
+		return (rotateRight(6, x|0) ^ rotateRight(11, x|0) ^ rotateRight(25, x|0))|0;
+	}
+	function sha256_sigma0(x) {
+		x=x|0;
+		return (rotateRight(7, x|0) ^ rotateRight(18, x|0) ^ (x >>> 3))|0;
+	}
+	function sha256_sigma1(x) {
+		x=x|0;
+		return (rotateRight(17, x|0) ^ rotateRight(19, x|0) ^ (x >>> 10))|0;
+	}
+	function sha256_expand(W, j) {
+		j=j|0;
+		return (W[j&0x0f] += sha256_sigma1(W[(j+14)&0x0f]|0) + W[(j+9)&0x0f] + 
+	sha256_sigma0(W[(j+1)&0x0f]|0))|0;
+	}
 
-    var iW = 256;
-    var iH = 512;
-    var iN = 544;
-    var iB = 548;
+	/* Hash constant words K: */
+	var K256 = [
+		0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
+		0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+		0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
+		0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+		0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc,
+		0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+		0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7,
+		0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+		0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
+		0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+		0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3,
+		0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+		0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5,
+		0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+		0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
+		0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
+	];
 
-    function endian_swap(x) {
-      x = x|0;
-      return (
-        (x>>>24) | 
-        ((x<<8) & 0x00FF0000) |
-        ((x>>>8) & 0x0000FF00) |
-        (x<<24)
-      )|0;
-    }
+	/* global arrays */
+	var ihash, count, buffer;
+	var sha256_hex_digits = "0123456789abcdef";
 
-    // Binary Right Rotate
-    function S(X, n) {
-      X = X|0; n = n|0;
-      return ( X >>> n ) | (X << (32 - n))|0;
-    }
+	/* Add 32-bit integers with 16-bit operations (bug in some JS-interpreters: 
+	overflow) */
+	function safe_add(x, y)
+	{
+		x=x|0;y=y|0;
+		return (x+y)|0;
+	}
 
-    // Binary Right Shift
-    function R(X, n) {
-      X = X|0; n = n|0;
-      return ( X >>> n )|0;
-    }
+	/* Initialise the SHA256 computation */
+	function sha256_init() {
+		ihash = new Uint32Array(8);
+		count = new Uint32Array(2);
+		buffer = new Uint8Array(64);
+		count[0] = count[1] = 0;
+		ihash[0] = 0x6a09e667;
+		ihash[1] = 0xbb67ae85;
+		ihash[2] = 0x3c6ef372;
+		ihash[3] = 0xa54ff53a;
+		ihash[4] = 0x510e527f;
+		ihash[5] = 0x9b05688c;
+		ihash[6] = 0x1f83d9ab;
+		ihash[7] = 0x5be0cd19;
+	}
 
-    //// Binary functions unique to SHA-256
-    // These are used in the calculation of T1
-    function Ch(x, y, z) {
-      x = x|0; y = y|0; z = z|0;
-      return ((x & y) ^ ((~x) & z))|0;
-    }
+	/* Transform a 512-bit message block */
+	function sha256_transform() {
+		var a, b, c, d, e, f, g, h, T1, T2;
+		var W = new Uint32Array(16);
 
-    function Sigma1(x) {
-      x = x|0;
-      return (S(x, 6) ^ S(x, 11) ^ S(x, 25))|0;
-    }
+		/* Initialize registers with the previous intermediate value */
+		a = ihash[0]|0;
+		b = ihash[1]|0;
+		c = ihash[2]|0;
+		d = ihash[3]|0;
+		e = ihash[4]|0;
+		f = ihash[5]|0;
+		g = ihash[6]|0;
+		h = ihash[7]|0;
 
-    // These are used in the calculation of T2
-    function Maj(x, y, z) {
-      x = x|0; y = y|0; z = z|0;
-      return ((x & y) ^ (x & z) ^ (y & z))|0;
-    }
+			/* make 32-bit words */
+		for(var i=0; i<16; i= (i + 1)|0)
+			W[i] = ((buffer[(i<<2)+3]) | (buffer[(i<<2)+2] << 8) | (buffer[(i<<2)+1] 
+	<< 16) | (buffer[i<<2] << 24))|0;
 
-    function Sigma0(x) {
-      x = x|0;
-      return (S(x, 2) ^ S(x, 13) ^ S(x, 22))|0;
-    }
+			for(var j=0; j<64; j= (j + 1)|0) {
+			T1 = (h + sha256_Sigma1(e|0) + choice(e|0, f|0, g|0) + K256[j])|0;
+			if(j < 16) T1 = (T1+W[j])|0;
+			else T1 = (T1+sha256_expand(W, j|0))|0;
+			T2 = (sha256_Sigma0(a|0) + majority(a|0, b|0, c|0))|0;
+			h = g;
+			g = f;
+			f = e;
+			e = safe_add(d|0, T1|0)|0;
+			d = c;
+			c = b;
+			b = a;
+			a = safe_add(T1|0, T2|0)|0;
+			}
 
-    // These are used in the calculation of W
-    function Gamma0(x) {
-      x = x|0;
-      return (S(x, 7) ^ S(x, 18) ^ R(x, 3))|0;
-    }
+		/* Compute the current intermediate hash value */
+		ihash[0] = (ihash[0] + a)|0;
+		ihash[1] = (ihash[1] + b)|0;
+		ihash[2] = (ihash[2] + c)|0;
+		ihash[3] = (ihash[3] + d)|0;
+		ihash[4] = (ihash[4] + e)|0;
+		ihash[5] = (ihash[5] + f)|0;
+		ihash[6] = (ihash[6] + g)|0;
+		ihash[7] = (ihash[7] + h)|0;
+	}
 
-    function Gamma1(x) {
-      x = x|0;
-      return (S(x, 17) ^ S(x, 19) ^ R(x, 10))|0;
-    }
+	/* Read the next chunk of data and update the SHA256 computation */
+	function sha256_update(data, inputLen) {
+		var i, index, curpos = 0;
+		/* Compute number of bytes mod 64 */
+		index = ((count[0] >> 3) & 0x3f)|0;
+			var remainder = (inputLen & 0x3f)|0;
 
-    function init() {
-      H[128] = 0x6A09E667;
-      H[129] = 0xBB67AE85;
-      H[130] = 0x3C6EF372;
-      H[131] = 0xA54FF53A;
-      H[132] = 0x510E527F;
-      H[133] = 0x9B05688C;
-      H[134] = 0x1F83D9AB;
-      H[135] = 0x5BE0CD19;
-    }
+		/* Update number of bits */
+		if ((count[0] += (inputLen << 3)) < (inputLen << 3)) count[1]++;
+		count[1] = (count[1] + (inputLen >> 29))|0;
 
-    function run(blocks) {
-      blocks = blocks|0;
-      var h0 = 0, h1 = 0, h2 = 0, h3 = 0, h4 = 0, h5 = 0, h6 = 0, h7 = 0;
-      var a = 0, b = 0, c = 0, d = 0, e = 0, f = 0, g = 0, h = 0;
+		/* Transform as many times as possible */
+		for(i=0; i+63<inputLen; i+=64) {
+					for(var j=index; j<64; j++)
+				buffer[j] = data.charCodeAt(curpos++);
+			sha256_transform();
+			index = 0;
+		}
 
-      var W = 256;
-      var start = 548; // where the blocks start
+		/* Buffer remaining input */
+		for(var j=0; j<remainder; j++)
+			buffer[j] = data.charCodeAt(curpos++);
+	}
 
-      var i = 0;
-      var s0 = 0, s1 = 0, maj = 0, t2 = 0, ch = 0, t1 = 0;
+	/* Finish the computation by operations such as padding */
+	function sha256_final() {
+		var index = ((count[0] >> 3) & 0x3f);
+			buffer[index++] = 0x80;
+			if(index <= 56) {
+			for(var i=index; i<56; i++)
+				buffer[i] = 0;
+			} else {
+			for(var i=index; i<64; i++)
+				buffer[i] = 0;
+					sha256_transform();
+					for(var i=0; i<56; i++)
+				buffer[i] = 0;
+		}
+			buffer[56] = (count[1] >>> 24) & 0xff;
+			buffer[57] = (count[1] >>> 16) & 0xff;
+			buffer[58] = (count[1] >>> 8) & 0xff;
+			buffer[59] = count[1] & 0xff;
+			buffer[60] = (count[0] >>> 24) & 0xff;
+			buffer[61] = (count[0] >>> 16) & 0xff;
+			buffer[62] = (count[0] >>> 8) & 0xff;
+			buffer[63] = count[0] & 0xff;
+			sha256_transform();
+	}
 
-      h0 = H[128]|0;
-      h1 = H[129]|0;
-      h2 = H[130]|0;
-      h3 = H[131]|0;
-      h4 = H[132]|0;
-      h5 = H[133]|0;
-      h6 = H[134]|0;
-      h7 = H[135]|0;
+	/* Split the internal hash values into an array of bytes */
+	function sha256_encode_bytes() {
+			var j=0;
+			var output = new Array(32);
+		for(var i=0; i<8; i++) {
+			output[j++] = ((ihash[i] >>> 24) & 0xff);
+			output[j++] = ((ihash[i] >>> 16) & 0xff);
+			output[j++] = ((ihash[i] >>> 8) & 0xff);
+			output[j++] = (ihash[i] & 0xff);
+		}
+		return output;
+	}
 
-      // Loop over the blocks
-      for (; blocks; blocks = (blocks - 1)|0) {
-        a = h0;
-        b = h1;
-        c = h2;
-        d = h3;
-        e = h4;
-        f = h5;
-        g = h6;
-        h = h7;
+	/* Get the internal hash as a hex string */
+	function sha256_encode_hex() {
+		var output = new String();
+		for(var i=0; i<8; i++) {
+			for(var j=28; j>=0; j-=4)
+				output += sha256_hex_digits.charAt((ihash[i] >>> j) & 0x0f);
+		}
+		return output;
+	}
 
-        for (i = 0; (i|0) < 256; i = (i + 4)|0) {
-          if ((i|0) < 64) {
-            H[(W+i)>>2] = endian_swap(H[(start+i)>>2]|0);
-          } else {
-            s0 = Gamma0(H[(W+i-60)>>2]|0);
-            s1 = Gamma1(H[(W+i-8)>>2]|0);
-            H[(W+i)>>2] = (H[(W+i-64)>>2]|0) + s0 + (H[(W+i-28)>>2]|0) + s1;
-          }
+	/* Main function: returns a hex string representing the SHA256 value of the 
+	given data */
+	function sha256_digest(data) {
+		sha256_init();
+		sha256_update(data, data.length);
+		sha256_final();
+			return sha256_encode_hex();
+	}
+	
+	this.init=sha256_init;
+	this.update=sha256_update;
+	this.final=sha256_final;
+	this.encode_bytes=sha256_encode_bytes;
+	this.encode_hex=sha256_encode_hex;
+	this.digest=sha256_digest;
+};
 
-          s0 = Sigma0(a);
-          maj = Maj(a, b, c);
-          t2 = (s0 + maj)|0;
-          s1 = Sigma1(e);
-          ch = Ch(e, f, g);
-          t1 = (h + s1 + ch + (H[i>>2]|0) + (H[(W+i)>>2]|0))|0;
-
-          h = g;
-          g = f;
-          f = e;
-          e = (d + t1)|0;
-          d = c;
-          c = b;
-          b = a;
-          a = (t1 + t2)|0;
-        }
-
-        h0 = (h0 + a)|0;
-        h1 = (h1 + b)|0;
-        h2 = (h2 + c)|0;
-        h3 = (h3 + d)|0;
-        h4 = (h4 + e)|0;
-        h5 = (h5 + f)|0;
-        h6 = (h6 + g)|0;
-        h7 = (h7 + h)|0;
-        start = (start + 64)|0;
-      }
-
-      H[128] = h0;
-      H[129] = h1;
-      H[130] = h2;
-      H[131] = h3;
-      H[132] = h4;
-      H[133] = h5;
-      H[134] = h6;
-      H[135] = h7;
-    }
-
-    return {
-      init: init,
-      run: run
-    };
-  }
-
-  var K = [0x428A2F98, 0x71374491, 0xB5C0FBCF, 0xE9B5DBA5, 0x3956C25B, 0x59F111F1, 0x923F82A4, 0xAB1C5ED5, 0xD807AA98, 0x12835B01, 0x243185BE, 0x550C7DC3, 0x72BE5D74, 0x80DEB1FE, 0x9BDC06A7, 0xC19BF174, 0xE49B69C1, 0xEFBE4786, 0xFC19DC6, 0x240CA1CC, 0x2DE92C6F, 0x4A7484AA, 0x5CB0A9DC, 0x76F988DA, 0x983E5152, 0xA831C66D, 0xB00327C8, 0xBF597FC7, 0xC6E00BF3, 0xD5A79147, 0x6CA6351, 0x14292967, 0x27B70A85, 0x2E1B2138, 0x4D2C6DFC, 0x53380D13, 0x650A7354, 0x766A0ABB, 0x81C2C92E, 0x92722C85, 0xA2BFE8A1, 0xA81A664B, 0xC24B8B70, 0xC76C51A3, 0xD192E819, 0xD6990624, 0xF40E3585, 0x106AA070, 0x19A4C116, 0x1E376C08, 0x2748774C, 0x34B0BCB5, 0x391C0CB3, 0x4ED8AA4A, 0x5B9CCA4F, 0x682E6FF3, 0x748F82EE, 0x78A5636F, 0x84C87814, 0x8CC70208, 0x90BEFFFA, 0xA4506CEB, 0xBEF9A3F7, 0xC67178F2];
-
-  var nums = "01234567890abcdef";
-
-  function writeBuffer(target, buffer, from, to, offset) {
-    if (typeof buffer == 'string') {
-      for (var i = from; i < to; i++) {
-        target[548 + offset + i] = buffer.charCodeAt(i);
-      }
-    } else {
-      // Writes an Int8Array
-      target.set(buffer.subarray(from, to), 548 + offset);
-    }
-  }
-
-  function sha256(heapSize) {
-    var heap = new ArrayBuffer(heapSize || 4096);
-    this.mod = module(window, {}, heap);
-    this.int8 = new Int8Array(heap);
-    this.int32 = new Uint32Array(heap);
-    this.int32.set(K);
-    this.chunkLimit = this.int8.length - 548;
-  }
-
-  sha256.prototype.init = function() {
-    this.totalSize = 0;
-    this.offset = 0;
-    this.mod.init();
-  };
-
-  sha256.prototype.update = function(buffer) {
-    var length, view, blocks, extra, boundary;
-
-    length = buffer.length;
-    if (length > this.chunkLimit) throw "too big chunk";
-    this.totalSize += length;
-    blocks = (length + this.offset) >> 6;
-    extra = (length + this.offset) & 63;
-    boundary = length - extra;
-    if (boundary < 0) boundary = 0;
-
-    writeBuffer(this.int8, buffer, 0, boundary, this.offset);
-
-    if (blocks) {
-      this.mod.run(blocks);
-    }
-
-    // Write the extra bytes
-    writeBuffer(this.int8, buffer, boundary, length, this.offset);
-    this.offset = extra;
-  };
-
-  sha256.prototype.finalUpdate = function() {
-    // write 1 bit
-    this.int8[548 + this.offset] = 128;
-    // write 0 bits
-    for (var i = this.offset+1; i < 64; i++) {
-      this.int8[548 + i] = 0;
-    }
-    // write size
-    var bitsize = this.totalSize * 8;
-    this.int8[548 + i - 1] = bitsize & 255;
-    this.int8[548 + i - 2] = bitsize >> 8;
-
-    // run the last blocks
-    this.mod.run(1);
-  },
-
-  sha256.prototype.final = function() {
-    this.finalUpdate();
-    // create hex
-    var str = "";
-    for (var i = 0; i < 8; i++) {
-      var h = this.int32[128+i].toString(16);
-      var leading = (8 - h.length);
-      while (leading--) str += "0";
-      str += h;
-    }
-    return str;
-  }
-
-  window.sha256 = sha256;
-})();
 
