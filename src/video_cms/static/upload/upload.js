@@ -54,7 +54,7 @@ var Uploader;
 		var pos=0;
 		var reader = new FileReader(); 
 
-		var checksumchunk = 65536;
+		var checksumchunk = 1048576;
 		var sha256=new sha256_module;
 		var sum;
 		
