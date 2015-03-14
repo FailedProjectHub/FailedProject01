@@ -56,14 +56,15 @@ var Uploader;
 		var pos=0;
 		var reader = new FileReader(); 
 
+		var sha256sum = new sha256;
 		var checksumchunk = 65536;
 
 		var sum;
 		
 		var checksumprog=0;
 		var uploadprog=0;
+		sha256sum.init();
 		onStatusChange(obj);
-		sha256_init();
 		/* init promise */
 		var chain = Promise.resolve(0);
 		/* calculate sha256sum */
@@ -74,17 +75,16 @@ var Uploader;
 					reader.onload=function() {
 						checksumprog=pos/file.size*100;
 						onStatusChange(obj);
-						sha256_update(this.result, thischunk);
+						sha256sum.update(new Int8Array(this.result));
 						resolve(pos+thischunk);
 					};
-					reader.readAsBinaryString(file.slice(pos, pos+thischunk));
+					reader.readAsArrayBuffer(file.slice(pos, pos+thischunk));
 				});
 			});
 		}
 		/* finalize sha256sum */
 		chain = chain.then(function(){
-			sha256_final();
-			sum=sha256_encode_hex();
+			sum=sha256sum.final();
 			checksumprog=100;
 			onStatusChange(obj);
 		})
@@ -128,8 +128,9 @@ var Uploader;
 						var reader = new FileReader();
 						reader.onload=function(e) {
 							onStatusChange(obj);
-							var data = String.fromCharCode.apply(null, new Uint8Array(this.result));
-							var hash=sha256_digest(data);
+							sha256sum.init();
+							sha256sum.update(new Int8Array(this.result));
+							var hash=sha256sum.final();
 							ajax("PUT", config.url+"upload/chunk/"+token+"/?hash="+hash+"&seq="+seq, this.result, {
 								"Content-Type": "application/x-www-form-urlencoded"
 							}).then(function(m){
