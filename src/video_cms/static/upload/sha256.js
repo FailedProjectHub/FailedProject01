@@ -39,7 +39,7 @@
 
 "use strict";
 function sha256_module() {
-	"use asm";
+	/* "use asm"; */
 	/* SHA256 logical functions */
 	function rotateRight(n,x) {
 		n=n|0;x=x|0;
