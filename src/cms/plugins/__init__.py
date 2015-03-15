@@ -6,7 +6,8 @@ __all__ = [
     'chmod',
     'chown',
     'touch',
-    'lna'
+    'lna',
+    'mv'
 ]
 
 

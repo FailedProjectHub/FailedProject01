@@ -84,3 +84,12 @@ class IsADirectory(Exception):
 
     def __str__(self):
         return "%s : is a directory" % (self.filename,)
+
+
+class WrongArgumentsNum(Exception):
+
+    def __init__(self, count):
+        self.count = count
+
+    def __str__(self):
+        return "The number of arguments should be %d" % (self.count,)

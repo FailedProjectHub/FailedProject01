@@ -29,7 +29,13 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    "django.core.context_processors.request"
+)
+
 INSTALLED_APPS = (
+    'grappelli',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,8 +45,7 @@ INSTALLED_APPS = (
     'ASA',
     'cms',
     'video_cms',
-    'website',
-    'userinfo'
+    'website'
 )
 
 MIDDLEWARE_CLASSES = (
@@ -86,6 +91,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = 'static'
 LOGGING_FILE = "log.log"
 LOGGING = {
     'version': 1,

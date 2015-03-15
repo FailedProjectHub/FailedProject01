@@ -21,7 +21,7 @@ class cd(baseplugin, metaclass=basepluginMetaclass):
         if hasattr(file, "folderattrib") is False:
             AttribNotFound(path, "folder")
         else:
-            if access(environ, file, AUTH_FOR_READ+AUTH_FOR_EXECUTE):
+            if access(environ, file, AUTH_FOR_READ + AUTH_FOR_EXECUTE):
                 environ['path'] = path
                 return None
             else:

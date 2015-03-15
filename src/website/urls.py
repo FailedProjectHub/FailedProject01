@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, url, include
+
 from .views import *
 from .ajax import *
 
@@ -51,6 +52,7 @@ urlpatterns_danmaku = patterns(
     ),
 )
 
+
 urlpatterns_index = patterns(
     '',
     url(
@@ -68,8 +70,33 @@ urlpatterns_video_cover = patterns(
 )
 
 
+urlpatterns_perinfo = patterns(
+    r'',
+    url(r'homepage/genericperinfo', genericperinfo),
+    url(r'homepage/advancedperinfo', advacedperinfo),
+    url(r'homepage/myupload/', myupload),
+    url(r'homepage/mygroup/', mygroup),
+    url(r'homepage/avatar/', AvatarView.as_view()),
+)
+
+
+urlpatterns_register = patterns(
+    r'',
+    url(r'register/', register.as_view())
+)
+
+
+urlpatterns_homepage = patterns(
+    r'',
+    url(r'homepage/', homepage),
+)
+
+
 urlpatterns = patterns(
     r'',
+    url(r'', include(urlpatterns_perinfo)),
+    url(r'', include(urlpatterns_register)),
+    url(r'', include(urlpatterns_homepage)),
     url(r'', include(urlpatterns_upload)),
     url(r'', include(urlpatterns_danmaku)),
     url(r'', include(urlpatterns_index)),

@@ -8,6 +8,10 @@ urlpatterns = patterns(
     # Examples:
     # url(r'^$', 'ASA.views.home', name='home'),
     # url(r'^blog/', include('blog.urls')),
+
+    # grapelli
+    url(r'^grappelli/', include('grappelli.urls')),
+
     url(r'^admin/', include(admin.site.urls)),
     url(r'', include('cms.urls', namespace='cms')),
     url(r'^accounts/login/$', 'django.contrib.auth.views.login',
@@ -16,6 +20,5 @@ urlpatterns = patterns(
         {'template_name': 'logged_out.html'}),
     url(r'', include('website.urls')),
     url(r'', include('video_cms')),
-    url(r'', include('userinfo.urls')),
 ) + \
     static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
