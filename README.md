@@ -3,7 +3,7 @@
 ### branch 说明
 ----------------------
 released version: 可运行稳定的版本  
-stable version: 可运行但是可能会有bug的版本  
+testing version: 可运行但是可能会有bug的版本  
 develop version: 开发版本.   
 
 ### 功能说明
