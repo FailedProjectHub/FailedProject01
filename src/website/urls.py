@@ -57,6 +57,11 @@ urlpatterns_index = patterns(
     url(
         r'^$',
         indexpage
+    ),
+
+    url(
+        r'^video_list/$',
+        video_list
     )
 )
 

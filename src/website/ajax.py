@@ -296,6 +296,26 @@ def mygroup(request):
     ))
 
 
+@login_required
+def video_list(request):
+    assert 'col' in request.GET
+    try:
+        col = Collection.objects.get(name=request.GET['col'])
+    except Exception:
+        raise CollectionNotFound(request.GET['col'])
+    return JsonResponse(
+        list(map(
+            lambda video:{
+                'rec': video.base.rec,
+                'filename': video.base.filename
+            }, 
+            col.file_set.all()
+        )),
+        status=201,
+        safe=False
+    )
+
+
 class AvatarView(View):
 
     def get(self, request):
