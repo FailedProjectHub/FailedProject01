@@ -46,7 +46,6 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'ASA',
-    'cms',
     'video_cms',
     'website'
 )

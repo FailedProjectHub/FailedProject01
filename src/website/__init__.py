@@ -1,8 +1,15 @@
-__all__ = ['cms_plugins', 'admin', 'ajax', 
-        'exceptions', 'form', 'models',
-        'urls', 'views', 'settings', 'ajax'
-        ]
+__all__ = [
+    'admin', 
+    'ajax',
+    'exceptions', 
+    'form', 
+    'models',
+    'urls', 
+    'views', 
+    'settings', 
+    'ajax',
+    'fields'
+]
 
 
 from . import settings
-from . import cms_plugins

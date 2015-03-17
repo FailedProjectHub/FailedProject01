@@ -12,6 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 
 from video_cms.settings import MIN_CHUNK_SIZE
+import video_cms
 
 
 def indexpage(request):
@@ -56,3 +57,9 @@ class register(View):
 @login_required
 def homepage(request):
     return render(request, 'homepage.html')
+
+
+class PageView(video_cms.upload_views.PageView):
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(PageView, self).dispatch(*args, **kwargs)

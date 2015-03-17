@@ -6,62 +6,71 @@ try:
 except Exception:
     import json
 
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils.decorators import method_decorator
 from django.views.generic import View
 from video_cms.models import *
 from django.contrib.auth.decorators import login_required
 
-from cms.plugins.exceptions import *
 import video_cms
-from .models import *
-from .cms_plugins import av
-from .settings import (VIDEO_COVER_DIR,
-    AVATAR_ROOT, AVATAR_SIZE_LIMIT)
+from video_cms.exceptions import *
 
-av = av.process
+from .exceptions import *
+from .models import *
+from .settings import (VIDEO_COVER_DIR,
+                       AVATAR_ROOT, AVATAR_SIZE_LIMIT)
 
 
 class InitView(video_cms.upload_views.InitView):
 
-    def post(self, request, data, *args, **kwargs):
-        environ = {'user': request.user, 'username': request.user.username}
+    def post(self, request, *args, **kwargs):
         try:
+            data = json.loads(request.body)
+            if not ('collection' in data):
+                raise ContentMismatch("Miss collection")
+            if isinstance(data['collection'], list) is False:
+                raise ContentMismatch("Collection must be a list, not a %s" % (type(data),))
+            if Collection.objects.filter(name=data['collection']).exists() is False:
+                raise NoSuchCollection("Collection '%s' not found" % (data['collection'],))
+            if Collection.objects.get(name=data['collection']).abstract is True:
+                raise CollectionIsAbstract(data['collection'])
             response = super(InitView, self).post(
                 request,
-                data,
                 *args,
                 **kwargs
             )
             if response.status_code == 201:
                 res_data = json.loads(response.content)
                 session = Session.objects.get(token=res_data['token'])
-                SessionUploaderRecord.objects.create(
+                col = Collection.objects.get(name=data['collection'])
+                SessionExt.objects.create(
                     session=session,
-                    uploader=environ['user']
+                    uploader=request.user,
+                    collection=col
                 )
             return response
         except Exception as e:
-            return HttpResponse(json.dumps({'status': 'error', 'msg': str(e)}))
+            return JsonResponse(
+                {'status': 'error', 'msg': str(e)},
+                status=400,
+            )
 
     @method_decorator(login_required)
     def dispatch(self, request, *args, **kwargs):
         return super(InitView, self).dispatch(request, *args, **kwargs)
 
 
-def auth_check(environ, owner):
+def auth_check(user, owner):
     owner = Session.objects.get(token=owner)
-    if owner.session_uploader_record.uploader.username \
-            != environ['username']:
+    if owner.ext.uploader != user:
         raise Unauthorized("You are not the uploader")
 
 
 class ChunkView(video_cms.upload_views.ChunkView):
 
     def put(self, request, owner, *args, **kwargs):
-        environ = {'user': request.user, 'username': request.user.username}
         try:
-            auth_check(environ, owner)
+            auth_check(request.user, owner)
             response = super(ChunkView, self).put(
                 request,
                 owner,
@@ -75,9 +84,8 @@ class ChunkView(video_cms.upload_views.ChunkView):
         return response
 
     def get(self, request, owner, *args, **kwargs):
-        environ = {'user': request.user, 'username': request.user.username}
         try:
-            auth_check(environ, owner)
+            auth_check(request.user, owner)
             response = super(ChunkView, self).get(
                 request,
                 owner,
@@ -98,25 +106,25 @@ class ChunkView(video_cms.upload_views.ChunkView):
 class FinalizeView(video_cms.upload_views.FinalizeView):
     def get(self, request, owner, *args, **kwargs):
         session = Session.objects.get(token=owner)
-        filename = session.filename
-        environ = {
-            'user': request.user,
-            'username': request.user.username,
-        }
         try:
-            auth_check(environ, owner)
-            session.session_uploader_record.delete()
+            auth_check(request.user, owner)
+            col = session.ext.collection
+            session.ext.delete()
             response = super(FinalizeView, self).get(
                 request,
                 owner,
                 *args,
                 **kwargs
             )
+            if response.status_code != 201:
+                return response
             data = json.loads(response.content)
-            data['path'] = '/home/' + str(request.user.username) + '/' + filename
-            environ['path'] = data['path']
-            if ('errstr' in data) is False:
-                av(environ, [data['path'], str(data['rec'])])
+            base = video_cms.models.File.objects.get(token=data['token'])
+            File.objects.create(
+                base=base,
+                collection=col,
+                uploader=request.user
+            )
             return response
         except Exception as e:
             raise e
@@ -129,19 +137,12 @@ class FinalizeView(video_cms.upload_views.FinalizeView):
         return super(FinalizeView, self).dispatch(*args, **kwargs)
 
 
-class PageView(video_cms.upload_views.PageView):
-    @method_decorator(login_required)
-    def dispatch(self, *args, **kwargs):
-        return super(PageView, self).dispatch(*args, **kwargs)
-
-
 class DestroyView(video_cms.upload_views.DestroyView):
 
     def get(self, request, owner, *args, **kwargs):
         owner = owner.lower()
-        environ = {'user': request.user, 'username': request.user.username}
         try:
-            auth_check(environ, owner)
+            auth_check(request.user, owner)
             return super(DestroyView, self).get(request, owner, *args, **kwargs)
         except Exception as e:
             raise e
@@ -167,7 +168,7 @@ class SessionsView(View):
                     'token': record.session.token,
                     'chunksize': record.session.chunk_size
                 },
-                user.sessionuploaderrecord_set.order_by('id')
+                user.sessionext_set.order_by('id')
             )
         )))
 
@@ -211,12 +212,6 @@ class DanmakuView(View):
         return HttpResponse(json.dumps({'status': 'OK'}))
 
 
-def load_index(request):
-    args = json.loads(request.data)
-    args = ['ils'] + args
-    return run_command(request, args)
-
-
 class VideoCoverView(View):
 
     def get(self, request, rec, *args, **kwargs):
@@ -228,13 +223,13 @@ class VideoCoverView(View):
 
     def post(self, request, rec, *args, **kwargs):
         try:
-            video_ = VideoFileAttrib.objects.get(video_file__rec=int(rec))
+            video = video_cms.models.File.objects.get(rec=int(rec))
         except Exception:
             return HttpResponse(json.dumps({
                 'status': 'error',
                 'reason': 'video file does not exists'
             }))
-        if video_.uploader == request.user:
+        if video.ext.uploader == request.user:
             with open(os.path.join(VIDEO_COVER_DIR, rec), "wb") as f:
                 f.write(request.body)
             return HttpResponse(json.dumps({
@@ -251,7 +246,14 @@ class VideoCoverView(View):
 
 
 @login_required
-def genericperinfo(request):
+def CollectionInfo(request):
+    return JsonResponse(
+        list(Collection.objects.filter(abstract=False))
+    )
+
+
+@login_required
+def GenericPerInfo(request):
     return HttpResponse(json.dumps({
         'username': request.user.username,
         'email': request.user.email,
@@ -259,7 +261,7 @@ def genericperinfo(request):
 
 
 @login_required
-def advacedperinfo(request):
+def AdvacedPerInfo(request):
     info = AdvancedPerInfo.objects.get(user=request.user)
     return HttpResponse(json.dumps({
         'chunksize': info.default_chunksize,
@@ -276,11 +278,11 @@ def myupload(request):
         ct = 20
     return HttpResponse(json.dumps(list(map(
         lambda video: {
-            'rec': video.video_file.rec,
-            'filename': video.video_file.filename,
-            'click_counts': video.hits
+            'rec': video.base.rec,
+            'filename': video.base.filename,
+            'click_counts': 0
         },
-        VideoFileAttrib.objects.filter(uploader=request.user).order_by('video_file__rec')[op: op + ct]
+        File.objects.filter(uploader=request.user).order_by('base__rec')[op: op + ct]
     ))))
 
 

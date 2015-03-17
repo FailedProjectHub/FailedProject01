@@ -16,7 +16,8 @@ var UploadVideoCover;
     }
 
     this.startUpload = function(rec){
-      var files = input.prop('files');
+      console.log(input.files);
+      var files = input.files;
       if (files.length == 0) {
         alert("Please choose an image");
         return false;

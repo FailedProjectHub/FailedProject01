@@ -1,35 +1,48 @@
 from django.db import models
-from cms.models import BaseFileAttrib, ListField
-from video_cms.models import File
+import video_cms.models
+from .fields import ListField
 
 # Create your models here.
 
 
-class VideoFileAttrib(BaseFileAttrib):
-    uploader = models.ForeignKey('auth.User', db_index=True)
-    video_file = models.ForeignKey(
-        'video_cms.File',
-        related_name="authattrib",
-        db_index=True
-    )
-    hits = models.IntegerField(default=0)
-    collected = models.IntegerField(default=0)
-
-
-class SessionUploaderRecord(models.Model):
+class SessionExt(models.Model):
     session = models.OneToOneField(
         'video_cms.Session',
-        related_name='session_uploader_record'
+        related_name='ext'
     )
     uploader = models.ForeignKey(
         'auth.User'
     )
+    collection = models.ForeignKey('Collection')
+
+
+class Collection(models.Model):
+    base = models.OneToOneField(
+        'auth.Group',
+        related_name='ext'
+    )
+    name = ListField(unique=True)
+    abstract = models.BooleanField(default=False)
+
+    def __str__(self):
+        return str(self.name)
+
+
+class File(models.Model):
+    base = models.OneToOneField(
+        'video_cms.File',
+        related_name='ext',
+        unique=True
+    )
+    uploader = models.ForeignKey('auth.User')
+    collection = models.ForeignKey('Collection')
+    onshow = models.BooleanField(default=False)
 
 
 class Danmaku(models.Model):
     id = models.IntegerField(primary_key=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    owner = models.ForeignKey(File, db_index=True, on_delete=models.PROTECT)
+    owner = models.ForeignKey('video_cms.File', db_index=True, on_delete=models.PROTECT)
     mode = models.IntegerField()
     stime = models.IntegerField()
     date = models.PositiveIntegerField()
@@ -52,8 +65,8 @@ class Danmaku(models.Model):
         assert isinstance(size, int) is True
         assert isinstance(color, str) is True
         assert isinstance(date, int) is True
-        assert File.objects.filter(token=owner).count() == 1
-        owner = File.objects.get(token=owner)
+        assert video_cms.models.File.objects.filter(token=owner).count() == 1
+        owner = video_cms.models.File.objects.get(token=owner)
         Danmaku.objects.create(
             owner=owner,
             mode=mode,
@@ -66,8 +79,8 @@ class Danmaku(models.Model):
 
     @staticmethod
     def load_danmaku_by_video_token(token):
-        assert File.objects.filter(token=token).count() == 1
-        video = File.objects.get(token=token)
+        assert video_cms.models.File.objects.filter(token=token).count() == 1
+        video = video_cms.models.File.objects.get(token=token)
         danmaku = list(
             map(lambda danmaku: {
                 # 'owner': danmaku.owner,
@@ -84,7 +97,7 @@ class Danmaku(models.Model):
 
 class Comment(models.Model):
     id = models.IntegerField(primary_key=True)
-    owner = models.ForeignKey(File, db_index=True, on_delete=models.PROTECT)
+    owner = models.ForeignKey('video_cms.File', db_index=True, on_delete=models.PROTECT)
     created_at = models.DateTimeField()
     text = models.CharField(max_length=1024)
 
@@ -125,17 +138,3 @@ class LoginLog(models.Model):
     user = models.ForeignKey('auth.User')
     login_ip = models.GenericIPAddressField()
     login_time = models.DateTimeField()
-
-
-class VisitVideoLog(models.Model):
-    user = models.ForeignKey('auth.User')
-    visit_video = models.ForeignKey(
-        'website.VideoFileAttrib', related_name='+')
-    visit_time = models.DateTimeField()
-
-
-class FocusRelation(models.Model):
-    focus = models.ForeignKey(
-        'auth.User', related_name='focus')
-    focused = models.ForeignKey(
-        'auth.User', related_name='focused')

@@ -3,7 +3,6 @@ from django.conf.urls import patterns, url, include
 from .views import *
 from .ajax import *
 
-
 urlpatterns_upload = patterns(
     r'',
     url(
@@ -70,10 +69,19 @@ urlpatterns_video_cover = patterns(
 )
 
 
+urlpatrtns_col = patterns(
+    '',
+    url(
+        r'^collection$',
+        CollectionInfo
+    )
+)
+
+
 urlpatterns_perinfo = patterns(
     r'',
-    url(r'homepage/genericperinfo', genericperinfo),
-    url(r'homepage/advancedperinfo', advacedperinfo),
+    url(r'homepage/genericperinfo', GenericPerInfo),
+    url(r'homepage/advancedperinfo', AdvacedPerInfo),
     url(r'homepage/myupload/', myupload),
     url(r'homepage/mygroup/', mygroup),
     url(r'homepage/avatar/', AvatarView.as_view()),

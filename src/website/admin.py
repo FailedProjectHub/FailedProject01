@@ -3,8 +3,9 @@ from .models import *
 
 # Register your models here.
 
-admin.site.register(SessionUploaderRecord)
-admin.site.register(VideoFileAttrib)
+admin.site.register(SessionExt)
+admin.site.register(Collection)
+admin.site.register(File)
 
 
 for cls in BasePerInfoMetaclass.Register.values():

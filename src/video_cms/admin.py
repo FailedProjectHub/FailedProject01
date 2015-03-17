@@ -5,3 +5,4 @@ from .player_views import *
 
 admin.site.register(File)
 admin.site.register(Session)
+admin.site.register(Chunk)
