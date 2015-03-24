@@ -6,7 +6,10 @@ from django.utils.decorators import method_decorator
 from .models import Session, Chunk
 from .exceptions import UploadException
 from django.views.decorators.csrf import csrf_exempt
-import simplejson as json
+try:
+    import simplejson as json
+except Exception:
+    import json
 
 # Create your views here.
 
