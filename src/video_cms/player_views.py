@@ -5,7 +5,10 @@ from django.views.generic import View
 from .models import *
 from .exceptions import *
 
-import simplejson as json
+try:
+    import simplejson as json
+except Exception:
+    import json
 
 import logging
 logger = logging.getLogger(__name__)
