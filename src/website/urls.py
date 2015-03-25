@@ -47,7 +47,8 @@ urlpatterns_danmaku = patterns(
     '',
     url(
         r'danmaku/(?P<token>[a-zA-Z0-9]{64})/?',
-        DanmakuView.as_view()
+        DanmakuView.as_view(),
+        name='danmaku'
     ),
 )
 
@@ -56,12 +57,14 @@ urlpatterns_index = patterns(
     '',
     url(
         r'^$',
-        indexpage
+        indexpage,
+        name='index'
     ),
 
     url(
         r'^video_list/$',
-        video_list
+        video_list,
+        name='video_list'
     )
 )
 
@@ -69,7 +72,8 @@ urlpatterns_video_cover = patterns(
     '',
     url(
         r'^video_cover/(?P<rec>[0-9]+)/$',
-        VideoCoverView.as_view()
+        VideoCoverView.as_view(),
+        name='video_cover'
     )
 )
 
@@ -78,30 +82,59 @@ urlpatrtns_col = patterns(
     '',
     url(
         r'^collection$',
-        CollectionInfo
+        CollectionInfo,
+        name='collection_info'
     )
 )
 
 
 urlpatterns_perinfo = patterns(
     r'',
-    url(r'homepage/genericperinfo', GenericPerInfo),
-    url(r'homepage/advancedperinfo', AdvacedPerInfo),
-    url(r'homepage/myupload/', myupload),
-    url(r'homepage/mygroup/', mygroup),
-    url(r'homepage/avatar/', AvatarView.as_view()),
+    url(
+        r'homepage/genericperinfo',
+        GenericPerInfo,
+        name='GenericPerInfo'
+    ),
+    url(
+        r'homepage/advancedperinfo',
+        AdvancedPerInfo,
+        name='AdvancedPerInfo'
+    ),
+    url(
+        r'homepage/myupload/',
+        myupload,
+        name='myupload'
+    ),
+    url(
+        r'homepage/mygroup/',
+        mygroup,
+        name='mygroup'
+    ),
+    url(
+        r'homepage/avatar/',
+        AvatarView.as_view(),
+        name='AvatarView'
+    ),
 )
 
 
 urlpatterns_register = patterns(
     r'',
-    url(r'register/', register.as_view())
+    url(
+        r'register/',
+        register.as_view(),
+        name='register'
+    )
 )
 
 
 urlpatterns_homepage = patterns(
     r'',
-    url(r'homepage/', homepage),
+    url(
+        r'homepage/',
+        homepage,
+        name='homepage'
+    ),
 )
 
 
