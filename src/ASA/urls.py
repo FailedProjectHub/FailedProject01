@@ -17,7 +17,6 @@ urlpatterns = patterns(
         {'template_name': 'admin/login.html'}),
     url(r'^accounts/logout/$', 'django.contrib.auth.views.logout',
         {'template_name': 'logged_out.html'}),
-    url(r'', include('website.urls')),
-    url(r'', include('video_cms')),
-) + \
-    static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    url(r'^$', 'ASA.views.app'),
+)   + \
+    static('/app/', document_root='app')

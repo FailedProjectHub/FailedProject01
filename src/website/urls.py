@@ -54,13 +54,6 @@ urlpatterns_danmaku = patterns(
 
 
 urlpatterns_index = patterns(
-    '',
-    url(
-        r'^$',
-        indexpage,
-        name='index'
-    ),
-
     url(
         r'^video_list/$',
         video_list,
