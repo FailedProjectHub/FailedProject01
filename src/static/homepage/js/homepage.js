@@ -62,10 +62,11 @@ homepage.controller('homepage', function homepage($scope, $http){
     document.getElementById('video-cover-upload').click();
     console.log(t);
   }
-  var uploadVideoCover = UploadVideoCover(
+  var uploadVideoCover = new UploadVideoCover(
       document.getElementById('video-cover-upload'),
       document.getElementById('video-cover-preview')
   );
+  console.log(uploadVideoCover.startUpload);
 
   // start uploading
   $scope.tab4.upload.progress = {'width': 0};
@@ -99,9 +100,11 @@ homepage.controller('homepage', function homepage($scope, $http){
               $scope.tab4.upload.progress.width = parseFloat(now/total)+'%';
               $scope.$apply();
             },
+            // config
+            undefined,
             // callback
             function(response){
-              submitCover(response.rec);
+              uploadVideoCover.startUpload(response.rec);
             }
           );
         })();
@@ -137,9 +140,7 @@ homepage.controller('homepage', function homepage($scope, $http){
   // test
   $scope.test_model = [];
   $scope.test = function(){
-    console.log($scope.tab4.upload.files_list);
-    console.log($scope.tab4.upload.files_dom);
-    console.log(document.getElementById('video-upload'));
+    uploadVideoCover.startUpload(2);
   };
 
   // tab5

@@ -1,6 +1,7 @@
 var Uploader;
 (function(){
-	Uploader = function(file, onStatusChange, callback){
+	Uploader = function(file, onStatusChange, config, callback){
+
 		Object.defineProperty(this, "checksumprog", {
 			get: function() {return checksumprog;}
 		});
@@ -10,13 +11,21 @@ var Uploader;
 		Object.defineProperty(this, "uploadprog", {
 			get: function() {return uploadprog;}
 		});
+
+    // default settings
 		if (typeof onStatusChange != "function") onStatusChange=function(obj){};
     if (typeof callback != "function") callback=function(){};
-		var config = {
-			"chunksize":    65536, /* min=65536, max=??? */
-			"url"     :     window.location.origin+"/",
-			"filename":		"test_file",
-		};
+    if (config == null)
+      var config = {};
+    config['size'] = file.size;
+    if (typeof(config['url']) != undefined)
+      config["url"] = window.location.origin+"/";
+    if (typeof(config['collection']) != undefined)
+      config['collection'] = ['test'];
+    if (typeof(config['chunksize']) != undefined)
+      config['chunksize'] = 65536;
+    if (typeof(config['filename']) != undefined)
+      config['filename'] = file.name; 
 
 		/* make ajax */
 		function ajax(method, url, data, headers) {
@@ -41,12 +50,11 @@ var Uploader;
 			});
 		}
 		/* parse json */
-		var parseJSON = function(json){return eval('('+json+')');};
+		var parseJSON = function(json){return JSON.parse(json);};
 		
 		/* init vars */
 		var obj=this;
 		
-		config.filename=file.name; 
 		var token;
 
 		var seqnow=0;
@@ -97,7 +105,13 @@ var Uploader;
 				if (sessions[f].hash == sum) break;
 			}
 			if (f>=sessions.length) {
-				return ajax("POST", config.url+"upload/init/", '{"size":'+file.size+',"hash":"'+sum+'","filename":"'+config.filename+'","chunksize":'+config.chunksize+'}')
+        config['hash'] = sum;
+        console.log(config);
+				return ajax(
+            "POST", 
+            config.url+"upload/init/", 
+            JSON.stringify(config)
+        )
 				.then(parseJSON)
 				.then(function(res){token=res.token;return 0;})
 			} else {
